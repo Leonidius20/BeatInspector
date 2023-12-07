@@ -1,5 +1,6 @@
 package ua.leonidius.beatinspector.views
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -34,7 +35,8 @@ import ua.leonidius.beatinspector.domain.entities.SongSearchResult
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
-    searchViewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory)
+    searchViewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory),
+    onNavigateToSongDetails: (SongSearchResult) -> Unit = {}
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     // todo: there's some better way, perhaps with better performance
@@ -45,7 +47,8 @@ fun SearchScreen(
         query = searchViewModel.query,
         onQueryChange = { searchViewModel.query = it },
         searchResults = searchViewModel.searchResults, // todo: should i bring this down to SearchResultsList for better performance?
-        onSearch = { searchViewModel.performSearch() }
+        onSearch = { searchViewModel.performSearch() },
+        onNavigateToSongDetails = onNavigateToSongDetails
     )
 }
 
@@ -56,7 +59,8 @@ fun SearchScreen(
     query: String,
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
-    searchResults: List<SongSearchResult>
+    searchResults: List<SongSearchResult>,
+    onNavigateToSongDetails: (SongSearchResult) -> Unit = {}
 ) {
     SearchBar(
         // modifier = Modifier.requiredHeight(100.dp),
@@ -76,7 +80,8 @@ fun SearchScreen(
     ) {
         SearchResultsList(
             //Modifier.height(100.dp), // todo
-            results = searchResults
+            results = searchResults,
+            onNavigateToSongDetails = onNavigateToSongDetails
         )
     }
 }
@@ -112,11 +117,16 @@ fun SearchResult(
 @Composable
 fun SearchResultsList(
     modifier: Modifier = Modifier,
-    results: List<SongSearchResult>
+    results: List<SongSearchResult>,
+    onNavigateToSongDetails: (SongSearchResult) -> Unit
 ) {
     LazyColumn(modifier.padding(5.dp)) {
         items(results) {
-            SearchResult(title = it.name, artist = it.artist)
+            SearchResult(
+                Modifier.clickable { onNavigateToSongDetails(it) },
+                title = it.name,
+                artist = it.artist
+            )
         }
     }
 }

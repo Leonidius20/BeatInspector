@@ -19,8 +19,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import ua.leonidius.beatinspector.ui.theme.BeatInspectorTheme
 import ua.leonidius.beatinspector.views.SearchScreen
+import ua.leonidius.beatinspector.views.SongDetailsScreen
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -30,9 +34,14 @@ class MainActivity : ComponentActivity() {
             BeatInspectorTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    var text by remember { mutableStateOf("") }
+                    val navController = rememberNavController()
 
-                    SearchScreen()
+                    NavHost(navController = navController, startDestination = "search") {
+                        composable("search") {
+                            SearchScreen(onNavigateToSongDetails = { navController.navigate("song") })
+                        }
+                        composable("song") { SongDetailsScreen() }
+                    }
 
                     //Greeting("Android")
                 }

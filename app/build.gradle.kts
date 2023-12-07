@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "ua.leonidius.beatinspector"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "ua.leonidius.beatinspector"
         minSdk = 21
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -57,6 +57,9 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3:1.1.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
+    val nav_version = "2.7.5"
+
+    implementation("androidx.navigation:navigation-compose:$nav_version")
 
     implementation(project(":data"))
     implementation(project(":domain"))
