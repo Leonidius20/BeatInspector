@@ -34,7 +34,7 @@ import ua.leonidius.beatinspector.domain.entities.SongSearchResult
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
-    searchViewModel: SearchViewModel = viewModel()
+    searchViewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory)
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     // todo: there's some better way, perhaps with better performance
