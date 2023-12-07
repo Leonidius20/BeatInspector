@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import ua.leonidius.beatinspector.ui.theme.BeatInspectorTheme
+import ua.leonidius.beatinspector.views.SearchScreen
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -31,18 +32,15 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     var text by remember { mutableStateOf("") }
 
-                    Column {
-                        TextField(value = text, onValueChange = { text = it })
-
-                        Button(onClick = { Toast.makeText(this@MainActivity, text, Toast.LENGTH_SHORT).show() }) {
-                            Text(text = "Button")
-                        }
-                    }
+                    SearchScreen()
 
                     //Greeting("Android")
                 }
             }
         }
+
+
+        // BuildConfig
     }
 }
 

@@ -18,7 +18,8 @@ android {
         if (apiPropertiesFile.exists()) {
             apiPropertiesFile.forEachLine { line ->
                 val (key, value) = line.split("=")
-                buildConfigField("String", key, "\"${value}\"")
+                // buildConfigField("String", key, "\"${value}\"")
+                resValue("String", key, "${value}")
             }
 
         }
