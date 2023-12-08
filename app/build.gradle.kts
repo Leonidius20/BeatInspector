@@ -1,6 +1,9 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -18,6 +21,23 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // adding the API access keys (client id & secret) from api.properties to BuildConfig
+        /*val apiPropertiesFile = project.file("api.properties")
+        println(apiPropertiesFile.path)
+        if (apiPropertiesFile.exists()) {
+            apiPropertiesFile.forEachLine { line ->
+                val (key, value) = line.split("=")
+                // buildConfigField("String", key, "\"${value}\"")
+                resValue("String", key, "${value}")
+            }
+
+        }*/
+        val secretProperties = Properties()
+        secretProperties.load(project.rootProject.file("secrets.properties").inputStream())
+
+        buildConfigField("String", "SPOTIFY_CLIENT_ID", "\"${properties["SPOTIFY_CLIENT_ID"]}\"")
+        buildConfigField("String", "SPOTIFY_CLIENT_SECRET", "\"${properties["SPOTIFY_CLIENT_SECRET"]}\"")
     }
 
     buildTypes {
@@ -35,6 +55,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"

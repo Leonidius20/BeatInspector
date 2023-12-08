@@ -6,6 +6,11 @@ import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
 
 class BeatInspectorApp: Application() {
     
-    val searchSongsUseCase = SearchSongsUseCase(SongsRepositoryImpl())
+    val searchSongsUseCase = SearchSongsUseCase(
+        SongsRepositoryImpl(
+            BuildConfig.SPOTIFY_CLIENT_ID,
+            BuildConfig.SPOTIFY_CLIENT_SECRET
+        )
+    )
     
 }

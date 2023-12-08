@@ -13,16 +13,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
 
-        // adding the API access keys (client id & secret) from api.properties to BuildConfig
-        val apiPropertiesFile = project.file("api.properties")
-        if (apiPropertiesFile.exists()) {
-            apiPropertiesFile.forEachLine { line ->
-                val (key, value) = line.split("=")
-                // buildConfigField("String", key, "\"${value}\"")
-                resValue("String", key, "${value}")
-            }
 
-        }
     }
 
     buildTypes {
