@@ -10,7 +10,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
-import ua.leonidius.beatinspector.domain.SearchSongsUseCase
+import ua.leonidius.beatinspector.domain.usecases.SearchSongsUseCase
 import ua.leonidius.beatinspector.domain.entities.SongSearchResult
 
 class SearchViewModel(

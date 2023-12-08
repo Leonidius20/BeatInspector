@@ -7,9 +7,10 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun SongDetailsScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    songId: SongId?
 ) {
     Column(modifier) {
-        Text("welcome to rice fields")
+        Text("This is supposed to represent a song with id of $songId")
     }
 }

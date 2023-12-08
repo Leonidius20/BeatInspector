@@ -38,9 +38,14 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(navController = navController, startDestination = "search") {
                         composable("search") {
-                            SearchScreen(onNavigateToSongDetails = { navController.navigate("song") })
+                            SearchScreen(onNavigateToSongDetails = { // todo: only send ID of the track to the other screen
+                                navController.navigate("song/${it}")
+                            })
                         }
-                        composable("song") { SongDetailsScreen() }
+                        composable("song/{songId}") { backStackEntry ->
+                            val songId = backStackEntry.arguments?.getString("songId")
+                            SongDetailsScreen(songId = songId)
+                        }
                     }
 
                     //Greeting("Android")

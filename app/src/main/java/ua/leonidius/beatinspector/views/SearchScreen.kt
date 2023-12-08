@@ -32,11 +32,13 @@ import ua.leonidius.beatinspector.viewmodels.SearchViewModel
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.domain.entities.SongSearchResult
 
+typealias SongId = String
+
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
     searchViewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory),
-    onNavigateToSongDetails: (SongSearchResult) -> Unit = {}
+    onNavigateToSongDetails: (SongId) -> Unit = {}
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     // todo: there's some better way, perhaps with better performance
@@ -60,7 +62,7 @@ fun SearchScreen(
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
     searchResults: List<SongSearchResult>,
-    onNavigateToSongDetails: (SongSearchResult) -> Unit = {}
+    onNavigateToSongDetails: (SongId) -> Unit = {}
 ) {
     SearchBar(
         // modifier = Modifier.requiredHeight(100.dp),
@@ -118,12 +120,12 @@ fun SearchResult(
 fun SearchResultsList(
     modifier: Modifier = Modifier,
     results: List<SongSearchResult>,
-    onNavigateToSongDetails: (SongSearchResult) -> Unit
+    onNavigateToSongDetails: (SongId) -> Unit
 ) {
     LazyColumn(modifier.padding(5.dp)) {
         items(results) {
             SearchResult(
-                Modifier.clickable { onNavigateToSongDetails(it) },
+                Modifier.clickable { onNavigateToSongDetails(it.id) },
                 title = it.name,
                 artist = it.artist
             )
