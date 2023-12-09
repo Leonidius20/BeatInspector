@@ -7,7 +7,7 @@ class SearchSongsUseCase(val repository: SongsRepository) {
 
     // todo: create an interface and an impl
     suspend fun searchSongs(query: String): List<SongSearchResult> {
-        return listOf(SongSearchResult("1","Everything", "Pnp"), SongSearchResult("2","Uhh", "oof"))
+        return repository.searchForSongsByTitle(query)
         // todo put it in repository impl
     }
 

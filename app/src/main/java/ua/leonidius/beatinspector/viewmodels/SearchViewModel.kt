@@ -25,7 +25,11 @@ class SearchViewModel(
 
     fun performSearch() {
         viewModelScope.launch {
-            _searchResults.value = searchSongsUseCase.searchSongs(query)
+            //try {
+                _searchResults.value = searchSongsUseCase.searchSongs(query)
+            //} catch (e: Error) { // todo: proper handling
+            //}
+
         }
     }
 
