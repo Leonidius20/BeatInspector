@@ -9,9 +9,11 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.launch
+import ua.leonidius.beatinspector.AuthStatusViewModel
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.domain.usecases.SearchSongsUseCase
 import ua.leonidius.beatinspector.domain.entities.SongSearchResult
+import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
 
 class SearchViewModel(
     val searchSongsUseCase: SearchSongsUseCase
@@ -25,10 +27,13 @@ class SearchViewModel(
 
     fun performSearch() {
         viewModelScope.launch {
-            //try {
+            try {
                 _searchResults.value = searchSongsUseCase.searchSongs(query)
-            //} catch (e: Error) { // todo: proper handling
-            //}
+            } catch (e: SongsRepositoryImpl.NotAuthedError) {
+
+            } catch (e: Error) {
+                // todo: proper handling
+            }
 
         }
     }

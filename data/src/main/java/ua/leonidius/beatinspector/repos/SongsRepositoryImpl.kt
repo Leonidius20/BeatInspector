@@ -21,10 +21,19 @@ class SongsRepositoryImpl(
             throw Error("error when doing the request")
             // todo: proper error handling
         } else {
-            return result.body()!!.tracks.items.map {
-                SongSearchResult(it.id, it.name, it.artistsListToString())
+            if (result.code() == 418) {
+                // no stored token found
+                throw NotAuthedError()
+            } else {
+                return result.body()!!.tracks.items.map {
+                    SongSearchResult(it.id, it.name, it.artistsListToString())
+                }
             }
+
+
         }
     }
+
+    class NotAuthedError: Error()
 
 }
