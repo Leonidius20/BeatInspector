@@ -10,12 +10,11 @@ class BeatInspectorApp: Application() {
 
     lateinit var authenticator: Authenticator
 
-    private val CLIENT_ID = ""
 
     val searchSongsUseCase = SearchSongsUseCase(
         SongsRepositoryImpl(
-            CLIENT_ID,
-            BuildConfig.SPOTIFY_CLIENT_SECRET,
+            BuildConfig.SPOTIFY_CLIENT_ID,
+            "BuildConfig.SPOTIFY_CLIENT_SECRET", // todo remove
             spotifyRetrofitClient // todo: place creation somewhere else
             // actually, it may make sense to put the retrofit dependency
             // into app module, and treat app module as our infrastructure layer
@@ -30,7 +29,7 @@ class BeatInspectorApp: Application() {
 
     override fun onCreate() {
         super.onCreate()
-        authenticator = Authenticator(CLIENT_ID, this)
+        authenticator = Authenticator(BuildConfig.SPOTIFY_CLIENT_ID, this)
     }
 
 

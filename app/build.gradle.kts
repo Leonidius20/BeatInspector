@@ -33,12 +33,15 @@ android {
             }
 
         }*/
+        val keystoreFile = project.rootProject.file("secrets.properties")
         val secretProperties = Properties()
-        secretProperties.load(project.rootProject.file("secrets.properties").inputStream())
+        secretProperties.load(keystoreFile.inputStream())
 
-        buildConfigField("String", "SPOTIFY_CLIENT_ID", "\"${properties["SPOTIFY_CLIENT_ID"]}\"")
-        println("\"${properties["SPOTIFY_CLIENT_ID"]}\"")
-        buildConfigField("String", "SPOTIFY_CLIENT_SECRET", "\"${properties["SPOTIFY_CLIENT_SECRET"]}\"")
+        val clientId = secretProperties.getProperty("SPOTIFY_CLIENT_ID") ?: ""
+
+        buildConfigField("String", "SPOTIFY_CLIENT_ID", "\"$clientId\"")
+
+        // buildConfigField("String", "SPOTIFY_CLIENT_SECRET", "\"${properties["SPOTIFY_CLIENT_SECRET"]}\"")
     }
 
     buildTypes {
