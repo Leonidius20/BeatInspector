@@ -19,31 +19,15 @@ import java.security.SecureRandom
 
 class AuthInterceptor: Interceptor {
 
-    /*val authServiceConfig: AuthorizationServiceConfiguration = // todo: replace by "fetchfromissuer" async
-        AuthorizationServiceConfiguration(
-            Uri.parse("https://accounts.spotify.com/oauth2/v2/auth"),
-            Uri.parse("https://accounts.spotify.com/api/token")
-        )
-    val authState: AuthState = AuthState(authServiceConfig)*/
-
-
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
 
         // val token = "BQBVB9mJKlNCZExse8lBPpbUnTGpxZrIaIfr4q3SQkP0IUO0C9p8fnoKIUp_yLeSGuV15eMKFY0UeZKgDZTm-6zjBmwKBKtoxuJR8F_UgOvRhVu7Iig"
         // expires in 1 hour
 
-        /*val authRequest = AuthorizationRequest.Builder(
-            authServiceConfig,
-            clientId,
-            ResponseTypeValues.CODE,
-            "" // todo: redirect uri
-        ).setScope("user-library-read playlist-read-private playlist-read-collaborative user-read-recently-played user-top-read")
-            .build()
 
-        val authService = AuthorizationService(context)*/
 
-        val authed = false
+        val authed = true
 
         if (!authed) {
             return Response.Builder()

@@ -37,6 +37,7 @@ android {
         secretProperties.load(project.rootProject.file("secrets.properties").inputStream())
 
         buildConfigField("String", "SPOTIFY_CLIENT_ID", "\"${properties["SPOTIFY_CLIENT_ID"]}\"")
+        println("\"${properties["SPOTIFY_CLIENT_ID"]}\"")
         buildConfigField("String", "SPOTIFY_CLIENT_SECRET", "\"${properties["SPOTIFY_CLIENT_SECRET"]}\"")
     }
 

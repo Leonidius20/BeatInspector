@@ -1,15 +1,20 @@
 package ua.leonidius.beatinspector
 
 import android.app.Application
+import ua.leonidius.beatinspector.auth.Authenticator
 import ua.leonidius.beatinspector.domain.usecases.SearchSongsUseCase
 import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
 import ua.leonidius.beatinspector.repos.retrofit.spotifyRetrofitClient
 
 class BeatInspectorApp: Application() {
 
+    lateinit var authenticator: Authenticator
+
+    private val CLIENT_ID = ""
+
     val searchSongsUseCase = SearchSongsUseCase(
         SongsRepositoryImpl(
-            BuildConfig.SPOTIFY_CLIENT_ID,
+            CLIENT_ID,
             BuildConfig.SPOTIFY_CLIENT_SECRET,
             spotifyRetrofitClient // todo: place creation somewhere else
             // actually, it may make sense to put the retrofit dependency
@@ -22,5 +27,14 @@ class BeatInspectorApp: Application() {
             // with dependencies and responsibilities
         )
     )
+
+    override fun onCreate() {
+        super.onCreate()
+        authenticator = Authenticator(CLIENT_ID, this)
+    }
+
+
+    // todo: maybe split Authenticator class and AuthState and only create
+    // Authenticator when needed?
 
 }
