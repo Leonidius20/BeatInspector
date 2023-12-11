@@ -1,35 +1,49 @@
 package ua.leonidius.beatinspector
 
 import android.app.Application
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import ua.leonidius.beatinspector.auth.Authenticator
 import ua.leonidius.beatinspector.domain.usecases.SearchSongsUseCase
 import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
-import ua.leonidius.beatinspector.repos.retrofit.spotifyRetrofitClient
+import ua.leonidius.beatinspector.repos.retrofit.AuthInterceptor
+import ua.leonidius.beatinspector.repos.retrofit.SpotifyRetrofitClient
 
 class BeatInspectorApp: Application() {
 
     lateinit var authenticator: Authenticator
 
 
-    val searchSongsUseCase = SearchSongsUseCase(
-        SongsRepositoryImpl(
-            BuildConfig.SPOTIFY_CLIENT_ID,
-            "BuildConfig.SPOTIFY_CLIENT_SECRET", // todo remove
-            spotifyRetrofitClient // todo: place creation somewhere else
-            // actually, it may make sense to put the retrofit dependency
-            // into app module, and treat app module as our infrastructure layer
-            // (the layer that connects to our OS, frameworks or whatever)
-            // we may need to create a wrapper interface spotifyRetrofitClient
-            // and pass its implementation to the data layer, so that the data
-            // layer does not depend on it? also maybe create a whole another module
-            // just for retrofit-dependent stuff so as not to overload "app" module
-            // with dependencies and responsibilities
-        )
-    )
+
+    lateinit var searchSongsUseCase: SearchSongsUseCase
 
     override fun onCreate() {
         super.onCreate()
         authenticator = Authenticator(BuildConfig.SPOTIFY_CLIENT_ID, this)
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://api.spotify.com/v1/")
+            .addConverterFactory(GsonConverterFactory. create())
+            .client(
+                OkHttpClient.Builder()
+                .addInterceptor(AuthInterceptor(authenticator)) // todo: creating object in other place, in "app"
+                .build())
+            .build()
+
+        val spotifyRetrofitClient = retrofit.create(SpotifyRetrofitClient::class.java)
+
+        searchSongsUseCase = SearchSongsUseCase(
+            SongsRepositoryImpl(
+                spotifyRetrofitClient
+                // todo
+                // we may need to create a wrapper interface spotifyRetrofitClient
+                // and pass its implementation to the data layer, so that the data
+                // layer does not depend on it? also maybe create a whole another module
+                // just for retrofit-dependent stuff so as not to overload "app" module
+                // with dependencies and responsibilities
+            )
+        )
     }
 
 

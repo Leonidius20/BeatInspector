@@ -13,11 +13,12 @@ import okhttp3.MediaType
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody
+import ua.leonidius.beatinspector.auth.Authenticator
 import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.security.SecureRandom
 
-class AuthInterceptor: Interceptor {
+class AuthInterceptor(val authenticator: Authenticator): Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
@@ -38,7 +39,8 @@ class AuthInterceptor: Interceptor {
                 .request(chain.request())
                 .build();
         } else {
-             val token = "" // todo get from storage
+            val token = authenticator.accessToken
+
 
             val request = original.newBuilder()
                 .header("Authorization", "Bearer $token")

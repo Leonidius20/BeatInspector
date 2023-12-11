@@ -1,6 +1,5 @@
 package ua.leonidius.beatinspector.auth
 
-import android.R.attr.data
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -12,14 +11,25 @@ import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
+import ua.leonidius.beatinspector.data.R
 
 
 class Authenticator(
     val clientId: String,
-    val applicationContext: Context,
-    var accessToken: String = "",
-    var refreshToken: String = "",
+    val appContext: Context,
 ) {
+
+    val prefs = appContext.getSharedPreferences(appContext.getString(
+        R.string.preferences_tokens_file_name
+    ), Context.MODE_PRIVATE)
+
+    val accessToken: String
+        get() = prefs.getString(
+            appContext.getString(R.string.preferences_access_token), "") ?: ""
+
+    val refreshToken: String
+        get() =  prefs.getString(
+            appContext.getString(R.string.preferences_refresh_token), "") ?: ""
 
     companion object {
         const val RC_AUTH = 1
@@ -32,7 +42,7 @@ class Authenticator(
         )
     val authState: AuthState = AuthState(authServiceConfig)
 
-    val authService = AuthorizationService(applicationContext)
+    val authService = AuthorizationService(appContext)
 
     fun authenticate(
         context: ComponentActivity // activity can be destroyed, so that's why we inject context here and not in constructor
@@ -76,8 +86,13 @@ class Authenticator(
                 if (tokenResp != null) {
                     // success
                     authState.update(tokenResp, authException)
-                    accessToken = tokenResp.accessToken!!
-                    refreshToken = tokenResp.refreshToken!!
+
+                    with(prefs.edit()) {
+                        putString(appContext.getString(R.string.preferences_access_token), accessToken)
+                        putString(appContext.getString(R.string.preferences_refresh_token), refreshToken)
+                        apply()
+                    }
+
                     callback(true)
                 } else {
                     // fail

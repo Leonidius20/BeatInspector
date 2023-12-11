@@ -12,7 +12,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -69,7 +68,7 @@ class MainActivity : ComponentActivity() {
         if (requestCode == 1) { // todo: get constant outta here (RC_AUTH)
             viewModel.authenticator.onResponse(this, data) { isSuccessful ->
                 Toast.makeText(this, "success: $isSuccessful", Toast.LENGTH_LONG).show()
-                viewModel.setLoggedIn(isSuccessful)
+                viewModel.setThatLoggedIn(isSuccessful)
             } // todo: move to viewmodel
         } else {
             super.onActivityResult(requestCode, resultCode, data)

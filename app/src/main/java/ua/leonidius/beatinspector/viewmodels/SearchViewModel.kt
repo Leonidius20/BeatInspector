@@ -30,9 +30,10 @@ class SearchViewModel(
             try {
                 _searchResults.value = searchSongsUseCase.searchSongs(query)
             } catch (e: SongsRepositoryImpl.NotAuthedError) {
-
+                e.printStackTrace()
             } catch (e: Error) {
                 // todo: proper handling
+                e.printStackTrace()
             }
 
         }

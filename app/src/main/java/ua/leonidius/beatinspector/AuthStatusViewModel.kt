@@ -15,20 +15,26 @@ import ua.leonidius.beatinspector.auth.Authenticator
 
 class AuthStatusViewModel(val authenticator: Authenticator): ViewModel() {
 
-    private var _isLoggedIn by mutableStateOf(false)
-
-    val isLoggedIn
-            get() = _isLoggedIn
+    var isLoggedIn by mutableStateOf(false)
+        private set
 
     fun initiateLogin(context: ComponentActivity) {
-        viewModelScope.launch {
-            authenticator.authenticate(context)
+        if (context.getSharedPreferences(
+                context.getString(
+                    ua.leonidius.beatinspector.data.R.string.preferences_tokens_file_name), // todo fix this abomination
+                    Context.MODE_PRIVATE).getString(context.getString(ua.leonidius.beatinspector.data.R.string.preferences_access_token), "") != "") {
+            // logged in, do nothing
+            isLoggedIn = true
+        } else {
+            viewModelScope.launch {
+                authenticator.authenticate(context)
+            }
         }
     }
 
     @Deprecated("temporary solution")
-    fun setLoggedIn(boolean: Boolean) {
-        _isLoggedIn = boolean
+    fun setThatLoggedIn(boolean: Boolean) {
+        isLoggedIn = boolean
     }
 
     // this is supposed to be a viewmodel for the MainActivity. it should control
