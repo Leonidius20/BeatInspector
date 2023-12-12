@@ -87,9 +87,11 @@ class Authenticator(
                     // success
                     authState.update(tokenResp, authException)
 
+
+
                     with(prefs.edit()) {
-                        putString(appContext.getString(R.string.preferences_access_token), accessToken)
-                        putString(appContext.getString(R.string.preferences_refresh_token), refreshToken)
+                        putString(appContext.getString(R.string.preferences_access_token), tokenResp.accessToken)
+                        putString(appContext.getString(R.string.preferences_refresh_token), tokenResp.refreshToken)
                         apply()
                     }
 

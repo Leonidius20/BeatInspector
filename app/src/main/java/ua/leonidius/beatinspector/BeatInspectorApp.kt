@@ -5,6 +5,8 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ua.leonidius.beatinspector.auth.Authenticator
+import ua.leonidius.beatinspector.domain.entities.SongDetails
+import ua.leonidius.beatinspector.domain.usecases.LoadSongDetailsUseCase
 import ua.leonidius.beatinspector.domain.usecases.SearchSongsUseCase
 import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
 import ua.leonidius.beatinspector.repos.retrofit.AuthInterceptor
@@ -17,6 +19,8 @@ class BeatInspectorApp: Application() {
 
 
     lateinit var searchSongsUseCase: SearchSongsUseCase
+
+    lateinit var songDetailsUseCase: LoadSongDetailsUseCase
 
     override fun onCreate() {
         super.onCreate()
@@ -44,6 +48,19 @@ class BeatInspectorApp: Application() {
                 // with dependencies and responsibilities
             )
         )
+
+        songDetailsUseCase = object : LoadSongDetailsUseCase {
+
+            override suspend fun loadSongDetails(songId: String): SongDetails {
+                return SongDetails(
+                    "Pacifier",
+                    arrayOf("Baby Gronk"),
+                    420.0,
+                    "C Maj"
+                )
+            }
+
+        }
     }
 
 

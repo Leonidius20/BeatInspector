@@ -23,12 +23,7 @@ class AuthInterceptor(val authenticator: Authenticator): Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
 
-        // val token = "BQBVB9mJKlNCZExse8lBPpbUnTGpxZrIaIfr4q3SQkP0IUO0C9p8fnoKIUp_yLeSGuV15eMKFY0UeZKgDZTm-6zjBmwKBKtoxuJR8F_UgOvRhVu7Iig"
-        // expires in 1 hour
-
-
-
-        val authed = true
+        val authed = authenticator.accessToken != ""
 
         if (!authed) {
             return Response.Builder()
