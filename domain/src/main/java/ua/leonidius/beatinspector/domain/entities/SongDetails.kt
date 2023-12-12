@@ -1,29 +1,37 @@
 package ua.leonidius.beatinspector.domain.entities
 
 data class SongDetails(
-    val name: String,
-    val artists: Array<String>,
+    val duration: Double,
+    val loudness: Double,
+
     val bpm: Double,
+    val bpmConfidence: Double,
+
+    val timeSignature: Int, // over 4
+    val timeSignatureConfidence: Double,
+
+
     val key: String, // todo: enum
+    val keyConfidence: Double,
+    val modeConfidence: Double,
+
+
+
     // todo: image cover
 ) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
 
-        other as SongDetails
-
-        if (name != other.name) return false
-        if (!artists.contentEquals(other.artists)) return false
-        if (bpm != other.bpm) return false
-        return key == other.key
+    companion object {
+        val Dummy = SongDetails(
+            duration = 0.0,
+            loudness = 0.0,
+            bpm = 0.0,
+            bpmConfidence = 0.0,
+            timeSignature = 0,
+            timeSignatureConfidence = 0.0,
+            key = "",
+            keyConfidence = 0.0,
+            modeConfidence = 0.0,
+        )
     }
 
-    override fun hashCode(): Int {
-        var result = name.hashCode()
-        result = 31 * result + artists.contentHashCode()
-        result = 31 * result + bpm.hashCode()
-        result = 31 * result + key.hashCode()
-        return result
-    }
 }

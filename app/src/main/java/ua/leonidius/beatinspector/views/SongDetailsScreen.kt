@@ -25,7 +25,9 @@ import ua.leonidius.beatinspector.viewmodels.SongDetailsViewModel
 fun SongDetailsScreen(
     modifier: Modifier = Modifier,
     detailsViewModel: SongDetailsViewModel = viewModel(factory = SongDetailsViewModel.Factory),
-    songId: SongId?
+    songId: SongId?,
+    name: String,
+    artists: Array<String>,
 ) {
     LaunchedEffect(key1 = true) {
         detailsViewModel.loadSongDetails(songId!!)

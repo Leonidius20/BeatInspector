@@ -49,6 +49,7 @@ class MainActivity : ComponentActivity() {
                                 })
                             }
                             composable("song/{songId}") { backStackEntry ->
+                                // todo: also transfer name and artists
                                 val songId = backStackEntry.arguments?.getString("songId")
                                 SongDetailsScreen(songId = songId)
                             }

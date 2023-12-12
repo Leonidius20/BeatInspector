@@ -16,7 +16,7 @@ class SongDetailsViewModel(
     private val loadSongUseCase: LoadSongDetailsUseCase
 ): ViewModel() {
 
-    var songDetails by mutableStateOf(SongDetails("", emptyArray(), 0.0, ""))
+    var songDetails by mutableStateOf(SongDetails.Dummy)
         private set
 
     fun loadSongDetails(id: String) {
