@@ -6,7 +6,6 @@ import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody
 import ua.leonidius.beatinspector.auth.Authenticator
-import java.util.concurrent.CompletableFuture
 
 class AuthInterceptor(val authenticator: Authenticator): Interceptor {
 
@@ -24,24 +23,32 @@ class AuthInterceptor(val authenticator: Authenticator): Interceptor {
                 .request(chain.request())
                 .build()
         } else {
-            val promise = CompletableFuture<Response>()
+            val needsRefresh = authenticator.authState.needsTokenRefresh
 
-            authenticator.authState.performActionWithFreshTokens(authenticator.authService) { accessToken, _, exception ->
-                if (exception != null) {
-                    throw Error("Failed to refresh token", exception)
-                } else {
-                    authenticator.storeAuthState()
+            if (needsRefresh) {
 
-                    val request = original.newBuilder()
-                        .header("Authorization", "Bearer $accessToken")
-                        .method(original.method(), original.body())
-                        .build()
+                val success = authenticator.refreshTokensBlocking()
 
-                    promise.complete(chain.proceed(request))
+                if (!success) {
+                    throw Error("Failed to refresh tokens")
                 }
             }
 
-            return promise.get()
+            val accessToken = authenticator.authState.accessToken
+
+            val request = original.newBuilder()
+                .header("Authorization", "Bearer $accessToken")
+                .method(original.method(), original.body())
+                .build()
+
+            // this is a workaround for a bug in AppAuth library
+            // which forces this callback to be executed on the
+            // main thread after a token refresh. this causes
+            // okhttp3 to throw an exception
+
+            return chain.proceed(request)
+
+
         }
 
     }

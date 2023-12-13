@@ -3,7 +3,6 @@ package ua.leonidius.beatinspector.auth
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationException
@@ -13,7 +12,7 @@ import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
 import ua.leonidius.beatinspector.data.R
-
+import java.util.concurrent.CompletableFuture
 
 class Authenticator(
     val clientId: String,
@@ -120,5 +119,35 @@ class Authenticator(
     }
 
     fun isAuthorized() = authState.isAuthorized
+
+    fun refreshTokensBlocking(): Boolean {
+        // this also includes refresh token rotation
+        /*
+         * we can't just use the performWithFreshTokens method because
+         * it doesn't allow us to get the new refresh token
+         * under the "refresh token rotation" scheme
+         */
+       // if (!authState.needsTokenRefresh) return true
+
+        val promise = CompletableFuture<Boolean>()
+
+        authService.performTokenRequest(
+            authState.createTokenRefreshRequest()
+        ) { tokenResp, authException ->
+            authState.update(tokenResp, authException)
+
+            if (tokenResp != null) {
+                // success
+                promise.complete(true)
+                storeAuthState()
+            } else {
+                // fail
+                promise.complete(false)
+                authException!!.printStackTrace()
+            }
+        }
+
+        return promise.get()
+    }
 
 }
