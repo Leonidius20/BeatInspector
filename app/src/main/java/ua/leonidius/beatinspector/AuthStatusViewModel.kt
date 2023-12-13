@@ -19,10 +19,7 @@ class AuthStatusViewModel(val authenticator: Authenticator): ViewModel() {
         private set
 
     fun initiateLogin(context: ComponentActivity) {
-        if (context.getSharedPreferences(
-                context.getString(
-                    ua.leonidius.beatinspector.data.R.string.preferences_tokens_file_name), // todo fix this abomination
-                    Context.MODE_PRIVATE).getString(context.getString(ua.leonidius.beatinspector.data.R.string.preferences_access_token), "") != "") {
+        if (authenticator.isAuthorized()) { // todo: remove this shit?
             // logged in, do nothing
             isLoggedIn = true
         } else {

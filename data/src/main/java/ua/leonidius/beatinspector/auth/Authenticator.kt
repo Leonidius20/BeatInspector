@@ -3,6 +3,7 @@ package ua.leonidius.beatinspector.auth
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationException
@@ -23,16 +24,13 @@ class Authenticator(
         R.string.preferences_tokens_file_name
     ), Context.MODE_PRIVATE)
 
-    val accessToken: String
+    private val authStateJson: String
         get() = prefs.getString(
-            appContext.getString(R.string.preferences_access_token), "") ?: ""
-
-    val refreshToken: String
-        get() =  prefs.getString(
-            appContext.getString(R.string.preferences_refresh_token), "") ?: ""
+            PREF_KEY_AUTH_STATE, "") ?: ""
 
     companion object {
         const val RC_AUTH = 1
+        const val PREF_KEY_AUTH_STATE = "auth_state"
     }
 
     private val authServiceConfig: AuthorizationServiceConfiguration = // todo: replace by "fetchfromissuer" async
@@ -40,7 +38,16 @@ class Authenticator(
             Uri.parse("https://accounts.spotify.com/oauth2/v2/auth"),
             Uri.parse("https://accounts.spotify.com/api/token")
         )
-    val authState: AuthState = AuthState(authServiceConfig)
+
+    val authState: AuthState = if (authStateJson == "") {
+        AuthState(authServiceConfig)
+    } else {
+        try {
+            AuthState.jsonDeserialize(authStateJson)
+        } catch (e: Error) {
+            AuthState(authServiceConfig)
+        }
+    }
 
     val authService = AuthorizationService(appContext)
 
@@ -88,12 +95,7 @@ class Authenticator(
                     authState.update(tokenResp, authException)
 
 
-
-                    with(prefs.edit()) {
-                        putString(appContext.getString(R.string.preferences_access_token), tokenResp.accessToken)
-                        putString(appContext.getString(R.string.preferences_refresh_token), tokenResp.refreshToken)
-                        apply()
-                    }
+                    storeAuthState()
 
                     callback(true)
                 } else {
@@ -109,5 +111,14 @@ class Authenticator(
             callback(false)
         }
     }
+
+    fun storeAuthState() {
+        with(prefs.edit()) {
+            putString(PREF_KEY_AUTH_STATE, authState.jsonSerializeString())
+            apply()
+        }
+    }
+
+    fun isAuthorized() = authState.isAuthorized
 
 }
