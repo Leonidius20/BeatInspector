@@ -7,6 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import ua.leonidius.beatinspector.auth.Authenticator
 import ua.leonidius.beatinspector.domain.entities.SongDetails
 import ua.leonidius.beatinspector.domain.usecases.LoadSongDetailsUseCase
+import ua.leonidius.beatinspector.domain.usecases.LoadSpotifySongDetailsUseCase
 import ua.leonidius.beatinspector.domain.usecases.SearchSongsUseCase
 import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
 import ua.leonidius.beatinspector.repos.retrofit.AuthInterceptor
@@ -37,30 +38,23 @@ class BeatInspectorApp: Application() {
 
         val spotifyRetrofitClient = retrofit.create(SpotifyRetrofitClient::class.java)
 
+        val songsRepository = SongsRepositoryImpl(spotifyRetrofitClient)
+
+
         searchSongsUseCase = SearchSongsUseCase(
-            SongsRepositoryImpl(
-                spotifyRetrofitClient
+            songsRepository
                 // todo
                 // we may need to create a wrapper interface spotifyRetrofitClient
                 // and pass its implementation to the data layer, so that the data
                 // layer does not depend on it? also maybe create a whole another module
                 // just for retrofit-dependent stuff so as not to overload "app" module
                 // with dependencies and responsibilities
-            )
+
         )
 
-        songDetailsUseCase = object : LoadSongDetailsUseCase {
-
-            override suspend fun loadSongDetails(songId: String): SongDetails {
-                return SongDetails(
-                    "Pacifier",
-                    arrayOf("Baby Gronk"),
-                    420.0,
-                    "C Maj"
-                )
-            }
-
-        }
+        songDetailsUseCase = LoadSpotifySongDetailsUseCase(
+            songsRepository
+        )
     }
 
 

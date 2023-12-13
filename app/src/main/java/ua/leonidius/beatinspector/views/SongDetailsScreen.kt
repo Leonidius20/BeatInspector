@@ -26,8 +26,6 @@ fun SongDetailsScreen(
     modifier: Modifier = Modifier,
     detailsViewModel: SongDetailsViewModel = viewModel(factory = SongDetailsViewModel.Factory),
     songId: SongId?,
-    name: String,
-    artists: Array<String>,
 ) {
     LaunchedEffect(key1 = true) {
         detailsViewModel.loadSongDetails(songId!!)
@@ -36,8 +34,8 @@ fun SongDetailsScreen(
     with(detailsViewModel.songDetails) {
         SongDetailsScreen(
             modifier,
-            name = name,
-            artists = artists,
+            name = "",
+            artists = listOf(""), // todo: get this from cache
             bpm = bpm.toString(), // todo: tostring in different layer
             key = key
         )
@@ -48,7 +46,7 @@ fun SongDetailsScreen(
 fun SongDetailsScreen(
     modifier: Modifier = Modifier,
     name: String,
-    artists: Array<String>,
+    artists: List<String>,
     bpm: String,
     key: String
 ) {
@@ -110,7 +108,7 @@ fun InfoCard(
 fun SongDetailsScreenPreview() {
     SongDetailsScreen(
         name = "Pacifier",
-        artists = arrayOf("Baby Gronk", "Super Sus"),
+        artists = listOf("Baby Gronk", "Super Sus"),
         bpm = "420",
         key = "C Maj"
     )
