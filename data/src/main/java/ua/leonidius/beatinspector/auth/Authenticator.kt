@@ -1,11 +1,8 @@
 package ua.leonidius.beatinspector.auth
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.activity.ComponentActivity
-import androidx.activity.result.contract.ActivityResultContracts
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
@@ -52,48 +49,23 @@ class Authenticator(
 
     val authService = AuthorizationService(appContext)
 
-    fun authenticate(
-        context: ComponentActivity, // activity can be destroyed, so that's why we inject context here and not in constructor
-        onSuccessfulAuth: () -> Unit,
-    ) {
-
-
+    fun prepareStepOneIntent(): Intent {
         val authRequest = AuthorizationRequest.Builder(
-           authServiceConfig,
-           clientId,
-           ResponseTypeValues.CODE,
-           Uri.parse("ua.leonidius.beatinspector://login-callback") // todo: redirect uri
-       ).setScope("user-library-read playlist-read-private playlist-read-collaborative user-read-recently-played user-top-read")
-           .build()
+            authServiceConfig,
+            clientId,
+            ResponseTypeValues.CODE,
+            Uri.parse("ua.leonidius.beatinspector://login-callback") // todo: redirect uri
+        ).setScope("user-library-read playlist-read-private playlist-read-collaborative user-read-recently-played user-top-read")
+            .build()
 
-
-        val intent = authService.getAuthorizationRequestIntent(authRequest)
-
-        // todo: maybe inject launcher from outside?
-
-        val launcher = context.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                // call the token-getting method
-                onResponse(context, result.data) { isSuccessful ->
-                    // after token request
-                    if (isSuccessful) {
-                        onSuccessfulAuth()
-                    }
-                }
-            }
-        }
-
-        launcher.launch(intent)
-
-        // context.startActivityForResult(intent, RC_AUTH)
-
+        return authService.getAuthorizationRequestIntent(authRequest)
     }
 
     /**
      * @param callback what to do after onResponse based on whether the
      * auth succeeded
      */
-    fun onResponse(context: ComponentActivity, intent: Intent?, callback: (Boolean) -> Unit) {
+    fun authSecondStep(intent: Intent?, callback: (Boolean) -> Unit) {
         val resp = AuthorizationResponse.fromIntent(intent!!)
         val ex = AuthorizationException.fromIntent(intent)
 

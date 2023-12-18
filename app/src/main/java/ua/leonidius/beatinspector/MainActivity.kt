@@ -1,8 +1,12 @@
 package ua.leonidius.beatinspector
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,15 +25,18 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: AuthStatusViewModel by viewModels(factoryProducer = { AuthStatusViewModel.Factory })
 
+    private lateinit var loginActivityLauncher: ActivityResultLauncher<Intent>
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // todo: if authed = false, do the auth stuff and show placeholder
-        // val viewModel: AuthStatusViewModel by viewModels()
+        loginActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            viewModel.onLoginActivityResult(result.resultCode == Activity.RESULT_OK, result.data)
+        }
 
         if (!viewModel.isLoggedIn) {
-            viewModel.initiateLogin(this)
+            viewModel.initiateLogin { loginActivityLauncher.launch(it) }
         }
 
         setContent {

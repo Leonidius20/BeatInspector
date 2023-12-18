@@ -1,6 +1,6 @@
 package ua.leonidius.beatinspector
 
-import androidx.activity.ComponentActivity
+import android.content.Intent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,25 +8,38 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.auth.Authenticator
 
-class AuthStatusViewModel(val authenticator: Authenticator): ViewModel() {
+class AuthStatusViewModel(private val authenticator: Authenticator): ViewModel() {
 
-    var isLoggedIn by mutableStateOf(false)
+    // todo: single source of truth for auth status - authenticator class. maybe make it a stateflow?
+    var isLoggedIn by mutableStateOf(authenticator.isAuthorized())
         private set
 
-    fun initiateLogin(context: ComponentActivity) {
-        if (authenticator.isAuthorized()) { // todo: remove this shit?
+    fun initiateLogin(launchLoginActivityWithIntent: (Intent) -> Unit) {
+        if (isLoggedIn) { // todo: remove this shit?
             // logged in, do nothing
-            isLoggedIn = true
         } else {
-            viewModelScope.launch {
-                authenticator.authenticate(context) {
-                    // on success
-                    isLoggedIn = true
+            // todo: find a proper place for this code, maybe in some lifecycle observer
+            val intent = authenticator.prepareStepOneIntent()
+            launchLoginActivityWithIntent(intent)
+        }
+    }
+
+    fun onLoginActivityResult(activitySuccess: Boolean, data: Intent?) {
+        if (activitySuccess) {
+            // call the token-getting method
+            viewModelScope.launch(Dispatchers.IO) {
+                authenticator.authSecondStep(data) { isSuccessful ->
+                    // todo: remove when auth becomes the SSOT?
+                    // although we need error display
+                    isLoggedIn = isSuccessful
                 }
             }
+        } else {
+            // todo
         }
     }
 
