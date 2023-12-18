@@ -1,9 +1,11 @@
 package ua.leonidius.beatinspector.auth
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
@@ -51,7 +53,8 @@ class Authenticator(
     val authService = AuthorizationService(appContext)
 
     fun authenticate(
-        context: ComponentActivity // activity can be destroyed, so that's why we inject context here and not in constructor
+        context: ComponentActivity, // activity can be destroyed, so that's why we inject context here and not in constructor
+        onSuccessfulAuth: () -> Unit,
     ) {
 
 
@@ -66,7 +69,23 @@ class Authenticator(
 
         val intent = authService.getAuthorizationRequestIntent(authRequest)
 
-        context.startActivityForResult(intent, RC_AUTH)
+        // todo: maybe inject launcher from outside?
+
+        val launcher = context.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                // call the token-getting method
+                onResponse(context, result.data) { isSuccessful ->
+                    // after token request
+                    if (isSuccessful) {
+                        onSuccessfulAuth()
+                    }
+                }
+            }
+        }
+
+        launcher.launch(intent)
+
+        // context.startActivityForResult(intent, RC_AUTH)
 
     }
 
@@ -129,7 +148,9 @@ class Authenticator(
          */
        // if (!authState.needsTokenRefresh) return true
 
+        // todo: use CallbackFlow here?
         val promise = CompletableFuture<Boolean>()
+
 
         authService.performTokenRequest(
             authState.createTokenRefreshRequest()

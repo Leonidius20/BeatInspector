@@ -1,6 +1,5 @@
 package ua.leonidius.beatinspector
 
-import android.content.Context
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.auth.Authenticator
 
@@ -24,14 +22,12 @@ class AuthStatusViewModel(val authenticator: Authenticator): ViewModel() {
             isLoggedIn = true
         } else {
             viewModelScope.launch {
-                authenticator.authenticate(context)
+                authenticator.authenticate(context) {
+                    // on success
+                    isLoggedIn = true
+                }
             }
         }
-    }
-
-    @Deprecated("temporary solution")
-    fun setThatLoggedIn(boolean: Boolean) {
-        isLoggedIn = boolean
     }
 
     // this is supposed to be a viewmodel for the MainActivity. it should control

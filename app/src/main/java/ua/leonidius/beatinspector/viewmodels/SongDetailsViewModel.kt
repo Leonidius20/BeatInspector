@@ -19,6 +19,13 @@ class SongDetailsViewModel(
     var songDetails by mutableStateOf(SongDetails.Dummy)
         private set
 
+
+
+    // todo have a state class with all fields needed for
+    // display, but in display-ready format (e.g. bpm as string)
+
+    // todo: we can move initial loading to init {}, but then we need to
+    //  pass songId through a savedStateHandle through the factory
     fun loadSongDetails(id: String) {
         viewModelScope.launch {
             songDetails = loadSongUseCase.loadSongDetails(id)

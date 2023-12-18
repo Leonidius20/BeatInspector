@@ -1,8 +1,6 @@
 package ua.leonidius.beatinspector
 
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -60,19 +58,6 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-    }
-
-
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == 1) { // todo: get constant outta here (RC_AUTH)
-            viewModel.authenticator.onResponse(this, data) { isSuccessful ->
-                Toast.makeText(this, "success: $isSuccessful", Toast.LENGTH_LONG).show()
-                viewModel.setThatLoggedIn(isSuccessful)
-            } // todo: move to viewmodel
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
-        }
     }
 
 }
