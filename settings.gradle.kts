@@ -16,4 +16,3 @@ dependencyResolutionManagement {
 rootProject.name = "BeatInspector"
 include(":app")
 include(":data")
-include(":domain")

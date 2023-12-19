@@ -5,10 +5,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ua.leonidius.beatinspector.auth.Authenticator
-import ua.leonidius.beatinspector.domain.entities.SongDetails
-import ua.leonidius.beatinspector.domain.usecases.LoadSongDetailsUseCase
-import ua.leonidius.beatinspector.domain.usecases.LoadSpotifySongDetailsUseCase
-import ua.leonidius.beatinspector.domain.usecases.SearchSongsUseCase
+import ua.leonidius.beatinspector.repos.SongsRepository
 import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
 import ua.leonidius.beatinspector.repos.retrofit.AuthInterceptor
 import ua.leonidius.beatinspector.repos.retrofit.SpotifyRetrofitClient
@@ -17,11 +14,7 @@ class BeatInspectorApp: Application() {
 
     lateinit var authenticator: Authenticator
 
-
-
-    lateinit var searchSongsUseCase: SearchSongsUseCase
-
-    lateinit var songDetailsUseCase: LoadSongDetailsUseCase
+    lateinit var songsRepository: SongsRepository
 
     override fun onCreate() {
         super.onCreate()
@@ -38,27 +31,7 @@ class BeatInspectorApp: Application() {
 
         val spotifyRetrofitClient = retrofit.create(SpotifyRetrofitClient::class.java)
 
-        val songsRepository = SongsRepositoryImpl(spotifyRetrofitClient)
-
-
-        searchSongsUseCase = SearchSongsUseCase(
-            songsRepository
-                // todo
-                // we may need to create a wrapper interface spotifyRetrofitClient
-                // and pass its implementation to the data layer, so that the data
-                // layer does not depend on it? also maybe create a whole another module
-                // just for retrofit-dependent stuff so as not to overload "app" module
-                // with dependencies and responsibilities
-
-        )
-
-        songDetailsUseCase = LoadSpotifySongDetailsUseCase(
-            songsRepository
-        )
+        songsRepository = SongsRepositoryImpl(spotifyRetrofitClient)
     }
-
-
-    // todo: maybe split Authenticator class and AuthState and only create
-    // Authenticator when needed?
 
 }

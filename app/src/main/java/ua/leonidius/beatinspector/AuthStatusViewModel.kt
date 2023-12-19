@@ -14,12 +14,23 @@ import ua.leonidius.beatinspector.auth.Authenticator
 
 class AuthStatusViewModel(private val authenticator: Authenticator): ViewModel() {
 
-    // todo: single source of truth for auth status - authenticator class. maybe make it a stateflow?
-    var isLoggedIn by mutableStateOf(authenticator.isAuthorized())
+    data class AuthState(
+        val isLoggedIn: Boolean,
+        val loginError: String? = null
+    )
+
+    //private val _uiState = MutableStateFlow(AuthState(isLoggedIn = false)) // todo: authenticator is the SSOT
+    //val uiState: StateFlow<AuthState> = _uiState.asStateFlow()
+
+    var uiState by mutableStateOf(AuthState(isLoggedIn = authenticator.isAuthorized()))
         private set
 
-    fun initiateLogin(launchLoginActivityWithIntent: (Intent) -> Unit) {
-        if (isLoggedIn) { // todo: remove this shit?
+    // todo: single source of truth for auth status - authenticator class. maybe make it a stateflow?
+    //var isLoggedIn by mutableStateOf(authenticator.isAuthorized())
+    //    private set
+
+    fun checkAuthStatus(launchLoginActivityWithIntent: (Intent) -> Unit) {
+        if (authenticator.isAuthorized()) { // todo: remove this shit?
             // logged in, do nothing
         } else {
             // todo: find a proper place for this code, maybe in some lifecycle observer
@@ -35,11 +46,16 @@ class AuthStatusViewModel(private val authenticator: Authenticator): ViewModel()
                 authenticator.authSecondStep(data) { isSuccessful ->
                     // todo: remove when auth becomes the SSOT?
                     // although we need error display
-                    isLoggedIn = isSuccessful
+                    uiState = uiState.copy(isLoggedIn = isSuccessful, loginError = null)
+                    //isLoggedIn = isSuccessful
                 }
             }
         } else {
-            // todo
+            uiState = uiState.copy(
+                // todo: remove when auth becomes the SSOT?
+                isLoggedIn = false, loginError = "Error while logging in. Try again."
+            )
+            // todo: display snakbar with error
         }
     }
 

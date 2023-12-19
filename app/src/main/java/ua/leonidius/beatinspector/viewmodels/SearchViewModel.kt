@@ -9,14 +9,13 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.launch
-import ua.leonidius.beatinspector.AuthStatusViewModel
 import ua.leonidius.beatinspector.BeatInspectorApp
-import ua.leonidius.beatinspector.domain.usecases.SearchSongsUseCase
-import ua.leonidius.beatinspector.domain.entities.SongSearchResult
+import ua.leonidius.beatinspector.entities.SongSearchResult
+import ua.leonidius.beatinspector.repos.SongsRepository
 import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
 
 class SearchViewModel(
-    val searchSongsUseCase: SearchSongsUseCase
+    private val songsRepository: SongsRepository
 ) : ViewModel() {
 
     var query by mutableStateOf("")
@@ -28,7 +27,7 @@ class SearchViewModel(
     fun performSearch() {
         viewModelScope.launch {
             try {
-                _searchResults.value = searchSongsUseCase.searchSongs(query)
+                _searchResults.value = songsRepository.searchForSongsByTitle(query)
             } catch (e: SongsRepositoryImpl.NotAuthedError) {
                 // todo: set this to AuthStatusViewModel and initiate login
                 e.printStackTrace()
@@ -48,7 +47,7 @@ class SearchViewModel(
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val app = checkNotNull(extras[APPLICATION_KEY]) as BeatInspectorApp
 
-                return SearchViewModel(app.searchSongsUseCase) as T
+                return SearchViewModel(app.songsRepository) as T
             }
 
         }

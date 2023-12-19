@@ -30,7 +30,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 import ua.leonidius.beatinspector.viewmodels.SearchViewModel
 import ua.leonidius.beatinspector.R
-import ua.leonidius.beatinspector.domain.entities.SongSearchResult
+import ua.leonidius.beatinspector.entities.SongSearchResult
 
 typealias SongId = String
 

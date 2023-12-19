@@ -1,13 +1,8 @@
 package ua.leonidius.beatinspector.repos
 
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import ua.leonidius.beatinspector.domain.entities.SongDetails
-import ua.leonidius.beatinspector.domain.entities.SongSearchResult
-import ua.leonidius.beatinspector.domain.repositories.SongsRepository
+import ua.leonidius.beatinspector.entities.SongDetails
+import ua.leonidius.beatinspector.entities.SongSearchResult
 import ua.leonidius.beatinspector.repos.retrofit.SpotifyRetrofitClient
-import ua.leonidius.beatinspector.repos.retrofit.SpotifySearchResult
 
 
 class SongsRepositoryImpl(

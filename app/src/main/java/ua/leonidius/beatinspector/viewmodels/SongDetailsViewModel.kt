@@ -9,11 +9,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
-import ua.leonidius.beatinspector.domain.entities.SongDetails
-import ua.leonidius.beatinspector.domain.usecases.LoadSongDetailsUseCase
+import ua.leonidius.beatinspector.entities.SongDetails
+import ua.leonidius.beatinspector.repos.SongsRepository
 
 class SongDetailsViewModel(
-    private val loadSongUseCase: LoadSongDetailsUseCase
+    private val songsRepository: SongsRepository
 ): ViewModel() {
 
     var songDetails by mutableStateOf(SongDetails.Dummy)
@@ -28,7 +28,7 @@ class SongDetailsViewModel(
     //  pass songId through a savedStateHandle through the factory
     fun loadSongDetails(id: String) {
         viewModelScope.launch {
-            songDetails = loadSongUseCase.loadSongDetails(id)
+            songDetails = songsRepository.getTrackDetails(id)
         }
     }
 
@@ -40,7 +40,7 @@ class SongDetailsViewModel(
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val app = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]) as BeatInspectorApp
 
-                return SongDetailsViewModel(app.songDetailsUseCase) as T
+                return SongDetailsViewModel(app.songsRepository) as T
             }
 
         }

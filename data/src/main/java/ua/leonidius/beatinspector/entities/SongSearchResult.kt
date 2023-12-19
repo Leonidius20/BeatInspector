@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.domain.entities
+package ua.leonidius.beatinspector.entities
 
 data class SongSearchResult(
     val id: String,
