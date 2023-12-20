@@ -34,9 +34,9 @@ fun SongDetailsScreen(
     with(detailsViewModel.songDetails) {
         SongDetailsScreen(
             modifier,
-            name = "",
-            artists = listOf(""), // todo: get this from cache
-            bpm = bpm.toString(), // todo: tostring in different layer
+            name = title,
+            artists = listOf(artist), // todo: decide if this should be a list or not
+            bpm = bpm,
             key = key
         )
     }

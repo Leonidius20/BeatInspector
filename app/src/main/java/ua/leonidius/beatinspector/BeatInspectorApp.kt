@@ -7,6 +7,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import ua.leonidius.beatinspector.auth.Authenticator
 import ua.leonidius.beatinspector.repos.SongsRepository
 import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
+import ua.leonidius.beatinspector.repos.datasources.SongsInMemCache
+import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSource
 import ua.leonidius.beatinspector.repos.retrofit.AuthInterceptor
 import ua.leonidius.beatinspector.repos.retrofit.SpotifyRetrofitClient
 
@@ -20,18 +22,23 @@ class BeatInspectorApp: Application() {
         super.onCreate()
         authenticator = Authenticator(BuildConfig.SPOTIFY_CLIENT_ID, this)
 
+        val authInterceptor = AuthInterceptor(authenticator)
+
         val retrofit = Retrofit.Builder()
             .baseUrl("https://api.spotify.com/v1/")
             .addConverterFactory(GsonConverterFactory. create())
             .client(
                 OkHttpClient.Builder()
-                .addInterceptor(AuthInterceptor(authenticator)) // todo: creating object in other place, in "app"
+                .addInterceptor(authInterceptor)
                 .build())
             .build()
 
         val spotifyRetrofitClient = retrofit.create(SpotifyRetrofitClient::class.java)
 
-        songsRepository = SongsRepositoryImpl(spotifyRetrofitClient)
+        val songsInMemCache = SongsInMemCache()
+        val networkDataSource = SongsNetworkDataSource(spotifyRetrofitClient)
+
+        songsRepository = SongsRepositoryImpl(spotifyRetrofitClient, songsInMemCache, networkDataSource)
     }
 
 }
