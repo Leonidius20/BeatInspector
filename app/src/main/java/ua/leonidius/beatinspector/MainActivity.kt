@@ -49,13 +49,12 @@ class MainActivity : ComponentActivity() {
 
                         NavHost(navController = navController, startDestination = "search") {
                             composable("search") {
-                                SearchScreen(onNavigateToSongDetails = { // todo: only send ID of the track to the other screen
+                                SearchScreen(onNavigateToSongDetails = {
                                     navController.navigate("song/${it}")
                                 })
                             }
-                            composable("song/{songId}") { backStackEntry ->
-                                val songId = backStackEntry.arguments?.getString("songId")
-                                SongDetailsScreen(songId = songId)
+                            composable("song/{songId}") {
+                                SongDetailsScreen()
                             }
                         }
                     } else {

@@ -62,6 +62,7 @@ class SongsRepositoryImpl(
             key = details.key,
             keyConfidence = details.keyConfidence,
             modeConfidence = details.modeConfidence,
+            genres = details.genres
         )
     }
 

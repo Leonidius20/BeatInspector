@@ -33,6 +33,7 @@ class SongDetailsViewModel(
         val artist: String = "",
         val bpm: String = "",
         val key: String = "",
+        val genres: String = "",
     )
 
     var songDetails by mutableStateOf(SongDetailsUiState())
@@ -53,6 +54,7 @@ class SongDetailsViewModel(
                     artist = song.artist,
                     bpm = song.bpm.toString(),
                     key = song.key,
+                    genres = song.genres.joinToString(", ")
                 )
             } catch (e: Exception) {
                 SongDetailsUiState(
