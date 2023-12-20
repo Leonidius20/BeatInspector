@@ -27,10 +27,6 @@ fun SongDetailsScreen(
     detailsViewModel: SongDetailsViewModel = viewModel(factory = SongDetailsViewModel.Factory),
     songId: SongId?,
 ) {
-    LaunchedEffect(key1 = true) {
-        detailsViewModel.loadSongDetails(songId!!)
-    }
-
     with(detailsViewModel.songDetails) {
         SongDetailsScreen(
             modifier,

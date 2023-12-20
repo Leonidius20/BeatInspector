@@ -3,12 +3,12 @@ package ua.leonidius.beatinspector.repos.datasources
 import ua.leonidius.beatinspector.entities.SongDetails
 import ua.leonidius.beatinspector.entities.SongSearchResult
 
-class SongsInMemCache: SongsDataSource {
+class SongsInMemCache {
 
     val songSearchResults = emptyMap<String, SongSearchResult>().toMutableMap()
 
     val songsDetails = emptyMap<String, SongDetails>().toMutableMap()
 
-    override suspend fun getSongDetailsById(trackId: String) = songsDetails[trackId]
+    fun getSongDetailsById(trackId: String) = songsDetails[trackId]
 
 }

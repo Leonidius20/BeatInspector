@@ -2,14 +2,14 @@ package ua.leonidius.beatinspector.repos
 
 import ua.leonidius.beatinspector.entities.Song
 import ua.leonidius.beatinspector.entities.SongSearchResult
-import ua.leonidius.beatinspector.repos.datasources.SongsDataSource
+import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSource
 import ua.leonidius.beatinspector.repos.datasources.SongsInMemCache
 import ua.leonidius.beatinspector.repos.retrofit.SpotifyRetrofitClient
 
 class SongsRepositoryImpl(
-    val spotifyRetrofitClient: SpotifyRetrofitClient,
-    val inMemCache: SongsInMemCache,
-    val networkDataSource: SongsDataSource
+    private val spotifyRetrofitClient: SpotifyRetrofitClient,
+    private val inMemCache: SongsInMemCache,
+    private val networkDataSource: SongsNetworkDataSource
 ) : SongsRepository {
 
     override suspend fun searchForSongsByTitle(q: String): List<SongSearchResult> {
@@ -63,33 +63,6 @@ class SongsRepositoryImpl(
             keyConfidence = details.keyConfidence,
             modeConfidence = details.modeConfidence,
         )
-    }
-
-    private fun getKeyStringFromSpotifyValue(keyInt: Int, modeInt: Int): String {
-        val key = when(keyInt) {
-            0 -> "C"
-            1 -> "C♯/D♭"
-            2 -> "D"
-            3 -> "D♯/E♭"
-            4 -> "E"
-            5 -> "F"
-            6 -> "F♯/G♭"
-            7 -> "G"
-            8 -> "G♯/A♭"
-            9 -> "A"
-            10 -> "A♯/B♭"
-            11 -> "B"
-            else -> "?"
-        }
-
-        val mode = when(modeInt) {
-            1 -> "Maj"
-            0 -> "Min"
-            else -> "?"
-
-        }
-
-        return "$key $mode"
     }
 
 }

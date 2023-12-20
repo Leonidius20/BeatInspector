@@ -8,7 +8,7 @@ import ua.leonidius.beatinspector.auth.Authenticator
 import ua.leonidius.beatinspector.repos.SongsRepository
 import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
 import ua.leonidius.beatinspector.repos.datasources.SongsInMemCache
-import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSource
+import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSourceImpl
 import ua.leonidius.beatinspector.repos.retrofit.AuthInterceptor
 import ua.leonidius.beatinspector.repos.retrofit.SpotifyRetrofitClient
 
@@ -36,7 +36,7 @@ class BeatInspectorApp: Application() {
         val spotifyRetrofitClient = retrofit.create(SpotifyRetrofitClient::class.java)
 
         val songsInMemCache = SongsInMemCache()
-        val networkDataSource = SongsNetworkDataSource(spotifyRetrofitClient)
+        val networkDataSource = SongsNetworkDataSourceImpl(spotifyRetrofitClient)
 
         songsRepository = SongsRepositoryImpl(spotifyRetrofitClient, songsInMemCache, networkDataSource)
     }

@@ -3,16 +3,20 @@ package ua.leonidius.beatinspector.viewmodels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.repos.SongsRepository
 
 class SongDetailsViewModel(
+    private val savedStateHandle: SavedStateHandle,
     private val songsRepository: SongsRepository
 ): ViewModel() {
 
@@ -34,15 +38,14 @@ class SongDetailsViewModel(
     var songDetails by mutableStateOf(SongDetailsUiState())
         private set
 
+    init {
+        val songId = savedStateHandle.get<String>("songId")!!
+        loadSongDetails(songId)
+    }
 
-
-
-
-    // todo: we can move initial loading to init {}, but then we need to
-    //  pass songId through a savedStateHandle through the factory
-    fun loadSongDetails(id: String) {
+    private fun loadSongDetails(id: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            songDetails = try {
+            val _songDetails = try {
                 val song = songsRepository.getTrackDetails(id)
                 SongDetailsUiState(
                     status = SongDetailsStatus.Loaded,
@@ -57,6 +60,10 @@ class SongDetailsViewModel(
                     error = e.message
                 )
             }
+
+            withContext(Dispatchers.Main) {
+                songDetails = _songDetails
+            }
         }
     }
 
@@ -68,7 +75,7 @@ class SongDetailsViewModel(
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val app = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]) as BeatInspectorApp
 
-                return SongDetailsViewModel(app.songsRepository) as T
+                return SongDetailsViewModel(extras.createSavedStateHandle(), app.songsRepository) as T
             }
 
         }
