@@ -19,9 +19,6 @@ class AuthStatusViewModel(private val authenticator: Authenticator): ViewModel()
         val loginError: String? = null
     )
 
-    //private val _uiState = MutableStateFlow(AuthState(isLoggedIn = false)) // todo: authenticator is the SSOT
-    //val uiState: StateFlow<AuthState> = _uiState.asStateFlow()
-
     var uiState by mutableStateOf(AuthState(isLoggedIn = authenticator.isAuthorized()))
         private set
 

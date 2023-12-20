@@ -15,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.enableSavedStateHandles
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -48,13 +49,12 @@ class MainActivity : ComponentActivity() {
 
                         NavHost(navController = navController, startDestination = "search") {
                             composable("search") {
-                                SearchScreen(onNavigateToSongDetails = { // todo: only send ID of the track to the other screen
+                                SearchScreen(onNavigateToSongDetails = {
                                     navController.navigate("song/${it}")
                                 })
                             }
-                            composable("song/{songId}") { backStackEntry ->
-                                val songId = backStackEntry.arguments?.getString("songId")
-                                SongDetailsScreen(songId = songId)
+                            composable("song/{songId}") {
+                                SongDetailsScreen()
                             }
                         }
                     } else {
