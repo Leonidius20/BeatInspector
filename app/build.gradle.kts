@@ -22,17 +22,7 @@ android {
             useSupportLibrary = true
         }
 
-        // adding the API access keys (client id & secret) from api.properties to BuildConfig
-        /*val apiPropertiesFile = project.file("api.properties")
-        println(apiPropertiesFile.path)
-        if (apiPropertiesFile.exists()) {
-            apiPropertiesFile.forEachLine { line ->
-                val (key, value) = line.split("=")
-                // buildConfigField("String", key, "\"${value}\"")
-                resValue("String", key, "${value}")
-            }
 
-        }*/
         val keystoreFile = project.rootProject.file("secrets.properties")
         val secretProperties = Properties()
         secretProperties.load(keystoreFile.inputStream())
@@ -41,7 +31,6 @@ android {
 
         buildConfigField("String", "SPOTIFY_CLIENT_ID", "\"$clientId\"")
 
-        // buildConfigField("String", "SPOTIFY_CLIENT_SECRET", "\"${properties["SPOTIFY_CLIENT_SECRET"]}\"")
     }
 
     buildTypes {
@@ -89,6 +78,9 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     // implementation("com.google.code.gson:gson:2.8.9")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation("io.coil-kt:coil-base:2.5.0")
+    implementation("io.coil-kt:coil-compose:2.5.0")
 
     implementation(project(":data"))
 

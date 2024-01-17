@@ -49,7 +49,12 @@ fun SongDetailsScreen(
     key: String,
     genres: String,
 ) {
+    // todo: make it scrollable
     Column(modifier.fillMaxWidth()) {
+        /*AsyncImage(
+            model = "https://example.com/image.jpg",
+            contentDescription = null,
+        )*/
         Text(
             modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 25.dp, bottom = 10.dp),
             text = name,

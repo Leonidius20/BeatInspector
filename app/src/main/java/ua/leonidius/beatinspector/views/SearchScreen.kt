@@ -12,6 +12,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
@@ -99,14 +101,17 @@ fun SearchScreenPreview() {
     )
 }
 
-@Composable
+/*@Composable
 fun SearchResult(
     modifier: Modifier = Modifier,
     title: String,
     artist: String
 ) {
     Surface(
-        modifier.shadow(elevation = 5.dp).fillMaxWidth().padding(5.dp)
+        modifier
+            .shadow(elevation = 5.dp)
+            .fillMaxWidth()
+            .padding(5.dp)
     ) {
         Column {
             Text(text = title, style = MaterialTheme.typography.bodyMedium)
@@ -114,7 +119,7 @@ fun SearchResult(
         }
     }
 
-}
+}*/
 
 @Composable
 fun SearchResultsList(
@@ -123,12 +128,25 @@ fun SearchResultsList(
     onNavigateToSongDetails: (SongId) -> Unit
 ) {
     LazyColumn(modifier.padding(5.dp)) {
-        items(results) {
-            SearchResult(
+        items(results, key = { it.id }) {
+            SearchResultsListItem(
                 Modifier.clickable { onNavigateToSongDetails(it.id) },
                 title = it.name,
                 artist = it.artist
             )
         }
     }
+}
+
+@Composable
+fun SearchResultsListItem(
+    modifier: Modifier = Modifier,
+    title: String,
+    artist: String
+) {
+    ListItem(
+        modifier = modifier,
+        headlineContent = { Text(text = title) },
+        supportingContent = { Text(text = artist) },
+    )
 }
