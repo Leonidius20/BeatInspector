@@ -15,6 +15,8 @@ class SongsRepositoryImpl(
     override suspend fun searchForSongsByTitle(q: String): List<SongSearchResult> {
         val result = spotifyRetrofitClient.searchForSongs(q)
         if (!result.isSuccessful) {
+
+
             throw Error("error when doing the request" + result.errorBody()!!.string())
             // todo: proper error handling
         } else {

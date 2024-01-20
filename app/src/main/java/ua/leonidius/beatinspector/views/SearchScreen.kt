@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -21,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -72,6 +74,8 @@ fun SearchScreen(
         onQueryChange = onQueryChange,
         onSearch = onSearch,
         placeholder = { Text(stringResource(R.string.searchBar_placeholder)) },
+        active = true,
+        onActiveChange = { },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
@@ -79,8 +83,17 @@ fun SearchScreen(
                 contentDescription = null
             )
         },
-        active = true,
-        onActiveChange = {}
+        trailingIcon = {
+           Icon(
+               modifier = Modifier.clickable(onClickLabel = "clear search query") { // todo: add localization
+                   if (query.isNotEmpty()) {
+                       onQueryChange("")
+                   }
+               },
+               imageVector = Icons.Default.Close,
+               contentDescription = null,
+           )
+        },
     ) {
         SearchResultsList(
             //Modifier.height(100.dp), // todo
