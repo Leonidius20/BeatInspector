@@ -82,6 +82,8 @@ dependencies {
     implementation("io.coil-kt:coil-base:2.5.0")
     implementation("io.coil-kt:coil-compose:2.5.0")
 
+    implementation("androidx.palette:palette-ktx:1.0.0") // for color extraction from album art
+
     implementation(project(":data"))
 
     testImplementation("junit:junit:4.13.2")

@@ -1,6 +1,7 @@
 package ua.leonidius.beatinspector.views
 
 import android.graphics.Bitmap
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -15,11 +16,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -30,15 +35,21 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
+import ua.leonidius.beatinspector.ui.theme.ChangeStatusBarColor
 import ua.leonidius.beatinspector.viewmodels.SongDetailsViewModel
 
 @Composable
@@ -92,7 +103,25 @@ fun SongDetailsScreen(
                     .fillMaxWidth()
                     .fillMaxHeight(),
             ) {
-                AsyncImage(
+                var palette by remember { mutableStateOf<Palette?>(null) }
+
+                if (palette != null) {
+                    ChangeStatusBarColor(palette?.darkVibrantSwatch?.rgb ?: Color.Transparent.toArgb())
+                }
+
+                val painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(albumArtUrl)
+                        .size(coil.size.Size.ORIGINAL)
+                        .allowHardware(false) // so that palette can be generated from the image
+                        .build(),
+                    onSuccess = { state ->
+                        val bitmap = state.result.drawable.toBitmap()
+                        palette = Palette.from(bitmap).generate()
+                    },
+                    contentScale = ContentScale.Crop)
+
+                Image(
                     modifier = Modifier
                         .fillMaxHeight()
                         .fillMaxWidth()
@@ -100,16 +129,16 @@ fun SongDetailsScreen(
                             Brush.verticalGradient(
                                 0F to MaterialTheme.colorScheme.surface.copy(alpha = 1F), // from top to title
 
-                              //  0.25F to MaterialTheme.colorScheme.surface.copy(alpha = 0.3F), // from title to lowest part
+                                //  0.25F to MaterialTheme.colorScheme.surface.copy(alpha = 0.3F), // from title to lowest part
 
-                                 0.4F to MaterialTheme.colorScheme.surface.copy(alpha = 0.35F), // from title to lowest part
+                                0.4F to MaterialTheme.colorScheme.surface.copy(alpha = 0.35F), // from title to lowest part
                                 //0.5F to MaterialTheme.colorScheme.surface.copy(alpha = 0.5F),
 
                                 0.8F to MaterialTheme.colorScheme.surface.copy(alpha = 0.04F),  // lowest part (behind cards)
                                 1F to MaterialTheme.colorScheme.surface.copy(alpha = 0F),
                             )
                         ),
-                    model = albumArtUrl,
+                    painter = painter,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                 )
@@ -140,6 +169,12 @@ fun SongDetailsScreen(
 
                    // Spacer(modifier = Modifier.height(10.dp))
 
+                    val cardColors = palette?.lightMutedSwatch?.let { Color(it.rgb) }?.let {
+                        CardDefaults.cardColors(
+                            containerColor = it,
+                        )
+                    } ?: CardDefaults.cardColors()
+
                     Row(
                         Modifier
                             .fillMaxWidth()
@@ -148,11 +183,13 @@ fun SongDetailsScreen(
                     ) {
                         InfoCard(
                             Modifier.weight(1F),
+                            colors = cardColors,
                             title = "bpm", data = bpm
                         )
                         Spacer(Modifier.width(10.dp))
                         InfoCard(
                             Modifier.weight(1F),
+                            colors = cardColors,
                             title = "key", data = key
                         )
                     }
@@ -161,6 +198,7 @@ fun SongDetailsScreen(
                         Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 10.dp),
+                        colors = cardColors,
                         title = "artists' genres", data = genres
                     )
                 }
@@ -178,9 +216,11 @@ fun InfoCard(
     modifier: Modifier = Modifier,
     title: String,
     data: String,
+    colors: CardColors = CardDefaults.cardColors(),
 ) {
     Card(
-        modifier.height(150.dp)
+        modifier.height(150.dp),
+        colors = colors,
     ) {
         Column(
             Modifier
@@ -220,9 +260,11 @@ fun CompactInfoCard(
     modifier: Modifier = Modifier,
     title: String,
     data: String,
+    colors: CardColors = CardDefaults.cardColors(),
 ) {
     Card(
-        modifier
+        modifier,
+        colors = colors,
     ) {
         Column(
             Modifier

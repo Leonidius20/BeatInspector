@@ -1,7 +1,10 @@
 package ua.leonidius.beatinspector.ui.theme
 
 import android.app.Activity
+import android.graphics.Color
 import android.os.Build
+import android.util.Log
+import android.view.WindowInsetsController
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -10,10 +13,13 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.em
+import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.luminance
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
@@ -68,4 +74,33 @@ fun BeatInspectorTheme(
             typography = Typography,
             content = content
     )
+}
+
+@Composable
+fun ChangeStatusBarColor(colorArgb: Int) {
+    val view = LocalView.current
+    if (!view.isInEditMode) {
+        SideEffect {
+            val window = (view.context as Activity).window
+            window.statusBarColor = colorArgb
+            window.navigationBarColor = colorArgb
+
+
+
+            // if color is dark, make status bar icons light, otherwise make them dark
+            val isColorDark = //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+               if (colorArgb == Color.TRANSPARENT) false else ColorUtils.calculateLuminance(colorArgb) < 0.6f
+            //} else {
+            //    false
+            //}
+
+            Log.d("Theme", "isColorDark: $isColorDark, color: $colorArgb")
+
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars =
+                !isColorDark
+            WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars =
+                !isColorDark
+
+        }
+    }
 }
