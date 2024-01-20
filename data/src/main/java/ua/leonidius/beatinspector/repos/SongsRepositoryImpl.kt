@@ -23,7 +23,7 @@ class SongsRepositoryImpl(
                 throw NotAuthedError()
             } else {
                 return result.body()!!.tracks.items.map {
-                    SongSearchResult(it.id, it.name, it.artistsListToString())
+                    SongSearchResult(it.id, it.name, it.artistsListToString(), it.album.images[0].url)
                 }.onEach { inMemCache.songSearchResults[it.id] = it }
             }
 
@@ -62,7 +62,8 @@ class SongsRepositoryImpl(
             key = details.key,
             keyConfidence = details.keyConfidence,
             modeConfidence = details.modeConfidence,
-            genres = details.genres
+            genres = details.genres,
+            albumArtUrl = baseInfo.imageUrl,
         )
     }
 

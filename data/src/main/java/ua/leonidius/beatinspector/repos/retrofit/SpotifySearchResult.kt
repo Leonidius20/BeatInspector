@@ -12,6 +12,7 @@ data class SpotifySearchResult(
         data class Track(
             val id: String,
             val name: String,
+            val album: Album,
             val artists: List<Artist>
         ) {
 
@@ -24,6 +25,15 @@ data class SpotifySearchResult(
     data class Artist(
         val id: String,
         val name: String,
+    )
+
+    data class Album(
+        val id: String,
+        val images: List<Image> // first image is the biggest one
+    )
+
+    data class Image(
+        val url: String,
     )
 
 }

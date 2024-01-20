@@ -15,4 +15,5 @@ data class Song(
     val keyConfidence: Double,
     val modeConfidence: Double,
     val genres: List<String> = listOf(),
+    val albumArtUrl: String,
 )
