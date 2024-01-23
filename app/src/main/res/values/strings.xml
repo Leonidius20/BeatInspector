@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">BeatInspector</string>
     <string name="searchBar_placeholder">Search songs...</string>
+    <string name="no_data">no data</string>
 </resources>

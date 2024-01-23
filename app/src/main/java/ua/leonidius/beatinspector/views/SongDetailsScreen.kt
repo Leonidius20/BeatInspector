@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,6 +50,7 @@ import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
+import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.ui.theme.ChangeStatusBarColor
 import ua.leonidius.beatinspector.viewmodels.SongDetailsViewModel
 
@@ -81,15 +83,8 @@ fun SongDetailsScreen(
     albumArtUrl: String,
 ) {
 
-    // todo: make it scrollable
     BoxWithConstraints {
         val boxScope = this
-
-        // image
-        // column with rest
-
-
-
 
         Column(
             modifier
@@ -199,7 +194,8 @@ fun SongDetailsScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 10.dp),
                         colors = cardColors,
-                        title = "artists' genres", data = genres
+                        title = "artists' genres", data = genres,
+                        emptyReplacementText = stringResource(R.string.no_data),
                     )
                 }
 
@@ -260,6 +256,7 @@ fun CompactInfoCard(
     modifier: Modifier = Modifier,
     title: String,
     data: String,
+    emptyReplacementText: String,
     colors: CardColors = CardDefaults.cardColors(),
 ) {
     Card(
@@ -284,10 +281,19 @@ fun CompactInfoCard(
                 //verticalAlignment = Alignment.CenterVertically
 
             ) {
-                Text(text = data,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontSize = 16.sp,
-                )
+                if (data.isNotEmpty()) {
+                    Text(text = data,
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontSize = 16.sp,
+                    )
+                } else {
+                    Text(
+                        text = "< $emptyReplacementText >",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8F),
+                    )
+                }
             }
 
         }
