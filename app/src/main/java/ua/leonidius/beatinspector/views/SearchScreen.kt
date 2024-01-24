@@ -41,7 +41,9 @@ fun SearchScreen(
         onQueryChange = { searchViewModel.query = it },
         searchResults = searchViewModel.searchResults, // todo: should i bring this down to SearchResultsList for better performance?
         onSearch = { searchViewModel.performSearch() },
-        onNavigateToSongDetails = onNavigateToSongDetails
+        onNavigateToSongDetails = onNavigateToSongDetails,
+        state = searchViewModel.uiState,
+        errorMessage = searchViewModel.errorMessage
     )
 }
 
@@ -53,7 +55,9 @@ fun SearchScreen(
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
     searchResults: List<SongSearchResult>,
-    onNavigateToSongDetails: (SongId) -> Unit = {}
+    onNavigateToSongDetails: (SongId) -> Unit = {},
+    state: SearchViewModel.UiState = SearchViewModel.UiState.LOADED,
+    errorMessage: String = ""
 ) {
     SearchBar(
         // modifier = Modifier.requiredHeight(100.dp),
@@ -82,11 +86,26 @@ fun SearchScreen(
            )
         },
     ) {
-        SearchResultsList(
-            //Modifier.height(100.dp), // todo
-            results = searchResults,
-            onNavigateToSongDetails = onNavigateToSongDetails
-        )
+        when(state) {
+            SearchViewModel.UiState.UNINITIALIZED -> {
+                // nothing
+            }
+            SearchViewModel.UiState.LOADING -> {
+                Text(text = "Loading...") // todo: loading indicator
+            }
+            SearchViewModel.UiState.LOADED -> {
+                SearchResultsList(
+                    //Modifier.height(100.dp), // todo
+                    results = searchResults,
+                    onNavigateToSongDetails = onNavigateToSongDetails
+                )
+            }
+            SearchViewModel.UiState.ERROR -> {
+                Text(text = errorMessage) // todo: snackbar
+            }
+        }
+
+
     }
 }
 
