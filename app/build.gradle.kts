@@ -83,6 +83,9 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.5.0")
 
     implementation("androidx.palette:palette-ktx:1.0.0") // for color extraction from album art
+    implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
+
+    implementation("com.github.haroldadmin:NetworkResponseAdapter:5.0.0")
 
     implementation(project(":data"))
 

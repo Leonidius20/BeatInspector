@@ -1,5 +1,7 @@
 package ua.leonidius.beatinspector.repos
 
+import com.haroldadmin.cnradapter.NetworkResponse
+import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.entities.Song
 import ua.leonidius.beatinspector.entities.SongSearchResult
 import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSource
@@ -12,24 +14,59 @@ class SongsRepositoryImpl(
     private val networkDataSource: SongsNetworkDataSource
 ) : SongsRepository {
 
-    override suspend fun searchForSongsByTitle(q: String): List<SongSearchResult> {
-        val result = spotifyRetrofitClient.searchForSongs(q)
-        if (!result.isSuccessful) {
+    companion object { // todo better solution
 
 
-            throw Error("error when doing the request" + result.errorBody()!!.string())
-            // todo: proper error handling
-        } else {
-            if (result.code() == 418) {
-                // no stored token found
-                throw NotAuthedError()
-            } else {
-                return result.body()!!.tracks.items.map {
-                    SongSearchResult(it.id, it.name, it.artistsListToString(), it.album.images[0].url)
-                }.onEach { inMemCache.songSearchResults[it.id] = it }
+        fun <T, R> handleResponseOrThrow(
+            result: NetworkResponse<T, SpotifyRetrofitClient.SpotifyError>,
+            onSuccess: (NetworkResponse.Success<T, SpotifyRetrofitClient.SpotifyError>) -> R
+        ): R {
+            when (result) {
+                is NetworkResponse.Success -> {
+                    return onSuccess(result)
+                }
+
+                is NetworkResponse.ServerError -> {
+                    throw SongDataIOException(
+                        SongDataIOException.Type.SERVER,
+                        result.body?.message,
+                        result.error
+                    )
+                }
+
+                is NetworkResponse.NetworkError -> {
+                    throw SongDataIOException(
+                        SongDataIOException.Type.NETWORK,
+                        result.error.message,
+                        result.error.cause
+                    )
+                }
+
+                is NetworkResponse.UnknownError -> {
+                    throw SongDataIOException(
+                        SongDataIOException.Type.UNKNOWN,
+                        result.error.message,
+                        result.error.cause
+                    )
+                }
+
+                is NetworkResponse.Error -> {
+                    throw SongDataIOException(
+                        SongDataIOException.Type.OTHER,
+                        result.body?.message,
+                        result.error
+                    )
+                }
             }
+        }
 
+    }
 
+    override suspend fun searchForSongsByTitle(q: String): List<SongSearchResult> {
+        return handleResponseOrThrow(spotifyRetrofitClient.searchForSongs(q)) { successResp ->
+            successResp.body.tracks.items.map {
+                SongSearchResult(it.id, it.name, it.artistsListToString(), it.album.images[0].url)
+            }.onEach { inMemCache.songSearchResults[it.id] = it }
         }
     }
 

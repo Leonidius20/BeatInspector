@@ -1,10 +1,14 @@
 package ua.leonidius.beatinspector.repos.datasources
 
 import android.util.Log
+import com.haroldadmin.cnradapter.NetworkResponse
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.handleCoroutineException
+import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.entities.SongDetails
+import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
 import ua.leonidius.beatinspector.repos.retrofit.SpotifyRetrofitClient
 
 class SongsNetworkDataSourceImpl(
@@ -16,8 +20,11 @@ class SongsNetworkDataSourceImpl(
         return coroutineScope {
             val genresDef = async {
                 val deferred = mutableListOf<Deferred<SpotifyRetrofitClient.ArtistResponse>>()
-                spotifyRetrofitClient.getTrack(trackId).body()!!.artists.forEach {
-                    deferred.add(async { spotifyRetrofitClient.getArtist(it.id).body()!! })
+
+                // todo: error handling for the one getTrack() request (what does it even get, isn't this cached?) as well as for all artist requests
+
+                (spotifyRetrofitClient.getTrack(trackId) as NetworkResponse.Success).body.artists.forEach {
+                    deferred.add(async { (spotifyRetrofitClient.getArtist(it.id) as NetworkResponse.Success).body })
                 }
                 deferred.map { it.await() }.flatMap { it.genres  }.distinct()
             }
@@ -29,31 +36,57 @@ class SongsNetworkDataSourceImpl(
             val genres = genresDef.await()
             val detailsResp = detailsRespDef.await()
 
-            Log.d("SongsNetworkDataSource", "requests finished")
+            //Log.d("SongsNetworkDataSource", "requests finished")
             //Log.d("SongsNetworkDataSource", "trackResp: " + trackResp.body().toString())
-            Log.d("SongsNetworkDataSource", "detailsResp: " + detailsResp.body().toString())
+            //Log.d("SongsNetworkDataSource", "detailsResp: " + detailsResp.body.toString())
 
-            if (!detailsResp.isSuccessful) {
-                Log.e("SongsNetworkDataSource", "error when doing the request" + detailsResp.errorBody()!!.string())
-                throw Error("error when doing the request" + detailsResp.errorBody()!!.string())
-                // todo: proper error handling
-               // } else if (!trackResp.isSuccessful) {
-                //     Log.e("SongsNetworkDataSource", "error when doing the request" + trackResp.errorBody()!!.string())
-                //     throw Error("error when doing the request" + trackResp.errorBody()!!.string())
-            } else {
-                with(detailsResp.body()!!.track) {
-                    SongDetails(
-                        duration,
-                        loudness,
-                        tempo,
-                        tempoConfidence,
-                        timeSignature,
-                        timeSignatureConfidence,
-                        getKeyStringFromSpotifyValue(key, mode),
-                        keyConfidence,
-                        modeConfidence,
-                        //trackResp.body()!!.artists.flatMap { it.genres }
-                        genres
+            when (detailsResp) {
+                is NetworkResponse.Success -> {
+                    with(detailsResp.body.track) {
+                        return@coroutineScope SongDetails(
+                            duration,
+                            loudness,
+                            tempo,
+                            tempoConfidence,
+                            timeSignature,
+                            timeSignatureConfidence,
+                            getKeyStringFromSpotifyValue(key, mode),
+                            keyConfidence,
+                            modeConfidence,
+                            genres
+                        )
+                    }
+                }
+                is NetworkResponse.ServerError -> {
+                    Log.d("SongsNetworkDataSource", "error when doing the request" + detailsResp.error?.message)
+                    throw SongDataIOException(
+                        SongDataIOException.Type.SERVER,
+                        detailsResp.body?.message,
+                        detailsResp.error
+                    )
+                }
+
+                is NetworkResponse.NetworkError -> {
+                    throw SongDataIOException(
+                        SongDataIOException.Type.NETWORK,
+                        detailsResp.error.message,
+                        detailsResp.error.cause
+                    )
+                }
+
+                is NetworkResponse.UnknownError -> {
+                    throw SongDataIOException(
+                        SongDataIOException.Type.UNKNOWN,
+                        detailsResp.error.message,
+                        detailsResp.error.cause
+                    )
+                }
+
+                is NetworkResponse.Error -> {
+                    throw SongDataIOException(
+                        SongDataIOException.Type.OTHER,
+                        detailsResp.body?.message,
+                        detailsResp.error
                     )
                 }
             }

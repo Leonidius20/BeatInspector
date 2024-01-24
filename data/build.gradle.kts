@@ -51,4 +51,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
 
     implementation("net.openid:appauth:0.11.1")
+
+    implementation("com.github.haroldadmin:NetworkResponseAdapter:5.0.0")
 }

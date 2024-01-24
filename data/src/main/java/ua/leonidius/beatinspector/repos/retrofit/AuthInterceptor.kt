@@ -1,13 +1,13 @@
 package ua.leonidius.beatinspector.repos.retrofit
 
 import okhttp3.Interceptor
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody
 import ua.leonidius.beatinspector.auth.Authenticator
 
-class AuthInterceptor(val authenticator: Authenticator): Interceptor {
+class AuthInterceptor(private val authenticator: Authenticator): Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
@@ -17,7 +17,7 @@ class AuthInterceptor(val authenticator: Authenticator): Interceptor {
         if (!authed) {
             return Response.Builder()
                 .code(418) // teapot code
-                .body(ResponseBody.create(MediaType.get("text/html; charset=utf-8"), "")) // Whatever body
+                .body(ResponseBody.create("text/html; charset=utf-8".toMediaType(), "")) // Whatever body
                 .protocol(Protocol.HTTP_2)
                 .message("Dummy response")
                 .request(chain.request())
@@ -38,7 +38,7 @@ class AuthInterceptor(val authenticator: Authenticator): Interceptor {
 
             val request = original.newBuilder()
                 .header("Authorization", "Bearer $accessToken")
-                .method(original.method(), original.body())
+                .method(original.method, original.body)
                 .build()
 
             // this is a workaround for a bug in AppAuth library

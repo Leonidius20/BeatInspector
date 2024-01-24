@@ -1,6 +1,7 @@
 package ua.leonidius.beatinspector
 
 import android.app.Application
+import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -27,6 +28,7 @@ class BeatInspectorApp: Application() {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://api.spotify.com/v1/")
             .addConverterFactory(GsonConverterFactory. create())
+            .addCallAdapterFactory(NetworkResponseAdapterFactory())
             .client(
                 OkHttpClient.Builder()
                 .addInterceptor(authInterceptor)

@@ -13,9 +13,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.collectAsState
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.enableSavedStateHandles
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var loginActivityLauncher: ActivityResultLauncher<Intent>
 
-    @OptIn(ExperimentalMaterial3Api::class)
+    @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -41,6 +41,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BeatInspectorTheme {
+                val windowSize = calculateWindowSizeClass(this)
+
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
 
@@ -54,7 +56,7 @@ class MainActivity : ComponentActivity() {
                                 })
                             }
                             composable("song/{songId}") {
-                                SongDetailsScreen()
+                                SongDetailsScreen(windowSize = windowSize)
                             }
                         }
                     } else {
