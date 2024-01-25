@@ -2,6 +2,7 @@ package ua.leonidius.beatinspector
 
 import android.app.Application
 import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
+import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -38,7 +39,7 @@ class BeatInspectorApp: Application() {
         val spotifyRetrofitClient = retrofit.create(SpotifyRetrofitClient::class.java)
 
         val songsInMemCache = SongsInMemCache()
-        val networkDataSource = SongsNetworkDataSourceImpl(spotifyRetrofitClient)
+        val networkDataSource = SongsNetworkDataSourceImpl(spotifyRetrofitClient, Dispatchers.IO)
 
         songsRepository = SongsRepositoryImpl(spotifyRetrofitClient, songsInMemCache, networkDataSource)
     }

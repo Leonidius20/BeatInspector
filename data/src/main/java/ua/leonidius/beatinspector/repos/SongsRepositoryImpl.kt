@@ -77,22 +77,24 @@ class SongsRepositoryImpl(
     class NotAuthedError: Error()
 
 
-    override suspend fun getTrackDetails(id: String): Song {
+    /**
+     * @return Pair of song details and list of artists that failed to get their genres
+     */
+    override suspend fun getTrackDetails(id: String): Pair<Song, List<String>> {
         val baseInfo = inMemCache.songSearchResults[id]
             ?: throw Error("no base info found in cache for song id $id")
 
         var details = inMemCache.getSongDetailsById(id)
+        var failedArtists = emptyList<String>()
 
         if (details == null) {
-            details = networkDataSource.getSongDetailsById(id, baseInfo.artists)
-            if (details == null) {
-                throw Error("no details could be loaded from network for song id $id")
-            } else {
-                inMemCache.songsDetails[id] = details
-            }
+            val result = networkDataSource.getSongDetailsById(id, baseInfo.artists)
+            details = result.first
+            failedArtists = result.second
+            inMemCache.songsDetails[id] = details
         }
 
-        return Song(
+        return Pair(Song(
             id = baseInfo.id,
             name = baseInfo.name,
             artist = baseInfo.artists.joinToString(", ") { it.name }, // todo: don't, just return as is and let ui layer handle it
@@ -107,7 +109,7 @@ class SongsRepositoryImpl(
             modeConfidence = details.modeConfidence,
             genres = details.genres,
             albumArtUrl = baseInfo.imageUrl,
-        )
+        ), failedArtists)
     }
 
 }

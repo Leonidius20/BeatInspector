@@ -1,5 +1,6 @@
 package ua.leonidius.beatinspector.views
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,6 +59,11 @@ fun SongDetailsScreen(
     detailsViewModel: SongDetailsViewModel = viewModel(factory = SongDetailsViewModel.Factory),
     windowSize: WindowSizeClass,
 ) {
+    if (detailsViewModel.songDetails.failedArtists.isNotEmpty()) {
+        // todo: error snackbars
+        Text(text = "Failed artists: ${detailsViewModel.songDetails.failedArtists}")
+    }
+
     with(detailsViewModel.songDetails) {
         when (windowSize.widthSizeClass) {
             WindowWidthSizeClass.Compact -> {

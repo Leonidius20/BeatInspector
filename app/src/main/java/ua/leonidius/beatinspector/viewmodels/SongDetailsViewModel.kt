@@ -1,5 +1,6 @@
 package ua.leonidius.beatinspector.viewmodels
 
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -38,6 +39,7 @@ class SongDetailsViewModel(
         val key: String = "",
         val genres: String = "",
         val albumArtUrl: String = "",
+        val failedArtists: List<String> = emptyList()
     )
 
     var songDetails by mutableStateOf(SongDetailsUiState())
@@ -51,7 +53,8 @@ class SongDetailsViewModel(
     private fun loadSongDetails(id: String) {
         viewModelScope.launch {
             val _songDetails = try {
-                val song = songsRepository.getTrackDetails(id)
+                val result = songsRepository.getTrackDetails(id)
+                val song = result.first
                 SongDetailsUiState(
                     status = SongDetailsStatus.Loaded,
                     title = song.name,
@@ -60,6 +63,7 @@ class SongDetailsViewModel(
                     key = song.key,
                     genres = song.genres.joinToString(", "),
                     albumArtUrl = song.albumArtUrl,
+                    failedArtists = result.second
                 )
             } catch (e: SongDataIOException) {
                 SongDetailsUiState(
