@@ -8,6 +8,7 @@ data class SpotifyTrackAnalysisResponse(
 
     data class TrackResponse(
         val duration: Double,
+        // todo: display loudness in UI? is it LUFS?
         val loudness: Double, // db but which kind of db? between -60 and 0
         val tempo: Double,
         @SerializedName("tempo_confidence")

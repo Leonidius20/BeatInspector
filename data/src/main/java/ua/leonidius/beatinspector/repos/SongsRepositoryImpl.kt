@@ -1,7 +1,9 @@
 package ua.leonidius.beatinspector.repos
 
+import android.util.Log
 import com.haroldadmin.cnradapter.NetworkResponse
 import ua.leonidius.beatinspector.SongDataIOException
+import ua.leonidius.beatinspector.entities.Artist
 import ua.leonidius.beatinspector.entities.Song
 import ua.leonidius.beatinspector.entities.SongSearchResult
 import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSource
@@ -63,9 +65,11 @@ class SongsRepositoryImpl(
     }
 
     override suspend fun searchForSongsByTitle(q: String): List<SongSearchResult> {
+        Log.d("SongsRepository", "searchForSongsByTitle: q = $q")
         return handleResponseOrThrow(spotifyRetrofitClient.searchForSongs(q)) { successResp ->
             successResp.body.tracks.items.map {
-                SongSearchResult(it.id, it.name, it.artistsListToString(), it.album.images[0].url)
+                // todo: make data mappers a separate thing
+                SongSearchResult(it.id, it.name, it.artists.map { Artist(it.id, it.name) }, it.album.images[0].url)
             }.onEach { inMemCache.songSearchResults[it.id] = it }
         }
     }
@@ -80,7 +84,7 @@ class SongsRepositoryImpl(
         var details = inMemCache.getSongDetailsById(id)
 
         if (details == null) {
-            details = networkDataSource.getSongDetailsById(id)
+            details = networkDataSource.getSongDetailsById(id, baseInfo.artists)
             if (details == null) {
                 throw Error("no details could be loaded from network for song id $id")
             } else {
@@ -91,7 +95,7 @@ class SongsRepositoryImpl(
         return Song(
             id = baseInfo.id,
             name = baseInfo.name,
-            artist = baseInfo.artist,
+            artist = baseInfo.artists.joinToString(", ") { it.name }, // todo: don't, just return as is and let ui layer handle it
             duration = details.duration,
             loudness = details.loudness,
             bpm = details.bpm,

@@ -28,10 +28,10 @@ interface SpotifyRetrofitClient {
         )
     }
 
-    @GET("tracks/{id}")
+    /*@GET("tracks/{id}")
     suspend fun getTrack(
         @Path("id") trackId: String
-    ): NetworkResponse<TrackResponse, SpotifyError>
+    ): NetworkResponse<TrackResponse, SpotifyError>*/
 
     data class ArtistResponse(
         val id: String,

@@ -1,5 +1,6 @@
 package ua.leonidius.beatinspector.views
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -43,7 +44,7 @@ fun SearchScreen(
         onSearch = { searchViewModel.performSearch() },
         onNavigateToSongDetails = onNavigateToSongDetails,
         state = searchViewModel.uiState,
-        errorMessage = searchViewModel.errorMessage
+        errorMessage = searchViewModel.errorMessageId
     )
 }
 
@@ -57,7 +58,7 @@ fun SearchScreen(
     searchResults: List<SongSearchResult>,
     onNavigateToSongDetails: (SongId) -> Unit = {},
     state: SearchViewModel.UiState = SearchViewModel.UiState.LOADED,
-    errorMessage: String = ""
+    @StringRes errorMessage: Int? = null
 ) {
     SearchBar(
         // modifier = Modifier.requiredHeight(100.dp),
@@ -101,7 +102,7 @@ fun SearchScreen(
                 )
             }
             SearchViewModel.UiState.ERROR -> {
-                Text(text = errorMessage) // todo: snackbar
+                Text(text = stringResource(id = errorMessage!!)) // todo: snackbar
             }
         }
 
@@ -151,7 +152,7 @@ fun SearchResultsList(
             SearchResultsListItem(
                 Modifier.clickable { onNavigateToSongDetails(it.id) },
                 title = it.name,
-                artist = it.artist
+                artist = it.artists.joinToString(", ") { it.name }
             )
         }
     }

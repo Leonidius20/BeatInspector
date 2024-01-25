@@ -2,4 +2,8 @@
     <string name="app_name">BeatInspector</string>
     <string name="searchBar_placeholder">Search songs...</string>
     <string name="no_data">no data</string>
+    <string name="network_error">Network error. Check your connection.</string>
+    <string name="server_error">Server error</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="other_error">Other error</string>
 </resources>

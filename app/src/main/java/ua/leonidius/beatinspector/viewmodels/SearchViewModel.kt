@@ -1,6 +1,8 @@
 package ua.leonidius.beatinspector.viewmodels
 
+import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -10,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
+import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.entities.SongSearchResult
 import ua.leonidius.beatinspector.repos.SongsRepository
@@ -29,7 +32,7 @@ class SearchViewModel(
     var uiState by mutableStateOf(UiState.UNINITIALIZED)
         private set
 
-    var errorMessage by mutableStateOf("")
+    var errorMessageId by mutableIntStateOf(-1)
         private set
 
     var query by mutableStateOf("")
@@ -46,35 +49,32 @@ class SearchViewModel(
                 uiState = UiState.LOADED
             } catch (e: SongsRepositoryImpl.NotAuthedError) {
                 uiState = UiState.ERROR
-                errorMessage = "Not authed" // todo: check how that is thrown and extract string res
+                errorMessageId = R.string.other_error // todo: check how that is thrown, handle it differently so that it redirects to login page
                 // todo: set this to AuthStatusViewModel and initiate login
 
             } catch (e: SongDataIOException) {
                 uiState = UiState.ERROR
-                errorMessage = when(e.type) {
+                errorMessageId = when(e.type) {
                     SongDataIOException.Type.NETWORK -> {
-                        "Network error. Check your connection." // todo: extract string res
+                        R.string.network_error
                     }
 
                     SongDataIOException.Type.SERVER -> {
-                        "Server error"
+                        R.string.server_error
                     }
 
                     SongDataIOException.Type.UNKNOWN -> {
-                        "Unknown error"
+                        R.string.unknown_error
                     }
 
                     SongDataIOException.Type.OTHER -> {
-                        "Other error"
+                        R.string.other_error
                     }
-                }
-
-                e.message?.also {
-                    errorMessage += ": $it"
                 }
             } catch (e: Error) {
                 uiState = UiState.ERROR
-                errorMessage = e.message ?: "Unknown error"
+                Log.e("SearchViewModel", "Unknown error", e)
+                errorMessageId = R.string.unknown_error
             }
 
         }

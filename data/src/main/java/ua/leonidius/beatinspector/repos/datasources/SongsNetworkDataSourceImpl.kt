@@ -1,23 +1,65 @@
 package ua.leonidius.beatinspector.repos.datasources
 
-import android.util.Log
 import com.haroldadmin.cnradapter.NetworkResponse
-import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.handleCoroutineException
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.SongDataIOException
+import ua.leonidius.beatinspector.entities.Artist
 import ua.leonidius.beatinspector.entities.SongDetails
-import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
 import ua.leonidius.beatinspector.repos.retrofit.SpotifyRetrofitClient
+import ua.leonidius.beatinspector.repos.retrofit.SpotifyTrackAnalysisResponse
 
 class SongsNetworkDataSourceImpl(
     private val spotifyRetrofitClient: SpotifyRetrofitClient
 ): SongsNetworkDataSource {
-    override suspend fun getSongDetailsById(trackId: String): SongDetails {
+    override suspend fun getSongDetailsById(trackId: String, artists: List<Artist>): SongDetails {
+
+
+
+        // new version
+       return withContext(Dispatchers.IO) { // todo: remove hardcoded dispatcher
+            val deferredGenres = artists.asSequence().map { it.id }.map { artistId ->
+                async {
+                    when (val response = spotifyRetrofitClient.getArtist(artistId)) {
+                        is NetworkResponse.Success -> response.body.genres
+                        else -> null// todo: notify the user about the error, but don't throw an exception. Maybe make a Map<Artist, List<Genre>?> and from there getseparately the flat list of genres and the list of errored out artists
+                    }
+                }
+
+            }.toList().toTypedArray()
+
+           val genres = awaitAll(*deferredGenres).filterNotNull().flatten().distinct().toList()
+
+           val trackDetails = when (val response = spotifyRetrofitClient.getTrackDetails(trackId)) {
+               is NetworkResponse.Success -> response.body.track
+               else -> throw SongDataIOException(badResponseClassToType(response::class.java))
+           }
+
+           with(trackDetails) {
+               return@withContext SongDetails(
+                   duration,
+                   loudness,
+                   tempo,
+                   tempoConfidence,
+                   timeSignature,
+                   timeSignatureConfidence,
+                   getKeyStringFromSpotifyValue(key, mode),
+                   keyConfidence,
+                   modeConfidence,
+                   genres
+               )
+           }
+        }
+
+
+
+        // old version:
+
         // todo: fix this mess using flows? or something else?
         //val trackResp = spotifyRetrofitClient.getTrack(trackId)
-        return coroutineScope {
+           /* return coroutineScope {
             val genresDef = async {
                 val deferred = mutableListOf<Deferred<SpotifyRetrofitClient.ArtistResponse>>()
 
@@ -26,7 +68,14 @@ class SongsNetworkDataSourceImpl(
                 (spotifyRetrofitClient.getTrack(trackId) as NetworkResponse.Success).body.artists.forEach {
                     deferred.add(async { (spotifyRetrofitClient.getArtist(it.id) as NetworkResponse.Success).body })
                 }
-                deferred.map { it.await() }.flatMap { it.genres  }.distinct()
+                deferred.map {
+                    //try {
+                        it.await()
+                    //} catch (e: Exception) {
+                    //    Log.d("SongsNetworkDataSource", "error when doing the request for artist genre" + e.message)
+                    //    null
+                    //}
+                }.flatMap { resp -> resp.genres }/*.filter { it != null }*/.distinct()
             }
             val detailsRespDef = async { spotifyRetrofitClient.getTrackDetails(trackId) }
 
@@ -90,7 +139,7 @@ class SongsNetworkDataSourceImpl(
                     )
                 }
             }
-        }
+        }*/
     }
 
     private fun getKeyStringFromSpotifyValue(keyInt: Int, modeInt: Int): String {
@@ -118,6 +167,16 @@ class SongsNetworkDataSourceImpl(
         }
 
         return "$key $mode"
+    }
+
+    fun badResponseClassToType(badResponseClass: Class<out NetworkResponse<SpotifyTrackAnalysisResponse, SpotifyRetrofitClient.SpotifyError>>): SongDataIOException.Type {
+        return when(badResponseClass) {
+            NetworkResponse.ServerError::class.java -> SongDataIOException.Type.SERVER
+            NetworkResponse.NetworkError::class.java -> SongDataIOException.Type.NETWORK
+            NetworkResponse.UnknownError::class.java -> SongDataIOException.Type.UNKNOWN
+            NetworkResponse.Error::class.java -> SongDataIOException.Type.OTHER
+            else -> SongDataIOException.Type.OTHER
+        }
     }
 
 }

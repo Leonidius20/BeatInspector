@@ -63,7 +63,7 @@ fun SongDetailsScreen(
                 SongDetailsPortraitScreen(
                     modifier,
                     name = title,
-                    artists = listOf(artist), // todo: decide if this should be a list or not
+                    artists = listOf(artists), // todo: decide if this should be a list or not
                     bpm = bpm,
                     key = key,
                     genres = genres,
@@ -96,6 +96,7 @@ fun SongDetailsPortraitScreen(
     genres: String,
     albumArtUrl: String,
 ) {
+    // todo: loading status, error snackbars
 
     BoxWithConstraints {
         val boxScope = this

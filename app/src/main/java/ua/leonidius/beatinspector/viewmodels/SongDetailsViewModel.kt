@@ -13,6 +13,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.BeatInspectorApp
+import ua.leonidius.beatinspector.R
+import ua.leonidius.beatinspector.SongDataIOException
+import ua.leonidius.beatinspector.entities.Song
 import ua.leonidius.beatinspector.repos.SongsRepository
 
 class SongDetailsViewModel(
@@ -28,9 +31,9 @@ class SongDetailsViewModel(
 
     data class SongDetailsUiState(
         val status: SongDetailsStatus = SongDetailsStatus.Loading,
-        val error: String? = null,
+        val errorMsgId: Int? = null,
         val title: String = "",
-        val artist: String = "",
+        val artists: String = "",
         val bpm: String = "",
         val key: String = "",
         val genres: String = "",
@@ -46,22 +49,27 @@ class SongDetailsViewModel(
     }
 
     private fun loadSongDetails(id: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             val _songDetails = try {
                 val song = songsRepository.getTrackDetails(id)
                 SongDetailsUiState(
                     status = SongDetailsStatus.Loaded,
                     title = song.name,
-                    artist = song.artist,
+                    artists = song.artist,
                     bpm = song.bpm.toString(),
                     key = song.key,
                     genres = song.genres.joinToString(", "),
                     albumArtUrl = song.albumArtUrl,
                 )
+            } catch (e: SongDataIOException) {
+                SongDetailsUiState(
+                    status = SongDetailsStatus.Error,
+                    errorMsgId = e.toUiMessage()
+                )
             } catch (e: Exception) {
                 SongDetailsUiState(
                     status = SongDetailsStatus.Error,
-                    error = e.message
+                    errorMsgId = R.string.unknown_error
                 )
             }
 
@@ -85,5 +93,6 @@ class SongDetailsViewModel(
         }
 
     }
+
 
 }
