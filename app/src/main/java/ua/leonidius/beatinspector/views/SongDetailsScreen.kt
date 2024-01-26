@@ -18,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
@@ -64,33 +65,52 @@ fun SongDetailsScreen(
         Text(text = "Failed artists: ${detailsViewModel.songDetails.failedArtists}")
     }
 
-    with(detailsViewModel.songDetails) {
-        when (windowSize.widthSizeClass) {
-            WindowWidthSizeClass.Compact -> {
-                SongDetailsPortraitScreen(
-                    modifier,
-                    name = title,
-                    artists = listOf(artists), // todo: decide if this should be a list or not
-                    bpm = bpm,
-                    key = key,
-                    genres = genres,
-                    albumArtUrl = albumArtUrl,
+    // todo: check ui state here (loading, error, etc)
+    when (detailsViewModel.songDetails.status) {
+        SongDetailsViewModel.SongDetailsStatus.Loading -> {
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight()) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(alignment = Alignment.Center)
                 )
             }
-            WindowWidthSizeClass.Expanded -> {
-                /*SongDetailsLandscapeScreen(
-                    modifier,
-                    name = title,
-                    artists = listOf(artist), // todo: decide if this should be a list or not
-                    bpm = bpm,
-                    key = key,
-                    genres = genres,
-                    albumArtUrl = albumArtUrl,
-                )*/
+        }
+        SongDetailsViewModel.SongDetailsStatus.Error -> {
+            Text(text = stringResource(id = detailsViewModel.songDetails.errorMsgId!!))
+        }
+        SongDetailsViewModel.SongDetailsStatus.Loaded -> {
+            with(detailsViewModel.songDetails) {
+                when (windowSize.widthSizeClass) {
+                    WindowWidthSizeClass.Compact -> {
+                        SongDetailsPortraitScreen(
+                            modifier,
+                            name = title,
+                            artists = listOf(artists), // todo: decide if this should be a list or not
+                            bpm = bpm,
+                            key = key,
+                            genres = genres,
+                            albumArtUrl = albumArtUrl,
+                        )
+                    }
+                    WindowWidthSizeClass.Expanded -> {
+                        /*SongDetailsLandscapeScreen(
+                            modifier,
+                            name = title,
+                            artists = listOf(artist), // todo: decide if this should be a list or not
+                            bpm = bpm,
+                            key = key,
+                            genres = genres,
+                            albumArtUrl = albumArtUrl,
+                        )*/
+                    }
+                }
+
             }
         }
-
     }
+
+
 }
 
 @Composable
