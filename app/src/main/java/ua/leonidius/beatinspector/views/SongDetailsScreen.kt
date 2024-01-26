@@ -133,7 +133,7 @@ fun SongDetailsPortraitScreen(
     genres: String,
     albumArtUrl: String,
 ) {
-    // todo: loading status, error snackbars
+    // todo: error snackbars
 
     BoxWithConstraints {
         val boxScope = this
@@ -308,7 +308,7 @@ fun SongDetailsLandscapeScreen(
 
         BoxWithConstraints(
             Modifier
-                .padding(top = 10.dp, start = 10.dp)
+                .padding(top = 10.dp, start = 10.dp, bottom = 10.dp)
                 .clip(RoundedCornerShape(10.dp))
         ) { // image with title and artists
             val boxScope = this
@@ -328,8 +328,8 @@ fun SongDetailsLandscapeScreen(
 
             Image(
                 modifier = Modifier
-                    .height(boxScope.maxHeight * 0.9F)
-                    .width(boxScope.maxHeight * 0.9F)
+                    .height(boxScope.maxHeight)
+                    .width(boxScope.maxHeight)
                     .fadingEdge(
                         Brush.verticalGradient(
                             0F to MaterialTheme.colorScheme.surface.copy(alpha = 1F), // from top to title
@@ -350,7 +350,9 @@ fun SongDetailsLandscapeScreen(
 
 
             Column(
-                modifier = Modifier.align(Alignment.BottomStart)
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .width(boxScope.maxHeight * 0.9F)
             ) {
                 Text(
                     modifier = Modifier
@@ -372,7 +374,9 @@ fun SongDetailsLandscapeScreen(
         }
 
         Column(
-            Modifier.padding(top = 10.dp)
+            Modifier
+                .padding(top = 10.dp, bottom = 10.dp)
+                .verticalScroll(rememberScrollState())
         ) {// info cards
 
 
