@@ -51,9 +51,11 @@ class MainActivity : ComponentActivity() {
 
                         NavHost(navController = navController, startDestination = "search") {
                             composable("search") {
-                                SearchScreen(onNavigateToSongDetails = {
-                                    navController.navigate("song/${it}")
-                                })
+                                SearchScreen(
+                                    windowSize = windowSize,
+                                    onNavigateToSongDetails = {
+                                        navController.navigate("song/${it}")
+                                    })
                             }
                             composable("song/{songId}") {
                                 SongDetailsScreen(windowSize = windowSize)
