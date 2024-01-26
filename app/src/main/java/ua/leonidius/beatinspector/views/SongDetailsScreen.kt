@@ -1,5 +1,6 @@
 package ua.leonidius.beatinspector.views
 
+import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -43,6 +44,7 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -85,21 +87,8 @@ fun SongDetailsScreen(
         }
         SongDetailsViewModel.SongDetailsStatus.Loaded -> {
             with(detailsViewModel.songDetails) {
-                when (windowSize.widthSizeClass) {
-                    WindowWidthSizeClass.Compact -> {
-                        SongDetailsPortraitScreen(
-                            modifier,
-                            name = title,
-                            artists = listOf(artists), // todo: decide if this should be a list or not
-                            bpm = bpm,
-                            key = key,
-                            timeSignature = timeSignatureOver4,
-                            loudness = loudness,
-                            genres = genres,
-                            albumArtUrl = albumArtUrl,
-                        )
-                    }
-                    WindowWidthSizeClass.Expanded -> {
+                when (LocalConfiguration.current.orientation) {
+                    Configuration.ORIENTATION_LANDSCAPE -> {
                         SongDetailsLandscapeScreen(
                             modifier,
                             name = title,
@@ -112,6 +101,20 @@ fun SongDetailsScreen(
                             albumArtUrl = albumArtUrl,
                         )
                     }
+                    else -> {
+                        SongDetailsPortraitScreen(
+                            modifier,
+                            name = title,
+                            artists = listOf(artists), // todo: decide if this should be a list or not
+                            bpm = bpm,
+                            key = key,
+                            timeSignature = timeSignatureOver4,
+                            loudness = loudness,
+                            genres = genres,
+                            albumArtUrl = albumArtUrl,
+                        )
+                    }
+
                 }
 
             }

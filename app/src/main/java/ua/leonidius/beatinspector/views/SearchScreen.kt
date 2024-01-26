@@ -1,5 +1,6 @@
 package ua.leonidius.beatinspector.views
 
+import android.content.res.Configuration
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
@@ -35,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -140,15 +142,15 @@ fun SearchScreen(
 
                 }
                 SearchViewModel.UiState.LOADED -> {
-                    when(windowSize.widthSizeClass) {
-                        WindowWidthSizeClass.Compact -> {
-                            SearchResultsList(
+                    when(LocalConfiguration.current.orientation) {
+                        Configuration.ORIENTATION_LANDSCAPE -> {
+                            SearchResultsGrid(
                                 results = searchResults,
                                 onNavigateToSongDetails = onNavigateToSongDetails
                             )
                         }
-                        WindowWidthSizeClass.Expanded-> {
-                            SearchResultsGrid(
+                        else -> {
+                            SearchResultsList(
                                 results = searchResults,
                                 onNavigateToSongDetails = onNavigateToSongDetails
                             )
