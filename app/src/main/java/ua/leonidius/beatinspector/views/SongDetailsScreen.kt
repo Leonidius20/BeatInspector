@@ -1,7 +1,8 @@
 package ua.leonidius.beatinspector.views
 
-import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
@@ -31,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
@@ -89,20 +93,24 @@ fun SongDetailsScreen(
                             artists = listOf(artists), // todo: decide if this should be a list or not
                             bpm = bpm,
                             key = key,
+                            timeSignature = timeSignatureOver4,
+                            loudness = loudness,
                             genres = genres,
                             albumArtUrl = albumArtUrl,
                         )
                     }
                     WindowWidthSizeClass.Expanded -> {
-                        /*SongDetailsLandscapeScreen(
+                        SongDetailsLandscapeScreen(
                             modifier,
                             name = title,
-                            artists = listOf(artist), // todo: decide if this should be a list or not
+                            artists = listOf(artists), // todo: decide if this should be a list or not
                             bpm = bpm,
                             key = key,
+                            timeSignature = timeSignatureOver4,
+                            loudness = loudness,
                             genres = genres,
                             albumArtUrl = albumArtUrl,
-                        )*/
+                        )
                     }
                 }
 
@@ -120,6 +128,8 @@ fun SongDetailsPortraitScreen(
     artists: List<String>,
     bpm: String,
     key: String,
+    timeSignature: Int,
+    loudness: Double,
     genres: String,
     albumArtUrl: String,
 ) {
@@ -231,6 +241,27 @@ fun SongDetailsPortraitScreen(
                         )
                     }
                     Spacer(Modifier.height(10.dp))
+
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                    ) {
+                        InfoCard(
+                            Modifier.weight(1F),
+                            colors = cardColors,
+                            title = "time signature", data = "$timeSignature/4"
+                        )
+                        Spacer(Modifier.width(10.dp))
+                        InfoCard(
+                            Modifier.weight(1F),
+                            colors = cardColors,
+                            title = "loudness", data = String.format("%.2f", loudness) + " dB"
+                        )
+                    }
+                    Spacer(Modifier.height(10.dp))
+
                     CompactInfoCard(
                         Modifier
                             .fillMaxWidth()
@@ -249,226 +280,157 @@ fun SongDetailsPortraitScreen(
 
 }
 
-/*@Composable
-fun CoverArtAndTitle(
-    modifier: Modifier = Modifier,
-    name: String,
-    artists: List<String>,
-    albumArtUrl: String,
-) {
-    // todo: нахуй удалить и переделать нормально
-    // наверное его не вийдет переиспрользовать в ландскейпе
-    BoxWithConstraints(
-        modifier = modifier
-            // .height(boxScope.maxHeight * 0.3F)
-            // .fillMaxHeight(0.3F)
-            .fillMaxWidth()
-            .fillMaxHeight(),
-    ) {
-        var palette by remember { mutableStateOf<Palette?>(null) }
-
-        if (palette != null) {
-            ChangeStatusBarColor(palette?.darkVibrantSwatch?.rgb ?: Color.Transparent.toArgb())
-        }
-
-        val painter = rememberAsyncImagePainter(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(albumArtUrl)
-                .size(coil.size.Size.ORIGINAL)
-                .allowHardware(false) // so that palette can be generated from the image
-                .build(),
-            onSuccess = { state ->
-                val bitmap = state.result.drawable.toBitmap()
-                palette = Palette.from(bitmap).generate()
-            },
-            contentScale = ContentScale.Crop
-        )
-
-        Image(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth()
-                .fadingEdge(
-                    Brush.verticalGradient(
-                        0F to MaterialTheme.colorScheme.surface.copy(alpha = 1F), // from top to title
-
-                        //  0.25F to MaterialTheme.colorScheme.surface.copy(alpha = 0.3F), // from title to lowest part
-
-                        0.4F to MaterialTheme.colorScheme.surface.copy(alpha = 0.35F), // from title to lowest part
-                        //0.5F to MaterialTheme.colorScheme.surface.copy(alpha = 0.5F),
-
-                        0.8F to MaterialTheme.colorScheme.surface.copy(alpha = 0.04F),  // lowest part (behind cards)
-                        1F to MaterialTheme.colorScheme.surface.copy(alpha = 0F),
-                    )
-                ),
-            painter = painter,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-        )
-
-
-
-        Column(
-            // modifier = Modifier.align(Alignment.BottomStart)
-        ) {
-            Spacer(modifier = Modifier.height(boxScope.maxHeight * 0.2F))
-
-            Text(
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 10.dp, top = 25.dp, bottom = 10.dp),
-                text = name,
-                style = MaterialTheme.typography.headlineLarge,
-                //color = MaterialTheme.colorScheme.inverseOnSurface,
-            )
-            // todo: do the joining in a different layer (presentation)
-            Text(
-                modifier = Modifier
-                    .padding(start = 10.dp, end = 10.dp, top = 0.dp, bottom = 25.dp),
-                text = artists.joinToString(", "),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Light,
-                //color = MaterialTheme.colorScheme.inverseOnSurface,
-            )
-        }
-    }
-}*/
-
-/*@Composable
+@Composable
 fun SongDetailsLandscapeScreen(
     modifier: Modifier = Modifier,
     name: String,
     artists: List<String>,
     bpm: String,
     key: String,
+    timeSignature: Int,
+    loudness: Double,
     genres: String,
     albumArtUrl: String,
 ) {
+    Row(modifier) {
 
-    BoxWithConstraints {
-        val boxScope = this
+        var palette by remember { mutableStateOf<Palette?>(null) }
 
-        Row(
-            modifier
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-        ) {
+        if (palette != null) {
+            ChangeStatusBarColor(palette?.darkVibrantSwatch?.rgb ?: Color.Transparent.toArgb())
+        }
 
-            Box() {
+        val cardColors = palette?.lightMutedSwatch?.let { Color(it.rgb) }?.let {
+            CardDefaults.cardColors(
+                containerColor = it,
+            )
+        } ?: CardDefaults.cardColors()
 
-                var palette by remember { mutableStateOf<Palette?>(null) }
+        BoxWithConstraints(
+            Modifier
+                .padding(top = 10.dp, start = 10.dp)
+                .clip(RoundedCornerShape(10.dp))
+        ) { // image with title and artists
+            val boxScope = this
 
-                if (palette != null) {
-                    ChangeStatusBarColor(
-                        palette?.darkVibrantSwatch?.rgb ?: Color.Transparent.toArgb()
-                    )
-                }
-
-                val painter = rememberAsyncImagePainter(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(albumArtUrl)
-                        .size(coil.size.Size.ORIGINAL)
-                        .allowHardware(false) // so that palette can be generated from the image
-                        .build(),
-                    onSuccess = { state ->
-                        val bitmap = state.result.drawable.toBitmap()
-                        palette = Palette.from(bitmap).generate()
-                    },
-                    contentScale = ContentScale.Crop
-                )
-
-                Image(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .fillMaxWidth()
-                        .fadingEdge(
-                            Brush.verticalGradient(
-                                0F to MaterialTheme.colorScheme.surface.copy(alpha = 1F), // from top to title
-
-                                //  0.25F to MaterialTheme.colorScheme.surface.copy(alpha = 0.3F), // from title to lowest part
-
-                                0.4F to MaterialTheme.colorScheme.surface.copy(alpha = 0.35F), // from title to lowest part
-                                //0.5F to MaterialTheme.colorScheme.surface.copy(alpha = 0.5F),
-
-                                0.8F to MaterialTheme.colorScheme.surface.copy(alpha = 0.04F),  // lowest part (behind cards)
-                                1F to MaterialTheme.colorScheme.surface.copy(alpha = 0F),
-                            )
-                        ),
-                    painter = painter,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                )
+            val painter = rememberAsyncImagePainter(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(albumArtUrl)
+                    .size(coil.size.Size.ORIGINAL)
+                    .allowHardware(false) // so that palette can be generated from the image
+                    .build(),
+                onSuccess = { state ->
+                    val bitmap = state.result.drawable.toBitmap()
+                    palette = Palette.from(bitmap).generate()
+                },
+                contentScale = ContentScale.Crop)
 
 
+            Image(
+                modifier = Modifier
+                    .height(boxScope.maxHeight * 0.9F)
+                    .width(boxScope.maxHeight * 0.9F)
+                    .fadingEdge(
+                        Brush.verticalGradient(
+                            0F to MaterialTheme.colorScheme.surface.copy(alpha = 1F), // from top to title
 
-                Column(
-                    // modifier = Modifier.align(Alignment.BottomStart)
-                ) {
-                    Spacer(modifier = Modifier.height(boxScope.maxHeight * 0.2F))
+                            //  0.25F to MaterialTheme.colorScheme.surface.copy(alpha = 0.3F), // from title to lowest part
 
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 25.dp, bottom = 10.dp),
-                        text = name,
-                        style = MaterialTheme.typography.headlineLarge,
-                        //color = MaterialTheme.colorScheme.inverseOnSurface,
-                    )
-                    // todo: do the joining in a different layer (presentation)
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 0.dp, bottom = 25.dp),
-                        text = artists.joinToString(", "),
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Light,
-                        //color = MaterialTheme.colorScheme.inverseOnSurface,
-                    )
+                            0.4F to MaterialTheme.colorScheme.surface.copy(alpha = 0.35F), // from title to lowest part
+                            //0.5F to MaterialTheme.colorScheme.surface.copy(alpha = 0.5F),
 
-                    // Spacer(modifier = Modifier.height(10.dp))
-
-                    val cardColors = palette?.lightMutedSwatch?.let { Color(it.rgb) }?.let {
-                        CardDefaults.cardColors(
-                            containerColor = it,
+                            0.8F to MaterialTheme.colorScheme.surface.copy(alpha = 0.04F),  // lowest part (behind cards)
+                            1F to MaterialTheme.colorScheme.surface.copy(alpha = 0F),
                         )
-                    } ?: CardDefaults.cardColors()
-                }
-            }
-            Column {
+                    ),
+                painter = painter,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+            )
 
 
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                ) {
-                    InfoCard(
-                        Modifier.weight(1F),
-                        colors = cardColors,
-                        title = "bpm", data = bpm
-                    )
-                    Spacer(Modifier.width(10.dp))
-                    InfoCard(
-                        Modifier.weight(1F),
-                        colors = cardColors,
-                        title = "key", data = key
-                    )
-                }
-                Spacer(Modifier.height(10.dp))
-                CompactInfoCard(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp),
-                    colors = cardColors,
-                    title = "artists' genres", data = genres,
-                    emptyReplacementText = stringResource(R.string.no_data),
+            Column(
+                modifier = Modifier.align(Alignment.BottomStart)
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(start = 10.dp, end = 10.dp, top = 25.dp, bottom = 10.dp),
+                    text = name,
+                    style = MaterialTheme.typography.headlineLarge,
+                    //color = MaterialTheme.colorScheme.inverseOnSurface,
+                )
+                // todo: do the joining in a different layer (presentation)
+                Text(
+                    modifier = Modifier
+                        .padding(start = 10.dp, end = 10.dp, top = 0.dp, bottom = 25.dp),
+                    text = artists.joinToString(", "),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Light,
+                    //color = MaterialTheme.colorScheme.inverseOnSurface,
                 )
             }
         }
 
+        Column(
+            Modifier.padding(top = 10.dp)
+        ) {// info cards
+
+
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+            ) {
+                InfoCard(
+                    Modifier.weight(1F),
+                    colors = cardColors,
+                    title = "bpm", data = bpm,
+                    isLandScape = true,
+                )
+                Spacer(Modifier.width(10.dp))
+                InfoCard(
+                    Modifier.weight(1F),
+                    colors = cardColors,
+                    title = "key", data = key,
+                    isLandScape = true,
+                )
+            }
+            Spacer(Modifier.height(10.dp))
+
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+            ) {
+                InfoCard(
+                    Modifier.weight(1F),
+                    colors = cardColors,
+                    title = "time signature", data = "$timeSignature/4",
+                    isLandScape = true,
+                )
+                Spacer(Modifier.width(10.dp))
+                InfoCard(
+                    Modifier.weight(1F),
+                    colors = cardColors,
+                    title = "loudness", data = String.format("%.2f", loudness) + " dB",
+                    isLandScape = true,
+                )
+            }
+            Spacer(Modifier.height(10.dp))
+
+            CompactInfoCard(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp),
+                colors = cardColors,
+                title = "artists' genres", data = genres,
+                emptyReplacementText = stringResource(R.string.no_data),
+            )
         }
     }
-
-}*/
-
+}
 
 @Composable
 fun InfoCard(
@@ -476,9 +438,11 @@ fun InfoCard(
     title: String,
     data: String,
     colors: CardColors = CardDefaults.cardColors(),
+    isLandScape: Boolean = false,
 ) {
     Card(
-        modifier.height(150.dp),
+        modifier = if (isLandScape) modifier.height(125.dp) else modifier.height(150.dp),
+        // todo: calculate height based on screen size, pass it with modifier
         colors = colors,
     ) {
         Column(
@@ -564,13 +528,30 @@ fun CompactInfoCard(
 }
 
 @Composable
-@Preview("SearchScreenPreview", widthDp = 320, showBackground = true)
-fun SongDetailsScreenPreview() {
+@Preview("SearchScreenPortraitPreview", widthDp = 320, showBackground = true)
+fun SongDetailsPortraitScreenPreview() {
     SongDetailsPortraitScreen(
         name = "Pacifier",
         artists = listOf("Baby Gronk", "Super Sus"),
         bpm = "420",
         key = "C Maj",
+        timeSignature = 4,
+        loudness = -5.2,
+        genres = "Hip Hop, Rap",
+        albumArtUrl = "https://fakeimg.pl/640x640?text=test&font=lobster",
+    )
+}
+
+@Composable
+@Preview("SearchScreenLandscapePreview", widthDp = 640, showBackground = true)
+fun SongDetailsLandscapeScreenPreview() {
+    SongDetailsLandscapeScreen(
+        name = "Pacifier",
+        artists = listOf("Baby Gronk", "Super Sus"),
+        bpm = "420",
+        key = "C Maj",
+        timeSignature = 4,
+        loudness = -5.2,
         genres = "Hip Hop, Rap",
         albumArtUrl = "https://fakeimg.pl/640x640?text=test&font=lobster",
     )

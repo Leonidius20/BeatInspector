@@ -37,6 +37,8 @@ class SongDetailsViewModel(
         val artists: String = "",
         val bpm: String = "",
         val key: String = "",
+        val timeSignatureOver4: Int = 0,
+        val loudness: Double = 0.0,
         val genres: String = "",
         val albumArtUrl: String = "",
         val failedArtists: List<String> = emptyList()
@@ -61,6 +63,8 @@ class SongDetailsViewModel(
                     artists = song.artist,
                     bpm = song.bpm.toString(),
                     key = song.key,
+                    timeSignatureOver4 = song.timeSignature,
+                    loudness = song.loudness,
                     genres = song.genres.joinToString(", "),
                     albumArtUrl = song.albumArtUrl,
                     failedArtists = result.second
