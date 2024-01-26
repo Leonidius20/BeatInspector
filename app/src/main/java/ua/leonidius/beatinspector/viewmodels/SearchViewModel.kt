@@ -41,7 +41,22 @@ class SearchViewModel(
     val searchResults: List<SongSearchResult>
         get() = _searchResults.value
 
+    //val searchQueriesFlow = MutableSharedFlow<String>() // todoL should it be mutable
+
+    ///init {
+    //    searchQueriesFlow.collect { query ->
+            // lauch a coroutine to perform search
+            // cancel previous request if it is still running
+            // should we be cancelling a coroutine ?
+            // no, only not letting next requests happen,
+            // but how do we know that the prev is still running?
+            // how do we combine network coroutines with this flow though
+     ///   }
+    //}
+
     fun performSearch() {
+        //searchQueriesFlow.emit(query)
+
         viewModelScope.launch {
             try {
                 uiState = UiState.LOADING

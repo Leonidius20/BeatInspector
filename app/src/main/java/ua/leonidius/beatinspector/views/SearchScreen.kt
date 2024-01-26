@@ -2,12 +2,16 @@ package ua.leonidius.beatinspector.views
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -15,12 +19,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.flow.callbackFlow
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.entities.SongSearchResult
 import ua.leonidius.beatinspector.ui.theme.ChangeStatusBarColor
@@ -60,11 +67,16 @@ fun SearchScreen(
     state: SearchViewModel.UiState = SearchViewModel.UiState.LOADED,
     @StringRes errorMessage: Int? = null
 ) {
+    val focusManager = LocalFocusManager.current
+
     SearchBar(
         // modifier = Modifier.requiredHeight(100.dp),
         query = query,
         onQueryChange = onQueryChange,
-        onSearch = onSearch,
+        onSearch = {
+            focusManager.clearFocus()
+            onSearch(it)
+        },
         placeholder = { Text(stringResource(R.string.searchBar_placeholder)) },
         active = true,
         onActiveChange = { },
@@ -92,7 +104,14 @@ fun SearchScreen(
                 // nothing
             }
             SearchViewModel.UiState.LOADING -> {
-                Text(text = "Loading...") // todo: loading indicator
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(alignment = androidx.compose.ui.Alignment.Center)
+                    )
+                }
+
             }
             SearchViewModel.UiState.LOADED -> {
                 SearchResultsList(
