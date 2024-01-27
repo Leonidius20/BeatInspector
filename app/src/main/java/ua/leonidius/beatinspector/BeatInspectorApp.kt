@@ -13,12 +13,15 @@ import ua.leonidius.beatinspector.repos.datasources.SongsInMemCache
 import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSourceImpl
 import ua.leonidius.beatinspector.repos.retrofit.AuthInterceptor
 import ua.leonidius.beatinspector.repos.retrofit.SpotifyRetrofitClient
+import java.text.DecimalFormat
 
 class BeatInspectorApp: Application() {
 
     lateinit var authenticator: Authenticator
 
     lateinit var songsRepository: SongsRepository
+
+    val decimalFormat = DecimalFormat("0.##") // for bpm and loudness
 
     override fun onCreate() {
         super.onCreate()

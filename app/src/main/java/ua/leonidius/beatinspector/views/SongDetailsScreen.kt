@@ -59,6 +59,7 @@ import coil.request.ImageRequest
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.ui.theme.ChangeStatusBarColor
 import ua.leonidius.beatinspector.viewmodels.SongDetailsViewModel
+import java.text.DecimalFormat
 
 @Composable
 fun SongDetailsScreen(
@@ -132,7 +133,7 @@ fun SongDetailsPortraitScreen(
     bpm: String,
     key: String,
     timeSignature: Int,
-    loudness: Double,
+    loudness: String,
     genres: String,
     albumArtUrl: String,
 ) {
@@ -234,7 +235,7 @@ fun SongDetailsPortraitScreen(
                         InfoCard(
                             Modifier.weight(1F),
                             colors = cardColors,
-                            title = "bpm", data = bpm
+                            title = "bpm", data = bpm,
                         )
                         Spacer(Modifier.width(10.dp))
                         InfoCard(
@@ -260,7 +261,7 @@ fun SongDetailsPortraitScreen(
                         InfoCard(
                             Modifier.weight(1F),
                             colors = cardColors,
-                            title = "loudness", data = String.format("%.2f", loudness) + " dB"
+                            title = "loudness", data = loudness,
                         )
                     }
                     Spacer(Modifier.height(10.dp))
@@ -291,7 +292,7 @@ fun SongDetailsLandscapeScreen(
     bpm: String,
     key: String,
     timeSignature: Int,
-    loudness: Double,
+    loudness: String,
     genres: String,
     albumArtUrl: String,
 ) {
@@ -421,7 +422,7 @@ fun SongDetailsLandscapeScreen(
                 InfoCard(
                     Modifier.weight(1F),
                     colors = cardColors,
-                    title = "loudness", data = String.format("%.2f", loudness) + " dB",
+                    title = "loudness", data = loudness,
                     isLandScape = true,
                 )
             }
@@ -448,7 +449,7 @@ fun InfoCard(
     isLandScape: Boolean = false,
 ) {
     Card(
-        modifier = if (isLandScape) modifier.height(125.dp) else modifier.height(150.dp),
+        modifier = if (isLandScape) modifier.height(120.dp) else modifier.height(150.dp),
         // todo: calculate height based on screen size, pass it with modifier
         colors = colors,
     ) {
@@ -543,7 +544,7 @@ fun SongDetailsPortraitScreenPreview() {
         bpm = "420",
         key = "C Maj",
         timeSignature = 4,
-        loudness = -5.2,
+        loudness = "-5.2 db",
         genres = "Hip Hop, Rap",
         albumArtUrl = "https://fakeimg.pl/640x640?text=test&font=lobster",
     )
@@ -558,7 +559,7 @@ fun SongDetailsLandscapeScreenPreview() {
         bpm = "420",
         key = "C Maj",
         timeSignature = 4,
-        loudness = -5.2,
+        loudness = "-5.2 db",
         genres = "Hip Hop, Rap",
         albumArtUrl = "https://fakeimg.pl/640x640?text=test&font=lobster",
     )
