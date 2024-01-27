@@ -11,7 +11,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "ua.leonidius.beatinspector"
+        applicationId = "io.github.leonidius20.beatinspector"
         minSdk = 21
         targetSdk = 34
         versionCode = 1
