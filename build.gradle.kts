@@ -7,7 +7,12 @@ plugins {
 }
 
 buildscript {
+    repositories {
+        maven("https://jitpack.io")
+    }
+
     dependencies {
         classpath("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
+        classpath("com.github.alexfu:androidautoversion:3.3.0")
     }
 }

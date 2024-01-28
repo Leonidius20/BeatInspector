@@ -4,6 +4,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("com.github.alexfu.androidautoversion")
 }
 
 android {
@@ -14,8 +15,8 @@ android {
         applicationId = "io.github.leonidius20.beatinspector"
         minSdk = 21
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = androidAutoVersion.versionCode
+        versionName = androidAutoVersion.versionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
