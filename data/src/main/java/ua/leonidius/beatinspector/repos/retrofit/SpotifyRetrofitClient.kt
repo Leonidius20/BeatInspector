@@ -52,4 +52,30 @@ interface SpotifyRetrofitClient {
         val message: String,
     )
 
+    data class TrackResponse(
+        val id: String,
+        val artists: List<Artist>,
+    ) {
+        data class Artist(
+            val name: String,
+            val id: String,
+        )
+    }
+
+    @GET("tracks/{id}")
+    suspend fun getTrack(
+        @Path("id") trackId: String
+    ): Response<TrackResponse>
+
+    data class ArtistResponse(
+        val id: String,
+        val name: String,
+        val genres: List<String>,
+    )
+
+    @GET("artists/{id}")
+    suspend fun getArtist(
+        @Path("id") artistId: String
+    ): Response<ArtistResponse>
+
 }
