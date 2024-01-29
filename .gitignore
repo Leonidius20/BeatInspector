@@ -10,3 +10,6 @@
 local.properties
 secrets.properties
 *.jks
+android-keystore.jks
+/android-keystore.jks
+/*.jks
