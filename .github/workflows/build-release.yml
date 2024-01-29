@@ -1,6 +1,6 @@
 # This action is manually triggered. It will bump the version according to argument (major, minor, patch),
-# commit the change to the development branch, merge the development branch into the master branch,
-# build a release APK and create a draft release on GitHub.
+# commit the change to the development branch, get these values from version file, merge the development branch into the master branch,
+# build a release APK, sing it, and create a draft release on GitHub named after the new version name.
 
 # but that's in the future, for now we just want to build a release APK and create a draft release on GitHub.
 name: Build Release APK
@@ -27,6 +27,12 @@ jobs:
                   java-version: 17
             - name: Grant execute permission for gradlew
               run: chmod +x gradlew
+            - name: Create local.properties
+              # run: echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+              # run: echo "sdk.dir=/opt/android/sdk" > local.properties
+              # run: echo "sdk.dir=$ANDROID_HOME" > local.properties
+              # run: echo "sdk.dir=/home/runner/work/_temp/_github_home/Android/sdk" > local.properties
+              run: touch local.properties
             - name: Build with Gradle
               env:
                 SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
