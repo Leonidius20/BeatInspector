@@ -31,32 +31,40 @@ jobs:
               # run: echo "sdk.dir=$ANDROID_HOME" > local.properties
               # run: echo "sdk.dir=/home/runner/work/_temp/_github_home/Android/sdk" > local.properties
               run: touch local.properties
+            - name: Decode keystore
+              run: echo ${{ secrets.SIGNATURE_KEYSTORE_BASE64 }} | base64 --decode > android-keystore.jks
             - name: Build with Gradle
               env:
                 SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+                SIGNATURE_KEYSTORE_PASSWORD: ${{ secrets.SIGNATURE_KEYSTORE_PASSWORD }}
+                SIGNATURE_KEY_PASSWORD: ${{ secrets.SIGNATURE_KEY_PASSWORD }}
+                SIGNATURE_KEY_ALIAS: ${{ vars.SIGNATURE_KEY_ALIAS }}
               run: ./gradlew assembleRelease
             - name: Upload APK # can be removed after we upload to the release
               uses: actions/upload-artifact@v2
               with:
                 name: app-release.apk
                 path: app/build/outputs/apk/release/app-release-unsigned.apk
-         #   - name: Create Release
-         #     id: create_release
-         #     uses: actions/create-release@v1
-         #     env:
-         #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-         #     with:
-         #         tag_name: ${{ github.ref }}
-         #         release_name: Release ${{ github.ref }}
-          #        draft: true
-          #        prerelease: false
-         #   - name: Upload APK
-         #     id: upload-release-asset
-          #    uses: actions/upload-release-asset@v1
-          #    env:
-          #        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          #    with:
-          #        upload_url: ${{ steps.create_release.outputs.upload_url }}
-          #        asset_path: ./app/build/outputs/apk/release/app-release.apk
-          #        asset_name: app-release.apk
-          #        asset_content_type: application/vnd.android.package-archive
+            - name: Create Release
+              id: create_release
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tag_name: ${{ github.ref }}
+                  release_name: Release ${{ github.ref }}
+                  body: |
+                      Changes in this Release
+                      - <add changes here>
+                  draft: true
+                  prerelease: false
+            - name: Attach APK to Release
+              id: upload-release-asset
+              uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                 upload_url: ${{ steps.create_release.outputs.upload_url }}
+                 asset_path: ./app/build/outputs/apk/release/app-release.apk
+                 asset_name: app-release.apk
+                 asset_content_type: application/vnd.android.package-archive
