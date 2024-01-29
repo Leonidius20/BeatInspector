@@ -44,11 +44,10 @@ android {
 
     signingConfigs {
         create("release") {
-            if (!project.rootProject.file("android-keystore.jks").exists()) {
-                // we are on github actions, the file will be provided, everything else get from env variables
-                storeFile = project.rootProject.file("android-keystore.jks")
+            storeFile = project.rootProject.file("android-keystore.jks")
 
-                // everything else is from env variables
+            if (!project.rootProject.file("secrets.properties").exists()) {
+                // we are on github actions, get from env variables
                 storePassword = System.getenv("SIGNATURE_KEYSTORE_PASSWORD")
                 keyAlias = System.getenv("SIGNATURE_KEY_ALIAS")
                 keyPassword = System.getenv("SIGNATURE_KEY_PASSWORD")
