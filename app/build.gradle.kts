@@ -40,9 +40,33 @@ android {
             buildConfigField("String", "SPOTIFY_CLIENT_ID", "\"$clientId\"")
         }
 
+    }
+
+    signingConfigs {
+        create("release") {
+            if (!project.rootProject.file("android-keystore.jks").exists()) {
+                // we are on github actions, the file will be provided, everything else get from env variables
+                storeFile = project.rootProject.file("android-keystore.jks")
+
+                // everything else is from env variables
+                storePassword = System.getenv("SIGNATURE_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("SIGNATURE_KEY_ALIAS")
+                keyPassword = System.getenv("SIGNATURE_KEY_PASSWORD")
+            } else {
+                // we are on local machine, get from file
+                storeFile = project.rootProject.file("android-keystore.jks")
+
+                val secretsFile = project.rootProject.file("secrets.properties")
+                val secretProperties = Properties()
+                secretProperties.load(secretsFile.inputStream())
+
+                storePassword = secretProperties.getProperty("SIGNATURE_KEYSTORE_PASSWORD")
+                keyAlias = secretProperties.getProperty("SIGNATURE_KEY_ALIAS")
+                keyPassword = secretProperties.getProperty("SIGNATURE_KEY_PASSWORD")
+            }
 
 
-
+        }
     }
 
     buildTypes {
@@ -50,7 +74,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            // signingConfig = signingConfigs.getByName("debug") // todo: change to release
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {

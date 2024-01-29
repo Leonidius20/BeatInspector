@@ -1,6 +1,7 @@
 # This action is manually triggered. It will bump the version according to argument (major, minor, patch),
-# commit the change to the development branch, get these values from version file, merge the development branch into the master branch,
-# build a release APK, sing it, and create a draft release on GitHub named after the new version name.
+# commit the change to the development branch, get these values from version file, merge --no-ff the development branch into the master branch,
+# build a release APK, sing it, and create a draft release on GitHub named after the new version name
+# with the description having all commit messages since last tag.
 
 # but that's in the future, for now we just want to build a release APK and create a draft release on GitHub.
 name: Build Release APK
@@ -12,9 +13,6 @@ on:
         #      description: 'Version to bump to'
         #      required: true
         #      default: 'patch'
-
-env:
-  SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
 
 jobs:
     build:
