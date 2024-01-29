@@ -1,0 +1,58 @@
+# This action is manually triggered. It will bump the version according to argument (major, minor, patch),
+# commit the change to the development branch, merge the development branch into the master branch,
+# build a release APK and create a draft release on GitHub.
+
+# but that's in the future, for now we just want to build a release APK and create a draft release on GitHub.
+name: Build Release APK
+
+on:
+    workflow_dispatch:
+        #inputs:
+        #  version:
+        #      description: 'Version to bump to'
+        #      required: true
+        #      default: 'patch'
+
+env:
+  SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - name: Set up JDK 17
+              uses: actions/setup-java@v1
+              with:
+                  java-version: 17
+            - name: Grant execute permission for gradlew
+              run: chmod +x gradlew
+            - name: Build with Gradle
+              env:
+                SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+              run: ./gradlew assembleRelease
+            - name: Upload APK # can be removed after we upload to the release
+              uses: actions/upload-artifact@v2
+              with:
+                name: app-release.apk
+                path: app/build/outputs/apk/release/app-release-unsigned.apk
+         #   - name: Create Release
+         #     id: create_release
+         #     uses: actions/create-release@v1
+         #     env:
+         #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+         #     with:
+         #         tag_name: ${{ github.ref }}
+         #         release_name: Release ${{ github.ref }}
+          #        draft: true
+          #        prerelease: false
+         #   - name: Upload APK
+         #     id: upload-release-asset
+          #    uses: actions/upload-release-asset@v1
+          #    env:
+          #        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          #    with:
+          #        upload_url: ${{ steps.create_release.outputs.upload_url }}
+          #        asset_path: ./app/build/outputs/apk/release/app-release.apk
+          #        asset_name: app-release.apk
+          #        asset_content_type: application/vnd.android.package-archive

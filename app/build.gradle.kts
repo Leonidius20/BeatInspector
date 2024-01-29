@@ -25,20 +25,31 @@ android {
 
 
         val keystoreFile = project.rootProject.file("secrets.properties")
-        val secretProperties = Properties()
-        secretProperties.load(keystoreFile.inputStream())
 
-        val clientId = secretProperties.getProperty("SPOTIFY_CLIENT_ID") ?: ""
+        if (keystoreFile.exists()) {
+            val secretProperties = Properties()
+            secretProperties.load(keystoreFile.inputStream())
 
-        buildConfigField("String", "SPOTIFY_CLIENT_ID", "\"$clientId\"")
+            val clientId = secretProperties.getProperty("SPOTIFY_CLIENT_ID") ?: ""
+
+            buildConfigField("String", "SPOTIFY_CLIENT_ID", "\"$clientId\"")
+        } else {
+            // get from env variables
+            val clientId = System.getenv("SPOTIFY_CLIENT_ID") ?: throw Exception("SPOTIFY_CLIENT_ID env variable not set")
+
+            buildConfigField("String", "SPOTIFY_CLIENT_ID", "\"$clientId\"")
+        }
+
+
+
 
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("debug") // todo: change to release
+            // signingConfig = signingConfigs.getByName("debug") // todo: change to release
         }
     }
     compileOptions {
