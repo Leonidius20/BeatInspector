@@ -6,6 +6,7 @@ import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody
 import ua.leonidius.beatinspector.auth.Authenticator
+import java.io.IOException
 
 class AuthInterceptor(private val authenticator: Authenticator): Interceptor {
 
@@ -30,7 +31,7 @@ class AuthInterceptor(private val authenticator: Authenticator): Interceptor {
                 val success = authenticator.refreshTokensBlocking()
 
                 if (!success) {
-                    throw Error("Failed to refresh tokens")
+                    throw TokenRefreshException()
                 }
             }
 
@@ -52,5 +53,7 @@ class AuthInterceptor(private val authenticator: Authenticator): Interceptor {
         }
 
     }
+
+    class TokenRefreshException: IOException()
 
 }

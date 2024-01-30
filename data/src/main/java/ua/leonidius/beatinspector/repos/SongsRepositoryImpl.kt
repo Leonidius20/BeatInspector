@@ -8,6 +8,7 @@ import ua.leonidius.beatinspector.entities.Song
 import ua.leonidius.beatinspector.entities.SongSearchResult
 import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSource
 import ua.leonidius.beatinspector.repos.datasources.SongsInMemCache
+import ua.leonidius.beatinspector.repos.retrofit.AuthInterceptor
 import ua.leonidius.beatinspector.repos.retrofit.SpotifyRetrofitClient
 
 class SongsRepositoryImpl(
@@ -66,12 +67,18 @@ class SongsRepositoryImpl(
 
     override suspend fun searchForSongsByTitle(q: String): List<SongSearchResult> {
         Log.d("SongsRepository", "searchForSongsByTitle: q = $q")
-        return handleResponseOrThrow(spotifyRetrofitClient.searchForSongs(q)) { successResp ->
-            successResp.body.tracks.items.map {
-                // todo: make data mappers a separate thing
-                SongSearchResult(it.id, it.name, it.artists.map { Artist(it.id, it.name) }, it.album.images[0].url)
-            }.onEach { inMemCache.songSearchResults[it.id] = it }
+        try {
+            return handleResponseOrThrow(spotifyRetrofitClient.searchForSongs(q)) { successResp ->
+                successResp.body.tracks.items.map {
+                    // todo: make data mappers a separate thing
+                    SongSearchResult(it.id, it.name, it.artists.map { Artist(it.id, it.name) }, it.album.images[0].url)
+                }.onEach { inMemCache.songSearchResults[it.id] = it }
+            }
+        } catch (e: AuthInterceptor.TokenRefreshException) {
+            Log.e("SongsRepository", "searchForSongsByTitle: token refresh failed", e)
+            throw SongDataIOException(SongDataIOException.Type.OTHER, "Failed to refresh token: " + e.message, e.cause)
         }
+
     }
 
     class NotAuthedError: Error()
@@ -87,29 +94,36 @@ class SongsRepositoryImpl(
         var details = inMemCache.getSongDetailsById(id)
         var failedArtists = emptyList<String>()
 
-        if (details == null) {
-            val result = networkDataSource.getSongDetailsById(id, baseInfo.artists)
-            details = result.first
-            failedArtists = result.second
-            inMemCache.songsDetails[id] = details
+        try {
+            if (details == null) {
+                val result = networkDataSource.getSongDetailsById(id, baseInfo.artists)
+                details = result.first
+                failedArtists = result.second
+                inMemCache.songsDetails[id] = details
+            }
+
+            return Pair(Song(
+                id = baseInfo.id,
+                name = baseInfo.name,
+                artist = baseInfo.artists.joinToString(", ") { it.name }, // todo: don't, just return as is and let ui layer handle it
+                duration = details.duration,
+                loudness = details.loudness,
+                bpm = details.bpm,
+                bpmConfidence = details.bpmConfidence,
+                timeSignature = details.timeSignature,
+                timeSignatureConfidence = details.timeSignatureConfidence,
+                key = details.key,
+                keyConfidence = details.keyConfidence,
+                modeConfidence = details.modeConfidence,
+                genres = details.genres,
+                albumArtUrl = baseInfo.imageUrl,
+            ), failedArtists)
+        } catch (e: AuthInterceptor.TokenRefreshException) {
+            Log.e("SongsRepository", "getTrackDetails: token refresh failed", e)
+            throw SongDataIOException(SongDataIOException.Type.OTHER, "Failed to refresh token: " + e.message, e.cause)
         }
 
-        return Pair(Song(
-            id = baseInfo.id,
-            name = baseInfo.name,
-            artist = baseInfo.artists.joinToString(", ") { it.name }, // todo: don't, just return as is and let ui layer handle it
-            duration = details.duration,
-            loudness = details.loudness,
-            bpm = details.bpm,
-            bpmConfidence = details.bpmConfidence,
-            timeSignature = details.timeSignature,
-            timeSignatureConfidence = details.timeSignatureConfidence,
-            key = details.key,
-            keyConfidence = details.keyConfidence,
-            modeConfidence = details.modeConfidence,
-            genres = details.genres,
-            albumArtUrl = baseInfo.imageUrl,
-        ), failedArtists)
+
     }
 
 }
