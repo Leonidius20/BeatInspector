@@ -48,15 +48,20 @@ jobs:
               uses: actions/upload-artifact@v2
               with:
                 name: app-release.apk
-                path: app/build/outputs/apk/release/app-release-unsigned.apk
+                path: app/build/outputs/apk/release/app-release.apk
+            - name: Read version name
+              id: read_version_name
+              uses: ActionsTools/read-json-action@main
+              with:
+                file_path: "./app/version"
             - name: Create Release
               id: create_release
               uses: actions/create-release@v1
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                  tag_name: ${{ github.ref }}
-                  release_name: Release ${{ github.ref }}
+                  tag_name: ${{ steps.read_version_name.outputs.major }}.${{ steps.read_version_name.outputs.minor }}.${{ steps.read_version_name.outputs.patch }}
+                  release_name: ${{ steps.read_version_name.outputs.major }}.${{ steps.read_version_name.outputs.minor }}.${{ steps.read_version_name.outputs.patch }}
                   body: |
                       Changes in this Release
                       - <add changes here>
