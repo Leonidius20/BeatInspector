@@ -20,6 +20,36 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+
+-printconfiguration ./build/data-full-r8-config.txt
+-printusage ./build/data-full-r8-usage.txt
+-printseeds ./build/data-full-r8-seeds.txt
+-keepattributes LineNumberTable,SourceFile
+-renamesourcefileattribute SourceFile
+
+
+-dontobfuscate
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Retrofit does reflection on generic parameters. InnerClasses is required to use Signature and
 # EnclosingMethod is required to use InnerClasses.
 -keepattributes Signature, InnerClasses, EnclosingMethod
@@ -68,26 +98,3 @@
 
 # With R8 full mode generic signatures are stripped for classes that are not kept.
 -keep,allowobfuscation,allowshrinking class retrofit2.Response
-
-
-
-
-# for okhttp
-# JSR 305 annotations are for embedding nullability information.
--dontwarn javax.annotation.**
-
-# A resource is loaded with a relative path so the package of this class must be preserved.
--adaptresourcefilenames okhttp3/internal/publicsuffix/PublicSuffixDatabase.gz
-
-# Animal Sniffer compileOnly dependency to ensure APIs are compatible with older versions of Java.
--dontwarn org.codehaus.mojo.animal_sniffer.*
-
-# OkHttp platform used only on JVM and when Conscrypt and other security providers are available.
--dontwarn okhttp3.internal.platform.**
--dontwarn org.conscrypt.**
--dontwarn org.bouncycastle.**
--dontwarn org.openjsse.**
-
-
-# FOR Its dependency
--dontwarn okio.**

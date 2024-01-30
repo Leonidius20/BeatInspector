@@ -23,6 +23,8 @@ android {
             useSupportLibrary = true
         }
 
+        resourceConfigurations.addAll(listOf("en")) // only english resources
+
 
         val keystoreFile = project.rootProject.file("secrets.properties")
 
@@ -30,7 +32,7 @@ android {
             val secretProperties = Properties()
             secretProperties.load(keystoreFile.inputStream())
 
-            val clientId = secretProperties.getProperty("SPOTIFY_CLIENT_ID") ?: ""
+            val clientId = secretProperties.getProperty("SPOTIFY_CLIENT_ID") ?: throw Exception("SPOTIFY_CLIENT_ID not set in secrets.properties")
 
             buildConfigField("String", "SPOTIFY_CLIENT_ID", "\"$clientId\"")
         } else {
@@ -70,8 +72,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false // due to retrofit r8 issues
+            isShrinkResources = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("release")
         }
@@ -116,7 +118,7 @@ dependencies {
 
     implementation("androidx.navigation:navigation-compose:$nav_version")
 
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:retrofit:2.10.0-SNAPSHOT")
     // implementation("com.google.code.gson:gson:2.8.9")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
@@ -127,6 +129,10 @@ dependencies {
     implementation("androidx.compose.material3:material3-window-size-class:1.1.2")
 
     implementation("com.github.haroldadmin:NetworkResponseAdapter:5.0.0")
+
+    // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
 
     implementation(project(":data"))
 

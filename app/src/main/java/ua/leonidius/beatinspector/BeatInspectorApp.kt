@@ -34,6 +34,7 @@ class BeatInspectorApp: Application() {
             .addConverterFactory(GsonConverterFactory. create())
             .addCallAdapterFactory(NetworkResponseAdapterFactory())
             .client(
+
                 OkHttpClient.Builder()
                 .addInterceptor(authInterceptor)
                 .build())
