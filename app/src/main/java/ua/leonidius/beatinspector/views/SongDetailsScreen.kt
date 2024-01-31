@@ -1,9 +1,7 @@
 package ua.leonidius.beatinspector.views
 
 import android.content.res.Configuration
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -16,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
@@ -26,9 +23,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,7 +54,6 @@ import coil.request.ImageRequest
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.ui.theme.ChangeStatusBarColor
 import ua.leonidius.beatinspector.viewmodels.SongDetailsViewModel
-import java.text.DecimalFormat
 
 @Composable
 fun SongDetailsScreen(
@@ -67,14 +61,11 @@ fun SongDetailsScreen(
     detailsViewModel: SongDetailsViewModel = viewModel(factory = SongDetailsViewModel.Factory),
     windowSize: WindowSizeClass,
 ) {
-    if (detailsViewModel.songDetails.failedArtists.isNotEmpty()) {
-        // todo: error snackbars
-        Text(text = "Failed artists: ${detailsViewModel.songDetails.failedArtists}")
-    }
 
-    // todo: check ui state here (loading, error, etc)
-    when (detailsViewModel.songDetails.status) {
-        SongDetailsViewModel.SongDetailsStatus.Loading -> {
+
+
+    when (detailsViewModel.uiState) {
+        is SongDetailsViewModel.UiState.Loading -> {
             Box(modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()) {
@@ -83,17 +74,23 @@ fun SongDetailsScreen(
                 )
             }
         }
-        SongDetailsViewModel.SongDetailsStatus.Error -> {
-            Text(text = stringResource(id = detailsViewModel.songDetails.errorMsgId!!))
+        is SongDetailsViewModel.UiState.Error -> {
+            val errorState = detailsViewModel.uiState as SongDetailsViewModel.UiState.Error
+            Text(text = stringResource(id = errorState.errorMsgId))
         }
-        SongDetailsViewModel.SongDetailsStatus.Loaded -> {
-            with(detailsViewModel.songDetails) {
+        is SongDetailsViewModel.UiState.Loaded -> {
+            with(detailsViewModel.uiState as SongDetailsViewModel.UiState.Loaded) {
+                if (failedArtists.isNotEmpty()) {
+                    // todo: better way to display this
+                    Text(text = "Failed artists: $failedArtists")
+                }
+
                 when (LocalConfiguration.current.orientation) {
                     Configuration.ORIENTATION_LANDSCAPE -> {
                         SongDetailsLandscapeScreen(
                             modifier,
                             name = title,
-                            artists = listOf(artists), // todo: decide if this should be a list or not
+                            artistString = artists,
                             bpm = bpm,
                             key = key,
                             timeSignature = timeSignatureOver4,
@@ -106,7 +103,7 @@ fun SongDetailsScreen(
                         SongDetailsPortraitScreen(
                             modifier,
                             name = title,
-                            artists = listOf(artists), // todo: decide if this should be a list or not
+                            artistString = artists,
                             bpm = bpm,
                             key = key,
                             timeSignature = timeSignatureOver4,
@@ -129,7 +126,7 @@ fun SongDetailsScreen(
 fun SongDetailsPortraitScreen(
     modifier: Modifier = Modifier,
     name: String,
-    artists: List<String>,
+    artistString: String,
     bpm: String,
     key: String,
     timeSignature: Int,
@@ -137,8 +134,6 @@ fun SongDetailsPortraitScreen(
     genres: String,
     albumArtUrl: String,
 ) {
-    // todo: error snackbars
-
     BoxWithConstraints {
         val boxScope = this
 
@@ -208,11 +203,11 @@ fun SongDetailsPortraitScreen(
                         style = MaterialTheme.typography.headlineLarge,
                         //color = MaterialTheme.colorScheme.inverseOnSurface,
                     )
-                    // todo: do the joining in a different layer (presentation)
+
                     Text(
                         modifier = Modifier
                             .padding(start = 10.dp, end = 10.dp, top = 0.dp, bottom = 25.dp),
-                        text = artists.joinToString(", "),
+                        text = artistString,
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Light,
                         //color = MaterialTheme.colorScheme.inverseOnSurface,
@@ -288,7 +283,7 @@ fun SongDetailsPortraitScreen(
 fun SongDetailsLandscapeScreen(
     modifier: Modifier = Modifier,
     name: String,
-    artists: List<String>,
+    artistString: String,
     bpm: String,
     key: String,
     timeSignature: Int,
@@ -369,7 +364,7 @@ fun SongDetailsLandscapeScreen(
                 Text(
                     modifier = Modifier
                         .padding(start = 10.dp, end = 10.dp, top = 0.dp, bottom = 25.dp),
-                    text = artists.joinToString(", "),
+                    text = artistString,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Light,
                     //color = MaterialTheme.colorScheme.inverseOnSurface,
@@ -540,7 +535,7 @@ fun CompactInfoCard(
 fun SongDetailsPortraitScreenPreview() {
     SongDetailsPortraitScreen(
         name = "Pacifier",
-        artists = listOf("Baby Gronk", "Super Sus"),
+        artistString = listOf("Baby Gronk", "Super Sus").joinToString(", "),
         bpm = "420",
         key = "C Maj",
         timeSignature = 4,
@@ -555,7 +550,7 @@ fun SongDetailsPortraitScreenPreview() {
 fun SongDetailsLandscapeScreenPreview() {
     SongDetailsLandscapeScreen(
         name = "Pacifier",
-        artists = listOf("Baby Gronk", "Super Sus"),
+        artistString = listOf("Baby Gronk", "Super Sus").joinToString(", "),
         bpm = "420",
         key = "C Maj",
         timeSignature = 4,

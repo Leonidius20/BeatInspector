@@ -1,7 +1,6 @@
 package ua.leonidius.beatinspector.viewmodels
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -17,7 +16,6 @@ import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.SongDataIOException
-import ua.leonidius.beatinspector.entities.Song
 import ua.leonidius.beatinspector.repos.SongsRepository
 import java.text.DecimalFormat
 
@@ -27,27 +25,26 @@ class SongDetailsViewModel(
     private val decimalFormat: DecimalFormat,
 ): ViewModel() {
 
-    enum class SongDetailsStatus {
-        Loading,
-        Loaded,
-        Error
+    sealed class UiState {
+        object Loading: UiState()
+        data class Loaded(
+            val title: String,
+            val artists: String,
+            val bpm: String,
+            val key: String,
+            val timeSignatureOver4: Int,
+            val loudness: String,
+            val genres: String,
+            val albumArtUrl: String,
+            val failedArtists: List<String>
+        ): UiState()
+
+        data class Error(
+            val errorMsgId: Int
+        ): UiState()
     }
 
-    data class SongDetailsUiState(
-        val status: SongDetailsStatus = SongDetailsStatus.Loading,
-        val errorMsgId: Int? = null,
-        val title: String = "",
-        val artists: String = "",
-        val bpm: String = "",
-        val key: String = "",
-        val timeSignatureOver4: Int = 0,
-        val loudness: String = "",
-        val genres: String = "",
-        val albumArtUrl: String = "",
-        val failedArtists: List<String> = emptyList()
-    )
-
-    var songDetails by mutableStateOf(SongDetailsUiState())
+    var uiState by mutableStateOf<UiState>(UiState.Loading)
         private set
 
     init {
@@ -60,8 +57,7 @@ class SongDetailsViewModel(
             val _songDetails = try {
                 val result = songsRepository.getTrackDetails(id)
                 val (song, failedArtists) = result
-                SongDetailsUiState(
-                    status = SongDetailsStatus.Loaded,
+                UiState.Loaded(
                     title = song.name,
                     artists = song.artist,
                     bpm = decimalFormat.format(song.bpm),
@@ -73,20 +69,18 @@ class SongDetailsViewModel(
                     failedArtists = failedArtists
                 )
             } catch (e: SongDataIOException) {
-                SongDetailsUiState(
-                    status = SongDetailsStatus.Error,
+                UiState.Error(
                     errorMsgId = e.toUiMessage()
                 )
             } catch (e: Exception) {
                 Log.e("SongDetailsViewModel", "Unknown error", e)
-                SongDetailsUiState(
-                    status = SongDetailsStatus.Error,
+                UiState.Error(
                     errorMsgId = R.string.unknown_error
                 )
             }
 
             withContext(Dispatchers.Main) {
-                songDetails = _songDetails
+                uiState = _songDetails
             }
         }
     }
