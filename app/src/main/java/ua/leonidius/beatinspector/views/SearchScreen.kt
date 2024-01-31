@@ -1,8 +1,6 @@
 package ua.leonidius.beatinspector.views
 
 import android.content.res.Configuration
-import android.widget.Toast
-import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -10,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyGridItemInfo
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
@@ -22,30 +19,18 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.entities.Artist
 import ua.leonidius.beatinspector.entities.SongSearchResult
@@ -68,11 +53,10 @@ fun SearchScreen(
         windowSize,
         query = searchViewModel.query,
         onQueryChange = { searchViewModel.query = it },
-        searchResults = searchViewModel.searchResults, // todo: should i bring this down to SearchResultsList for better performance?
+
         onSearch = { searchViewModel.performSearch() },
         onNavigateToSongDetails = onNavigateToSongDetails,
         state = searchViewModel.uiState,
-        errorMessage = searchViewModel.errorMessageId
     )
 }
 
@@ -84,103 +68,80 @@ fun SearchScreen(
     query: String,
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
-    searchResults: List<SongSearchResult>,
+
     onNavigateToSongDetails: (SongId) -> Unit = {},
-    state: SearchViewModel.UiState = SearchViewModel.UiState.LOADED,
-    @StringRes errorMessage: Int? = null
+    state: SearchViewModel.UiState = SearchViewModel.UiState.Uninitialized,
 ) {
     val focusManager = LocalFocusManager.current
 
-    val scope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    //Scaffold(
-   //     snackbarHost = { SnackbarHost(snackbarHostState) },
-   // ) { paddingValues ->
-        SearchBar(
-            // modifier = Modifier.requiredHeight(100.dp),
-            query = query,
-            onQueryChange = onQueryChange,
-            onSearch = {
-                focusManager.clearFocus()
-                onSearch(it)
-            },
-            placeholder = { Text(stringResource(R.string.searchBar_placeholder)) },
-            active = true,
-            onActiveChange = { },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    contentDescription = null
-                )
-            },
-            trailingIcon = {
-                Icon(
-                    modifier = Modifier.clickable(onClickLabel = "clear search query") { // todo: add localization
-                        if (query.isNotEmpty()) {
-                            onQueryChange("")
-                        }
-                    },
-                    imageVector = Icons.Default.Close,
-                    contentDescription = null,
-                )
-            },
-        ) {
-            when(state) {
-                SearchViewModel.UiState.UNINITIALIZED -> {
-                    // nothing
+    SearchBar(
+        modifier = modifier,
+        query = query,
+        onQueryChange = onQueryChange,
+        onSearch = {
+            focusManager.clearFocus()
+            onSearch(it)
+        },
+        placeholder = { Text(stringResource(R.string.searchBar_placeholder)) },
+        active = true,
+        onActiveChange = { },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                tint = MaterialTheme.colorScheme.onSurface,
+                contentDescription = null
+            )
+        },
+        trailingIcon = {
+            Icon(
+                modifier = Modifier.clickable(onClickLabel = "clear search query") { // todo: add localization
+                    if (query.isNotEmpty()) {
+                        onQueryChange("")
+                    }
+                },
+                imageVector = Icons.Default.Close,
+                contentDescription = null,
+            )
+        },
+    ) {
+        when(state) {
+            is SearchViewModel.UiState.Uninitialized -> {
+                // nothing
+            }
+            is SearchViewModel.UiState.Loading -> {
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(alignment = androidx.compose.ui.Alignment.Center)
+                    )
                 }
-                SearchViewModel.UiState.LOADING -> {
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(alignment = androidx.compose.ui.Alignment.Center)
+
+            }
+            is SearchViewModel.UiState.Loaded -> {
+                when(LocalConfiguration.current.orientation) {
+                    Configuration.ORIENTATION_LANDSCAPE -> {
+                        SearchResultsGrid(
+                            results = state.searchResults,
+                            onNavigateToSongDetails = onNavigateToSongDetails
                         )
                     }
-
-                }
-                SearchViewModel.UiState.LOADED -> {
-                    when(LocalConfiguration.current.orientation) {
-                        Configuration.ORIENTATION_LANDSCAPE -> {
-                            SearchResultsGrid(
-                                results = searchResults,
-                                onNavigateToSongDetails = onNavigateToSongDetails
-                            )
-                        }
-                        else -> {
-                            SearchResultsList(
-                                results = searchResults,
-                                onNavigateToSongDetails = onNavigateToSongDetails
-                            )
-                        }
+                    else -> {
+                        SearchResultsList(
+                            results = state.searchResults,
+                            onNavigateToSongDetails = onNavigateToSongDetails
+                        )
                     }
-                    /*SearchResultsList(
-                        //Modifier.height(100.dp), // todo
-                        results = searchResults,
-                        onNavigateToSongDetails = onNavigateToSongDetails
-                    )*/
-                }
-                SearchViewModel.UiState.ERROR -> {
-                    val message = stringResource(id = errorMessage!!)
-                    val context = LocalContext.current
-                    LaunchedEffect(key1 = errorMessage) {
-                        ///snackbarHostState.showSnackbar(
-                        //    message = message,
-                        //    duration = SnackbarDuration.Short
-                       // )
-                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                    } // todo: is this  the right way to start a snackbar?
-                    Text(text = message) // todo: snackbar
                 }
             }
-
-
+            is SearchViewModel.UiState.Error -> {
+                val message = stringResource(id = state.errorMessageId)
+                Text(text = message)
+            }
         }
-   // }
 
 
+    }
 }
 
 @Composable
@@ -210,26 +171,6 @@ fun SearchResultsGridPreview() {
         onNavigateToSongDetails = {}
     )
 }
-
-/*@Composable
-fun SearchResult(
-    modifier: Modifier = Modifier,
-    title: String,
-    artist: String
-) {
-    Surface(
-        modifier
-            .shadow(elevation = 5.dp)
-            .fillMaxWidth()
-            .padding(5.dp)
-    ) {
-        Column {
-            Text(text = title, style = MaterialTheme.typography.bodyMedium)
-            Text(text = artist)
-        }
-    }
-
-}*/
 
 @Composable
 fun SearchResultsList(

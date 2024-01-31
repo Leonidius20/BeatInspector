@@ -2,7 +2,6 @@ package ua.leonidius.beatinspector.viewmodels
 
 import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -22,24 +21,26 @@ class SearchViewModel(
     private val songsRepository: SongsRepository
 ) : ViewModel() {
 
-    enum class UiState {
-        UNINITIALIZED,
-        LOADING,
-        LOADED,
-        ERROR
+    sealed class UiState {
+
+        object Uninitialized : UiState()
+
+        object Loading : UiState()
+
+        data class Loaded(
+            val searchResults: List<SongSearchResult>
+        ) : UiState()
+
+        data class Error(
+            val errorMessageId: Int
+        ) : UiState()
+
     }
 
-    var uiState by mutableStateOf(UiState.UNINITIALIZED)
-        private set
-
-    var errorMessageId by mutableIntStateOf(-1)
-        private set
-
     var query by mutableStateOf("")
-    private val _searchResults = mutableStateOf(emptyList<SongSearchResult>())
 
-    val searchResults: List<SongSearchResult>
-        get() = _searchResults.value
+    var uiState by mutableStateOf<UiState>(UiState.Uninitialized)
+        private set
 
     //val searchQueriesFlow = MutableSharedFlow<String>() // todoL should it be mutable
 
@@ -59,37 +60,19 @@ class SearchViewModel(
 
         viewModelScope.launch {
             try {
-                uiState = UiState.LOADING
-                _searchResults.value = songsRepository.searchForSongsByTitle(query)
-                uiState = UiState.LOADED
+                uiState = UiState.Loading
+                val results = songsRepository.searchForSongsByTitle(query)
+                uiState = UiState.Loaded(results)
             } catch (e: SongsRepositoryImpl.NotAuthedError) {
-                uiState = UiState.ERROR
-                errorMessageId = R.string.other_error // todo: check how that is thrown, handle it differently so that it redirects to login page
+                // todo: check how that is thrown, handle it differently so that it redirects to login page
                 // todo: set this to AuthStatusViewModel and initiate login
 
+                uiState = UiState.Error(R.string.other_error)
             } catch (e: SongDataIOException) {
-                uiState = UiState.ERROR
-                errorMessageId = when(e.type) {
-                    SongDataIOException.Type.NETWORK -> {
-                        R.string.network_error
-                    }
-
-                    SongDataIOException.Type.SERVER -> {
-                        R.string.server_error
-                    }
-
-                    SongDataIOException.Type.UNKNOWN -> {
-                        R.string.unknown_error
-                    }
-
-                    SongDataIOException.Type.OTHER -> {
-                        R.string.other_error
-                    }
-                }
+                uiState = UiState.Error(e.toUiMessage())
             } catch (e: Error) {
-                uiState = UiState.ERROR
+                uiState = UiState.Error(R.string.unknown_error)
                 Log.e("SearchViewModel", "Unknown error", e)
-                errorMessageId = R.string.unknown_error
             }
 
         }

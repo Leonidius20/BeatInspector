@@ -61,25 +61,34 @@ fun SongDetailsScreen(
     detailsViewModel: SongDetailsViewModel = viewModel(factory = SongDetailsViewModel.Factory),
     windowSize: WindowSizeClass,
 ) {
+    // todo: why do smart casts work in the other composable, but not inside of this one?
+    SongDetailsScreen(modifier, detailsViewModel.uiState)
+}
 
-
-
-    when (detailsViewModel.uiState) {
+@Composable
+fun SongDetailsScreen(
+    modifier: Modifier = Modifier,
+    uiState: SongDetailsViewModel.UiState = SongDetailsViewModel.UiState.Loading,
+) {
+    when (uiState) {
         is SongDetailsViewModel.UiState.Loading -> {
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+            ) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(alignment = Alignment.Center)
                 )
             }
         }
+
         is SongDetailsViewModel.UiState.Error -> {
-            val errorState = detailsViewModel.uiState as SongDetailsViewModel.UiState.Error
-            Text(text = stringResource(id = errorState.errorMsgId))
+            Text(text = stringResource(id = uiState.errorMsgId))
         }
+
         is SongDetailsViewModel.UiState.Loaded -> {
-            with(detailsViewModel.uiState as SongDetailsViewModel.UiState.Loaded) {
+            with(uiState) {
                 if (failedArtists.isNotEmpty()) {
                     // todo: better way to display this
                     Text(text = "Failed artists: $failedArtists")
@@ -99,6 +108,7 @@ fun SongDetailsScreen(
                             albumArtUrl = albumArtUrl,
                         )
                     }
+
                     else -> {
                         SongDetailsPortraitScreen(
                             modifier,
@@ -118,8 +128,6 @@ fun SongDetailsScreen(
             }
         }
     }
-
-
 }
 
 @Composable
