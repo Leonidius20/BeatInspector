@@ -1,5 +1,11 @@
 # BeatInspector
-An Android app to view the BPM, key, genre, time signature, and average loudness of a track from Spotify API. 
+An Android app to view the BPM, key, genre, time signature, and average loudness of a track from Spotify API.
+
+---
+[<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid2.png" width="200px">](https://apt.izzysoft.de/fdroid/index/apk/io.github.leonidius20.beatinspector/)
+
+---
+
 ## Purpose
 The data provided by the app is meant to help music producers remix other tracks or use them as references for thier own work.
 ## Technology
