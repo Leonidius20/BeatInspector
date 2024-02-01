@@ -28,11 +28,12 @@ class SearchViewModel(
         object Loading : UiState()
 
         data class Loaded(
-            val searchResults: List<SongSearchResult>
+            val searchResults: List<SongSearchResult>,
         ) : UiState()
 
         data class Error(
-            val errorMessageId: Int
+            val errorMessageId: Int,
+            val errorAdditionalInfo: String,
         ) : UiState()
 
     }
@@ -67,11 +68,28 @@ class SearchViewModel(
                 // todo: check how that is thrown, handle it differently so that it redirects to login page
                 // todo: set this to AuthStatusViewModel and initiate login
 
-                uiState = UiState.Error(R.string.other_error)
+                uiState = UiState.Error(
+                    R.string.other_error,
+                    """
+                        NotAuthedError thrown:
+                        Message: ${e.message}
+                        Try logging out (or clearing app data) and logging in again.
+                    """.trimIndent()
+                )
             } catch (e: SongDataIOException) {
-                uiState = UiState.Error(e.toUiMessage())
+                uiState = UiState.Error(
+                    e.toUiMessage(),
+                    e.toTextDescription()
+                )
             } catch (e: Error) {
-                uiState = UiState.Error(R.string.unknown_error)
+                uiState = UiState.Error(
+                    R.string.unknown_error,
+                    """
+                        Non-SongDataIOException exception thrown:
+                        Type: ${e.javaClass.name}
+                        ${e.message}
+                    """.trimIndent()
+                )
                 Log.e("SearchViewModel", "Unknown error", e)
             }
 

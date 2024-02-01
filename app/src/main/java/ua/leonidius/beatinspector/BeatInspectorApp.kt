@@ -45,7 +45,7 @@ class BeatInspectorApp: Application() {
         val songsInMemCache = SongsInMemCache()
         val networkDataSource = SongsNetworkDataSourceImpl(spotifyRetrofitClient, Dispatchers.IO)
 
-        songsRepository = SongsRepositoryImpl(spotifyRetrofitClient, songsInMemCache, networkDataSource)
+        songsRepository = SongsRepositoryImpl(spotifyRetrofitClient, songsInMemCache, networkDataSource, Dispatchers.IO)
     }
 
 }

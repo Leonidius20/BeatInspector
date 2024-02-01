@@ -3,6 +3,7 @@ package ua.leonidius.beatinspector.auth
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
@@ -12,12 +13,14 @@ import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
 import ua.leonidius.beatinspector.data.R
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CountDownLatch
 
 class Authenticator(
     val clientId: String,
     val appContext: Context,
 ) {
 
+    // todo: create an interface for persistant storage, inject implementation with SharedPreferences, to remove direct depedence on app context
     val prefs = appContext.getSharedPreferences(appContext.getString(
         R.string.preferences_tokens_file_name
     ), Context.MODE_PRIVATE)
@@ -111,7 +114,7 @@ class Authenticator(
 
     fun isAuthorized() = authState.isAuthorized
 
-    fun refreshTokensBlocking(): Boolean {
+    fun refreshTokensBlocking() {
         // this also includes refresh token rotation
         /*
          * we can't just use the performWithFreshTokens method because
@@ -120,8 +123,13 @@ class Authenticator(
          */
        // if (!authState.needsTokenRefresh) return true
 
-        // todo: use CallbackFlow here?
-        val promise = CompletableFuture<Boolean>()
+        // todo: use CallbackFlow here? or countDownLatch?
+
+        // val promise = CompletableFuture<Boolean>()
+
+        val latch = CountDownLatch(1)
+
+        var exception: AuthorizationException? = null
 
 
         authService.performTokenRequest(
@@ -129,18 +137,25 @@ class Authenticator(
         ) { tokenResp, authException ->
             authState.update(tokenResp, authException)
 
-            if (tokenResp != null) {
-                // success
-                promise.complete(true)
-                storeAuthState()
-            } else {
+            if (authException != null || tokenResp == null) {
                 // fail
-                promise.complete(false)
-                authException!!.printStackTrace()
+                exception = authException
+                Log.e("Authenticator", "refreshTokensBlocking: token refresh failed", authException)
+                latch.countDown()
+                // promise.complete(false)
+            } else {
+                // success
+                // promise.complete(true)
+                storeAuthState()
+                latch.countDown()
             }
         }
 
-        return promise.get()
+        latch.await()
+
+        if (exception != null) {
+            throw exception!!
+        }
     }
 
 }

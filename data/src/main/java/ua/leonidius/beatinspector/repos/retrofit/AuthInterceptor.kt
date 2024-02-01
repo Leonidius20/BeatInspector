@@ -1,12 +1,14 @@
 package ua.leonidius.beatinspector.repos.retrofit
 
+import android.util.Log
+import net.openid.appauth.AuthorizationException
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody
+import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.auth.Authenticator
-import java.io.IOException
 
 class AuthInterceptor(private val authenticator: Authenticator): Interceptor {
 
@@ -18,7 +20,12 @@ class AuthInterceptor(private val authenticator: Authenticator): Interceptor {
         if (!authed) {
             return Response.Builder()
                 .code(418) // teapot code
-                .body(ResponseBody.create("text/html; charset=utf-8".toMediaType(), "")) // Whatever body
+                .body(
+                    ResponseBody.create(
+                        "text/html; charset=utf-8".toMediaType(),
+                        ""
+                    )
+                ) // Whatever body
                 .protocol(Protocol.HTTP_2)
                 .message("Dummy response")
                 .request(chain.request())
@@ -28,10 +35,16 @@ class AuthInterceptor(private val authenticator: Authenticator): Interceptor {
 
             if (needsRefresh) {
 
-                val success = authenticator.refreshTokensBlocking()
-
-                if (!success) {
-                    throw TokenRefreshException()
+                try {
+                    authenticator.refreshTokensBlocking()
+                    Log.d("AuthInterceptor", "Token refreshed")
+                } catch (e: AuthorizationException) { // todo: i don't think its a good idea to depend on AppAuth library here, better create a wrapper exception class
+                    throw SongDataIOException.TokenRefresh(
+                        e.code,
+                        e.error,
+                        e.errorDescription,
+                        e
+                    )
                 }
             }
 
@@ -53,7 +66,5 @@ class AuthInterceptor(private val authenticator: Authenticator): Interceptor {
         }
 
     }
-
-    class TokenRefreshException: IOException()
 
 }

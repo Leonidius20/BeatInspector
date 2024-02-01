@@ -1,13 +1,78 @@
 package ua.leonidius.beatinspector
 
-class SongDataIOException(
-    val type: Type,
-    message: String? = null,
-    cause: Throwable? = null
-): Exception() {
+import java.io.IOException
 
-    enum class Type {
-        SERVER, NETWORK, UNKNOWN, OTHER
+sealed class SongDataIOException(
+    cause: Throwable? = null
+): IOException(cause) {
+
+    abstract fun toTextDescription(): String
+
+    data class Server(
+        val code: Int?,
+        val messageFromApi: String
+    ) : SongDataIOException() {
+
+        override fun toTextDescription() = """
+            Code: $code
+            Message from API: $messageFromApi
+        """.trimIndent()
+
+    }
+
+    data class Network(
+        val e: Throwable
+    ): SongDataIOException(e) {
+
+        override fun toTextDescription() = """
+            Exception type: ${e::class.java.name}
+            Exception message: ${e.message}
+            ${if (e is TokenRefresh) """
+                Token refresh exception data:
+                ${e.toTextDescription()}
+            """.trimIndent() else ""}
+        """.trimIndent()
+
+    }
+
+    data class Unknown(
+        val e: Throwable
+    ): SongDataIOException(e) {
+
+        override fun toTextDescription() = """
+            Exception type: ${e::class.java.name}
+            Exception message: ${e.message}
+        """.trimIndent()
+
+    }
+
+    /*data class Other(
+        val messageFromLibrary: String,
+        val e: Throwable
+    ): SongDataIOException(e) {
+
+        override fun toTextDescription() = """
+            Message from library: $messageFromLibrary
+            Exception message: ${e.message}
+        """.trimIndent()
+
+    }*/
+
+    data class TokenRefresh(
+        val code: Int,
+        val errorFromLibrary: String?,
+        val errorDescriptionFromLibrary: String?,
+        val e: Throwable
+    ): SongDataIOException() {
+
+        override fun toTextDescription() = """
+            Code: $code
+            Error from library: $errorFromLibrary
+            Error description from library: $errorDescriptionFromLibrary
+            Exception (cause) type: ${e::class.java.name}
+            Exception (cause) message: ${e.message}
+        """.trimIndent()
+
     }
 
 }

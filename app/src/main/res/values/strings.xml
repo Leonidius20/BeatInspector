@@ -6,4 +6,5 @@
     <string name="server_error">Server error</string>
     <string name="unknown_error">Unknown error</string>
     <string name="other_error">Other error</string>
+    <string name="token_refresh_error">Error when refreshing access token</string>
 </resources>

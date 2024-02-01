@@ -10,7 +10,6 @@ import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.entities.Artist
 import ua.leonidius.beatinspector.entities.SongDetails
 import ua.leonidius.beatinspector.repos.retrofit.SpotifyRetrofitClient
-import ua.leonidius.beatinspector.repos.retrofit.SpotifyTrackAnalysisResponse
 
 class SongsNetworkDataSourceImpl(
     private val spotifyRetrofitClient: SpotifyRetrofitClient,
@@ -42,7 +41,16 @@ class SongsNetworkDataSourceImpl(
 
        val trackDetails = when (val response = spotifyRetrofitClient.getTrackDetails(trackId)) {
            is NetworkResponse.Success -> response.body.track
-           else -> throw SongDataIOException(badResponseClassToType(response::class.java))
+
+           is NetworkResponse.ServerError -> {
+               throw SongDataIOException.Server(response.code, response.body?.message ?: "< No response body >")
+           }
+           is NetworkResponse.NetworkError -> {
+                throw SongDataIOException.Network(response.error)
+           }
+           is NetworkResponse.UnknownError -> {
+               throw SongDataIOException.Unknown(response.error)
+           }
        }
 
        Log.d("SongsNetworkDataSource", "Failed artists: $failedArtistsNames")
@@ -88,16 +96,6 @@ class SongsNetworkDataSourceImpl(
         }
 
         return "$key $mode"
-    }
-
-    fun badResponseClassToType(badResponseClass: Class<out NetworkResponse<SpotifyTrackAnalysisResponse, SpotifyRetrofitClient.SpotifyError>>): SongDataIOException.Type {
-        return when(badResponseClass) {
-            NetworkResponse.ServerError::class.java -> SongDataIOException.Type.SERVER
-            NetworkResponse.NetworkError::class.java -> SongDataIOException.Type.NETWORK
-            NetworkResponse.UnknownError::class.java -> SongDataIOException.Type.UNKNOWN
-            NetworkResponse.Error::class.java -> SongDataIOException.Type.OTHER
-            else -> SongDataIOException.Type.OTHER
-        }
     }
 
 }

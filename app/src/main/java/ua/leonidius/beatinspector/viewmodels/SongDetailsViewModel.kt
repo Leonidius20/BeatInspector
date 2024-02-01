@@ -36,11 +36,12 @@ class SongDetailsViewModel(
             val loudness: String,
             val genres: String,
             val albumArtUrl: String,
-            val failedArtists: List<String>
+            val failedArtists: List<String>,
         ): UiState()
 
         data class Error(
-            val errorMsgId: Int
+            val errorMsgId: Int,
+            val errorAdditionalInfo: String,
         ): UiState()
     }
 
@@ -70,12 +71,18 @@ class SongDetailsViewModel(
                 )
             } catch (e: SongDataIOException) {
                 UiState.Error(
-                    errorMsgId = e.toUiMessage()
+                    errorMsgId = e.toUiMessage(),
+                    errorAdditionalInfo = e.toTextDescription()
                 )
             } catch (e: Exception) {
                 Log.e("SongDetailsViewModel", "Unknown error", e)
                 UiState.Error(
-                    errorMsgId = R.string.unknown_error
+                    errorMsgId = R.string.unknown_error,
+                    errorAdditionalInfo = """
+                        Non-SongDataIOException exception thrown:
+                        Type: ${e.javaClass.name}
+                        Message: ${e.message}
+                    """.trimIndent()
                 )
             }
 

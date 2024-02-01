@@ -84,7 +84,23 @@ fun SongDetailsScreen(
         }
 
         is SongDetailsViewModel.UiState.Error -> {
-            Text(text = stringResource(id = uiState.errorMsgId))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+            ) {
+                Column(
+
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(text = stringResource(id = uiState.errorMsgId))
+                    Card(Modifier.fillMaxWidth()) {
+                        Text(text = uiState.errorAdditionalInfo)
+                    }
+                }
+
+            }
+
         }
 
         is SongDetailsViewModel.UiState.Loaded -> {
