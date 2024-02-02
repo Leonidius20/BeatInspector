@@ -1,12 +1,20 @@
 package ua.leonidius.beatinspector.views
 
 import android.content.res.Configuration
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -30,8 +38,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ua.leonidius.beatinspector.R
@@ -77,86 +89,132 @@ fun SearchScreen(
 ) {
     val focusManager = LocalFocusManager.current
 
-    SearchBar(
-        modifier = modifier,
-        query = query,
-        onQueryChange = onQueryChange,
-        onSearch = {
-            focusManager.clearFocus()
-            onSearch(it)
-        },
-        placeholder = { Text(stringResource(R.string.searchBar_placeholder)) },
-        active = true,
-        onActiveChange = { },
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                tint = MaterialTheme.colorScheme.onSurface,
-                contentDescription = null
-            )
-        },
-        trailingIcon = {
-            Icon(
-                modifier = Modifier.clickable(onClickLabel = "clear search query") { // todo: add localization
-                    if (query.isNotEmpty()) {
-                        onQueryChange("")
-                    }
-                },
-                imageVector = Icons.Default.Close,
-                contentDescription = null,
-            )
-        },
-    ) {
-        when(state) {
-            is SearchViewModel.UiState.Uninitialized -> {
-                // nothing
-            }
-            is SearchViewModel.UiState.Loading -> {
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(alignment = androidx.compose.ui.Alignment.Center)
-                    )
-                }
+    Column {
+        // search bar and attribution box
+        SearchBar(
+            modifier = modifier
+                .fillMaxWidth()
+                .weight(1f),
+            query = query,
+            onQueryChange = onQueryChange,
+            onSearch = {
+                focusManager.clearFocus()
+                onSearch(it)
+            },
+            placeholder = { Text(stringResource(R.string.searchBar_placeholder)) },
+            active = true,
+            onActiveChange = { },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    contentDescription = null
+                )
+            },
+            trailingIcon = {
+                Icon(
+                    modifier = Modifier.clickable(onClickLabel = "clear search query") { // todo: add localization
+                        if (query.isNotEmpty()) {
+                            onQueryChange("")
+                        }
+                    },
+                    imageVector = Icons.Default.Close,
+                    contentDescription = null,
+                )
+            },
+        ) {
 
-            }
-            is SearchViewModel.UiState.Loaded -> {
-                when(LocalConfiguration.current.orientation) {
-                    Configuration.ORIENTATION_LANDSCAPE -> {
-                        SearchResultsGrid(
-                            results = state.searchResults,
-                            onNavigateToSongDetails = onNavigateToSongDetails
-                        )
-                    }
-                    else -> {
-                        SearchResultsList(
-                            results = state.searchResults,
-                            onNavigateToSongDetails = onNavigateToSongDetails
-                        )
-                    }
+            when(state) {
+                is SearchViewModel.UiState.Uninitialized -> {
+                    // nothing
                 }
-            }
-            is SearchViewModel.UiState.Error -> {
-                Box(
-                    modifier = Modifier
+                is SearchViewModel.UiState.Loading -> {
+                    Box(modifier = Modifier
                         .fillMaxWidth()
-                        .fillMaxHeight()
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(text = stringResource(id = state.errorMessageId))
-                        Card(Modifier.fillMaxWidth()) {
-                            Text(text = state.errorAdditionalInfo)
+                        .fillMaxHeight()) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(alignment = androidx.compose.ui.Alignment.Center)
+                        )
+                    }
+
+                }
+                is SearchViewModel.UiState.Loaded -> {
+                    when(LocalConfiguration.current.orientation) {
+                        Configuration.ORIENTATION_LANDSCAPE -> {
+                            SearchResultsGrid(
+                                results = state.searchResults,
+                                onNavigateToSongDetails = onNavigateToSongDetails
+                            )
+                        }
+                        else -> {
+                            SearchResultsList(
+                                results = state.searchResults,
+                                onNavigateToSongDetails = onNavigateToSongDetails
+                            )
                         }
                     }
+                }
+                is SearchViewModel.UiState.Error -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight()
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(text = stringResource(id = state.errorMessageId))
+                            Card(Modifier.fillMaxWidth()) {
+                                Text(text = state.errorAdditionalInfo)
+                            }
+                        }
 
+                    }
                 }
             }
+
         }
 
+        // box for spotify attribution
+        SpotifyAttributionBoxPortrait()
+    }
 
+
+}
+
+@Composable
+fun SpotifyAttributionBoxPortrait(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surfaceVariant),
+    ) {
+
+        Row(
+            Modifier
+                .align(Alignment.Center),
+        ) {
+
+            Text(
+                modifier = Modifier
+                    .padding(start = 5.dp, end = 5.dp, top = 10.dp, bottom = 10.dp)
+                    .height(40.dp)
+                    .wrapContentHeight(),
+                text = "powered by",
+                textAlign = TextAlign.Center
+            )
+
+            Image(
+                painterResource(R.drawable.spotify_full_logo_black),
+                contentDescription = null,
+                modifier = Modifier
+                    //.align(Alignment.CenterHorizontally)
+                    .padding(start = 5.dp, end = 5.dp, top = 10.dp, bottom = 10.dp)
+                    .height(40.dp)
+            )
+        }
     }
 }
 
