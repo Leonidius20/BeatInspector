@@ -15,6 +15,7 @@ import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSourceImpl
 import ua.leonidius.beatinspector.repos.retrofit.AuthInterceptor
 import ua.leonidius.beatinspector.repos.retrofit.SpotifyRetrofitClient
 import java.text.DecimalFormat
+import kotlin.properties.Delegates
 
 class BeatInspectorApp: Application() {
 
@@ -23,6 +24,8 @@ class BeatInspectorApp: Application() {
     lateinit var songsRepository: SongsRepository
 
     val decimalFormat = DecimalFormat("0.##") // for bpm and loudness
+
+    var isSpotifyInstalled = false
 
     override fun onCreate() {
         super.onCreate()
@@ -50,6 +53,10 @@ class BeatInspectorApp: Application() {
         val networkDataSource = SongsNetworkDataSourceImpl(spotifyRetrofitClient, Dispatchers.IO)
 
         songsRepository = SongsRepositoryImpl(spotifyRetrofitClient, songsInMemCache, networkDataSource, Dispatchers.IO)
+
+        // check if Spotify is installed
+        val intent = packageManager.getLaunchIntentForPackage("com.spotify.music")
+        isSpotifyInstalled = intent != null
     }
 
 }

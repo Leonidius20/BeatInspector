@@ -132,6 +132,7 @@ fun SongDetailsScreen(
                             genres = genres,
                             albumArtUrl = albumArtUrl,
                             onOpenInSpotifyButtonClick,
+                            isSpotifyInstalled,
                         )
                     }
 
@@ -147,6 +148,7 @@ fun SongDetailsScreen(
                             genres = genres,
                             albumArtUrl = albumArtUrl,
                             onOpenInSpotifyButtonClick,
+                            isSpotifyInstalled,
                         )
                     }
 
@@ -169,6 +171,7 @@ fun SongDetailsPortraitScreen(
     genres: String,
     albumArtUrl: String,
     onOpenInSpotifyButtonClick: () -> Unit,
+    isSpotifyInstalled: Boolean,
 ) {
     BoxWithConstraints {
         val boxScope = this
@@ -313,12 +316,16 @@ fun SongDetailsPortraitScreen(
                             containerColor = it,
                             contentColor = MaterialTheme.colorScheme.onSurface
                         )
-                    } ?: ButtonDefaults.buttonColors()
+                    } ?: ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
 
                     OpenInSpotifyButton(
                         modifier = Modifier.align(Alignment.CenterHorizontally),
                         colors = buttonColors,
                         onClick = onOpenInSpotifyButtonClick,
+                        isSpotifyInstalled = isSpotifyInstalled,
                     )
                 }
 
@@ -335,6 +342,7 @@ fun OpenInSpotifyButton(
     modifier: Modifier = Modifier,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
     onClick: () -> Unit,
+    isSpotifyInstalled: Boolean,
 ) {
     Button(
         modifier = modifier,
@@ -347,7 +355,12 @@ fun OpenInSpotifyButton(
                 .padding(end = 10.dp),
             painter = painterResource(R.drawable.spotify_icon_black),
             contentDescription = null)
-        Text(text = "Open in Spotify")
+        Text(
+            text = if (isSpotifyInstalled)
+                stringResource(R.string.play_on_spotify_button_text)
+            else
+                stringResource(R.string.get_spotify_free_button_text)
+        )
     }
 }
 
@@ -363,6 +376,7 @@ fun SongDetailsLandscapeScreen(
     genres: String,
     albumArtUrl: String,
     onOpenInSpotifyButtonClick: () -> Unit,
+    isSpotifyInstalled: Boolean,
 ) {
     Row(modifier) {
 
@@ -518,6 +532,7 @@ fun SongDetailsLandscapeScreen(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 colors = buttonColors,
                 onClick = onOpenInSpotifyButtonClick,
+                isSpotifyInstalled = isSpotifyInstalled,
             )
 
             Spacer(modifier = Modifier.height(10.dp))
@@ -633,6 +648,7 @@ fun SongDetailsPortraitScreenPreview() {
         genres = "Hip Hop, Rap",
         albumArtUrl = "https://fakeimg.pl/640x640?text=test&font=lobster",
         onOpenInSpotifyButtonClick = {},
+        isSpotifyInstalled = true,
     )
 }
 
@@ -649,6 +665,7 @@ fun SongDetailsLandscapeScreenPreview() {
         genres = "Hip Hop, Rap",
         albumArtUrl = "https://fakeimg.pl/640x640?text=test&font=lobster",
         onOpenInSpotifyButtonClick = {},
+        isSpotifyInstalled = true,
     )
 }
 

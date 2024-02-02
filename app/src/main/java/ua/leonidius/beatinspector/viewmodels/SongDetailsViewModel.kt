@@ -23,6 +23,7 @@ class SongDetailsViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val songsRepository: SongsRepository,
     private val decimalFormat: DecimalFormat,
+    private val isSpotifyInstalled: Boolean,
 ): ViewModel() {
 
     sealed class UiState {
@@ -37,6 +38,7 @@ class SongDetailsViewModel(
             val genres: String,
             val albumArtUrl: String,
             val failedArtists: List<String>,
+            val isSpotifyInstalled: Boolean,
         ): UiState()
 
         data class Error(
@@ -67,7 +69,8 @@ class SongDetailsViewModel(
                     loudness = decimalFormat.format(song.loudness) + " db",
                     genres = song.genres.joinToString(", "),
                     albumArtUrl = song.albumArtUrl,
-                    failedArtists = failedArtists
+                    failedArtists = failedArtists,
+                    isSpotifyInstalled = isSpotifyInstalled,
                 )
             } catch (e: SongDataIOException) {
                 UiState.Error(
@@ -98,9 +101,16 @@ class SongDetailsViewModel(
 
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-                val app = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]) as BeatInspectorApp
+                val app = checkNotNull(
+                    extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]
+                ) as BeatInspectorApp
 
-                return SongDetailsViewModel(extras.createSavedStateHandle(), app.songsRepository, app.decimalFormat) as T
+                return SongDetailsViewModel(
+                    extras.createSavedStateHandle(),
+                    app.songsRepository,
+                    app.decimalFormat,
+                    app.isSpotifyInstalled
+                ) as T
             }
 
         }

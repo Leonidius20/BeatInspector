@@ -7,4 +7,6 @@
     <string name="unknown_error">Unknown error</string>
     <string name="other_error">Other error</string>
     <string name="token_refresh_error">Error when refreshing access token</string>
+    <string name="play_on_spotify_button_text">PLAY ON SPOTIFY</string>
+    <string name="get_spotify_free_button_text">GET SPOTIFY FREE</string>
 </resources>
