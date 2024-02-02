@@ -37,7 +37,6 @@ class SongDetailsViewModel(
             val loudness: String,
             val genres: String,
             val albumArtUrl: String,
-            val failedArtists: List<String>,
             val isSpotifyInstalled: Boolean,
         ): UiState()
 
@@ -58,8 +57,7 @@ class SongDetailsViewModel(
     private fun loadSongDetails(id: String) {
         viewModelScope.launch {
             val _songDetails = try {
-                val result = songsRepository.getTrackDetails(id)
-                val (song, failedArtists) = result
+                val song = songsRepository.getTrackDetails(id)
                 UiState.Loaded(
                     title = song.name,
                     artists = song.artist,
@@ -69,7 +67,6 @@ class SongDetailsViewModel(
                     loudness = decimalFormat.format(song.loudness) + " db",
                     genres = song.genres.joinToString(", "),
                     albumArtUrl = song.albumArtUrl,
-                    failedArtists = failedArtists,
                     isSpotifyInstalled = isSpotifyInstalled,
                 )
             } catch (e: SongDataIOException) {

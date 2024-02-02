@@ -1,10 +1,7 @@
 package ua.leonidius.beatinspector.repos.datasources
 
-import android.util.Log
 import com.haroldadmin.cnradapter.NetworkResponse
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.entities.Artist
@@ -14,65 +11,73 @@ import ua.leonidius.beatinspector.repos.retrofit.SpotifyRetrofitClient
 class SongsNetworkDataSourceImpl(
     private val spotifyRetrofitClient: SpotifyRetrofitClient,
     private val ioDispatcher: CoroutineDispatcher
-): SongsNetworkDataSource {
+) : SongsNetworkDataSource {
 
-    override suspend fun getSongDetailsById(
+    override suspend fun getTrackAudioAnalysis(
         trackId: String, artists: List<Artist>
-    ): Pair<SongDetails, List<String>> = withContext(ioDispatcher) {
+    ): SongDetails = withContext(ioDispatcher) {
 
-        val deferredGenres = artists.asSequence().map { artist ->
-            async {
-                when (val response = spotifyRetrofitClient.getArtist(artist.id)) {
-                    is NetworkResponse.Success -> Pair(artist, response.body.genres)
-                    else -> Pair(artist, null)
-                }
+        // todo: run these requests in parallel
+
+        val trackAnalysis = when (val response = spotifyRetrofitClient.getTrackAudioAnalysis(trackId)) {
+            is NetworkResponse.Success -> response.body.track
+
+            is NetworkResponse.ServerError -> {
+                throw SongDataIOException.Server(
+                    response.code,
+                    response.body?.message ?: "< No response body >"
+                )
             }
 
-        }.toList().toTypedArray()
-
-       val artistsAndGenreLists = awaitAll(*deferredGenres) // .filterNotNull().flatten().distinct().toList()
-
-        val (succeededArtists, failedArtists) = artistsAndGenreLists.partition { it.second != null }
-
-
-       val failedArtistsNames = failedArtists.map { it.first.name }
-
-        val genres = succeededArtists.map { it.second!! }.flatten().distinct().toList()
-
-       val trackDetails = when (val response = spotifyRetrofitClient.getTrackDetails(trackId)) {
-           is NetworkResponse.Success -> response.body.track
-
-           is NetworkResponse.ServerError -> {
-               throw SongDataIOException.Server(response.code, response.body?.message ?: "< No response body >")
-           }
-           is NetworkResponse.NetworkError -> {
+            is NetworkResponse.NetworkError -> {
                 throw SongDataIOException.Network(response.error)
-           }
-           is NetworkResponse.UnknownError -> {
-               throw SongDataIOException.Unknown(response.error)
-           }
-       }
+            }
 
-       Log.d("SongsNetworkDataSource", "Failed artists: $failedArtistsNames")
+            is NetworkResponse.UnknownError -> {
+                throw SongDataIOException.Unknown(response.error)
+            }
+        }
 
-       with(trackDetails) {
-           return@withContext Pair(SongDetails(
-               duration,
-               loudness,
-               tempo,
-               tempoConfidence,
-               timeSignature,
-               timeSignatureConfidence,
-               getKeyStringFromSpotifyValue(key, mode),
-               keyConfidence,
-               modeConfidence,
-               genres
-           ), failedArtistsNames)
-       }
+        val genres = when (val response = spotifyRetrofitClient.getArtists(artists.joinToString(",") { it.id })) {
+            is NetworkResponse.Success -> {
+                response.body.artists.map { it.genres }.flatten().distinct()
+            }
+            is NetworkResponse.ServerError -> {
+                throw SongDataIOException.Server(
+                    response.code,
+                    response.body?.message ?: "< No response body >"
+                )
+            }
+
+            is NetworkResponse.NetworkError -> {
+                throw SongDataIOException.Network(response.error)
+            }
+
+            is NetworkResponse.UnknownError -> {
+                throw SongDataIOException.Unknown(response.error)
+            }
+        }
+
+        // todo: make data mappers a separate thing
+        with(trackAnalysis) {
+            return@withContext SongDetails(
+                duration,
+                loudness,
+                tempo,
+                tempoConfidence,
+                timeSignature,
+                timeSignatureConfidence,
+                getKeyStringFromSpotifyValue(key, mode),
+                keyConfidence,
+                modeConfidence,
+                genres,
+            )
+
+        }
     }
 
     private fun getKeyStringFromSpotifyValue(keyInt: Int, modeInt: Int): String {
-        val key = when(keyInt) {
+        val key = when (keyInt) {
             0 -> "C"
             1 -> "C♯/D♭"
             2 -> "D"
@@ -88,7 +93,7 @@ class SongsNetworkDataSourceImpl(
             else -> "?"
         }
 
-        val mode = when(modeInt) {
+        val mode = when (modeInt) {
             1 -> "Maj"
             0 -> "Min"
             else -> "?"

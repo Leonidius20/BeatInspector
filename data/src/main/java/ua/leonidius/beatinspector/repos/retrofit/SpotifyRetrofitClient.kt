@@ -14,20 +14,24 @@ interface SpotifyRetrofitClient {
     ): NetworkResponse<SpotifySearchResult, SpotifyError>
 
     @GET("audio-analysis/{id}")
-    suspend fun getTrackDetails(
+    suspend fun getTrackAudioAnalysis(
         @Path("id") trackId: String
     ): NetworkResponse<SpotifyTrackAnalysisResponse, SpotifyError>
+
+    @GET("artists")
+    suspend fun getArtists(
+        @Query("ids") ids: String
+    ): NetworkResponse<MultipleArtistsResponse, SpotifyError>
+
+    data class MultipleArtistsResponse(
+        val artists: List<ArtistResponse>
+    )
 
     data class ArtistResponse(
         val id: String,
         val name: String,
-        val genres: List<String>,
+        val genres: List<String>
     )
-
-    @GET("artists/{id}")
-    suspend fun getArtist(
-        @Path("id") artistId: String
-    ): NetworkResponse<ArtistResponse, SpotifyError>
 
     /**
      * Deserialized spotify error result
@@ -36,7 +40,5 @@ interface SpotifyRetrofitClient {
         val status: Int,
         val message: String,
     )
-
-
 
 }

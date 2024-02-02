@@ -14,7 +14,7 @@ data class SongDetails(
     val key: String, // todo: enum
     val keyConfidence: Double,
     val modeConfidence: Double,
-    val genres: List<String> = listOf(),
+    val genres: List<String>,
 
 
 
@@ -32,6 +32,7 @@ data class SongDetails(
             key = "",
             keyConfidence = 0.0,
             modeConfidence = 0.0,
+            genres = emptyList(),
         )
     }
 

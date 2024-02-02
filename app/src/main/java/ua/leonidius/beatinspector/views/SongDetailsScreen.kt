@@ -114,10 +114,6 @@ fun SongDetailsScreen(
 
         is SongDetailsViewModel.UiState.Loaded -> {
             with(uiState) {
-                if (failedArtists.isNotEmpty()) {
-                    // todo: better way to display this
-                    Text(text = "Failed artists: $failedArtists")
-                }
 
                 when (LocalConfiguration.current.orientation) {
                     Configuration.ORIENTATION_LANDSCAPE -> {
@@ -309,8 +305,6 @@ fun SongDetailsPortraitScreen(
                         emptyReplacementText = stringResource(R.string.no_data),
                     )
 
-                    Spacer(Modifier.height(20.dp))
-
                     val buttonColors = palette?.lightMutedSwatch?.let { Color(it.rgb) }?.let {
                         ButtonDefaults.buttonColors(
                             containerColor = it,
@@ -322,7 +316,9 @@ fun SongDetailsPortraitScreen(
                     )
 
                     OpenInSpotifyButton(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(top = 20.dp, bottom = 20.dp),
                         colors = buttonColors,
                         onClick = onOpenInSpotifyButtonClick,
                         isSpotifyInstalled = isSpotifyInstalled,
@@ -519,8 +515,6 @@ fun SongDetailsLandscapeScreen(
                 emptyReplacementText = stringResource(R.string.no_data),
             )
 
-            Spacer(Modifier.height(20.dp))
-
             val buttonColors = palette?.lightMutedSwatch?.let { Color(it.rgb) }?.let {
                 ButtonDefaults.buttonColors(
                     containerColor = it,
@@ -529,13 +523,13 @@ fun SongDetailsLandscapeScreen(
             } ?: ButtonDefaults.buttonColors()
 
             OpenInSpotifyButton(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 20.dp, bottom = 10.dp),
                 colors = buttonColors,
                 onClick = onOpenInSpotifyButtonClick,
                 isSpotifyInstalled = isSpotifyInstalled,
             )
-
-            Spacer(modifier = Modifier.height(10.dp))
         }
     }
 }

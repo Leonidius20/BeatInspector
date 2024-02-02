@@ -11,6 +11,6 @@ interface SongsRepository {
      */
     suspend fun searchForSongsByTitle(q: String):  List<SongSearchResult>
 
-    suspend fun getTrackDetails(id: String): Pair<Song, List<String>>
+    suspend fun getTrackDetails(id: String): Song
 
 }

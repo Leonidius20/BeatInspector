@@ -28,7 +28,12 @@ class SongsRepositoryImpl(
             is NetworkResponse.Success -> {
                 return@withContext result.body.tracks.items.map {
                     // todo: make data mappers a separate thing
-                    SongSearchResult(it.id, it.name, it.artists.map { Artist(it.id, it.name) }, it.album.images[0].url)
+                    SongSearchResult(
+                        id = it.id,
+                        name = it.name,
+                        artists = it.artists.map { Artist(it.id, it.name) },
+                        imageUrl = it.album.images[0].url,
+                    )
                 }.onEach { inMemCache.songSearchResults[it.id] = it }
             }
             is NetworkResponse.ServerError -> {
@@ -49,21 +54,18 @@ class SongsRepositoryImpl(
     /**
      * @return Pair of song details and list of artists that failed to get their genres
      */
-    override suspend fun getTrackDetails(id: String): Pair<Song, List<String>> = withContext(ioDispatcher) {
+    override suspend fun getTrackDetails(id: String): Song = withContext(ioDispatcher) {
         val baseInfo = inMemCache.songSearchResults[id]
             ?: throw Error("no base info found in cache for song id $id")
 
         var details = inMemCache.getSongDetailsById(id)
-        var failedArtists = emptyList<String>()
 
         if (details == null) {
-            val result = networkDataSource.getSongDetailsById(id, baseInfo.artists)
-            details = result.first
-            failedArtists = result.second
+            details = networkDataSource.getTrackAudioAnalysis(id, baseInfo.artists) // may throw SongDataIOException
             inMemCache.songsDetails[id] = details
         }
 
-        return@withContext Pair(Song(
+        return@withContext Song(
             id = baseInfo.id,
             name = baseInfo.name,
             artist = baseInfo.artists.joinToString(", ") { it.name }, // todo: don't, just return as is and let ui layer handle it
@@ -78,7 +80,7 @@ class SongsRepositoryImpl(
             modeConfidence = details.modeConfidence,
             genres = details.genres,
             albumArtUrl = baseInfo.imageUrl,
-        ), failedArtists)
+        )
 
     }
 
