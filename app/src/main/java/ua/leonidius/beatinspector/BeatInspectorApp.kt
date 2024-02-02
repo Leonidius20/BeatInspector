@@ -1,6 +1,7 @@
 package ua.leonidius.beatinspector
 
 import android.app.Application
+import android.content.pm.PackageManager
 import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
@@ -15,7 +16,6 @@ import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSourceImpl
 import ua.leonidius.beatinspector.repos.retrofit.AuthInterceptor
 import ua.leonidius.beatinspector.repos.retrofit.SpotifyRetrofitClient
 import java.text.DecimalFormat
-import kotlin.properties.Delegates
 
 class BeatInspectorApp: Application() {
 
@@ -55,8 +55,16 @@ class BeatInspectorApp: Application() {
         songsRepository = SongsRepositoryImpl(spotifyRetrofitClient, songsInMemCache, networkDataSource, Dispatchers.IO)
 
         // check if Spotify is installed
-        val intent = packageManager.getLaunchIntentForPackage("com.spotify.music")
-        isSpotifyInstalled = intent != null
+        isSpotifyInstalled = isPackageInstalled("com.spotify.music")
+    }
+
+    private fun isPackageInstalled(packageName: String): Boolean {
+        return try {
+            packageManager.getPackageInfo(packageName, 0)
+            true
+        } catch (e: PackageManager.NameNotFoundException) {
+            false
+        }
     }
 
 }
