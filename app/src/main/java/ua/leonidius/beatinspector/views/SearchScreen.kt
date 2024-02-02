@@ -211,10 +211,11 @@ fun SpotifyAttributionBoxPortrait(
             Text(
                 modifier = Modifier
                     .padding(start = 5.dp, end = 5.dp, top = 10.dp, bottom = 10.dp)
-                    .height(40.dp)
+                    .height(30.dp)
                     .wrapContentHeight(),
                 text = "powered by",
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyLarge,
             )
 
             Image(
@@ -223,7 +224,7 @@ fun SpotifyAttributionBoxPortrait(
                 modifier = Modifier
                     //.align(Alignment.CenterHorizontally)
                     .padding(start = 5.dp, end = 5.dp, top = 10.dp, bottom = 10.dp)
-                    .height(40.dp)
+                    .height(30.dp)
             )
         }
     }
