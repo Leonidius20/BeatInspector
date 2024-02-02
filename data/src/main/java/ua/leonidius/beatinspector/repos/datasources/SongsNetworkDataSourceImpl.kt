@@ -2,6 +2,7 @@ package ua.leonidius.beatinspector.repos.datasources
 
 import com.haroldadmin.cnradapter.NetworkResponse
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.entities.Artist
@@ -17,9 +18,15 @@ class SongsNetworkDataSourceImpl(
         trackId: String, artists: List<Artist>
     ): SongDetails = withContext(ioDispatcher) {
 
-        // todo: run these requests in parallel
+        val trackAnalysisDeferredResponse = async {
+            spotifyRetrofitClient.getTrackAudioAnalysis(trackId)
+        }
 
-        val trackAnalysis = when (val response = spotifyRetrofitClient.getTrackAudioAnalysis(trackId)) {
+        val genresDeferredResponse = async {
+            spotifyRetrofitClient.getArtists(artists.joinToString(",") { it.id })
+        }
+
+        val trackAnalysis = when (val response = trackAnalysisDeferredResponse.await()) {
             is NetworkResponse.Success -> response.body.track
 
             is NetworkResponse.ServerError -> {
@@ -38,7 +45,7 @@ class SongsNetworkDataSourceImpl(
             }
         }
 
-        val genres = when (val response = spotifyRetrofitClient.getArtists(artists.joinToString(",") { it.id })) {
+        val genres = when (val response = genresDeferredResponse.await()) {
             is NetworkResponse.Success -> {
                 response.body.artists.map { it.genres }.flatten().distinct()
             }
