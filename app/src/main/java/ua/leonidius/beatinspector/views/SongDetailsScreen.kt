@@ -16,6 +16,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
@@ -41,6 +44,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,13 +66,18 @@ fun SongDetailsScreen(
     windowSize: WindowSizeClass,
 ) {
     // todo: why do smart casts work in the other composable, but not inside of this one?
-    SongDetailsScreen(modifier, detailsViewModel.uiState)
+    SongDetailsScreen(
+        modifier,
+        detailsViewModel.uiState,
+        onOpenInSpotifyButtonClick = { /* todo */ }
+    )
 }
 
 @Composable
 fun SongDetailsScreen(
     modifier: Modifier = Modifier,
     uiState: SongDetailsViewModel.UiState = SongDetailsViewModel.UiState.Loading,
+    onOpenInSpotifyButtonClick: () -> Unit,
 ) {
     when (uiState) {
         is SongDetailsViewModel.UiState.Loading -> {
@@ -122,6 +131,7 @@ fun SongDetailsScreen(
                             loudness = loudness,
                             genres = genres,
                             albumArtUrl = albumArtUrl,
+                            onOpenInSpotifyButtonClick,
                         )
                     }
 
@@ -136,6 +146,7 @@ fun SongDetailsScreen(
                             loudness = loudness,
                             genres = genres,
                             albumArtUrl = albumArtUrl,
+                            onOpenInSpotifyButtonClick,
                         )
                     }
 
@@ -157,6 +168,7 @@ fun SongDetailsPortraitScreen(
     loudness: String,
     genres: String,
     albumArtUrl: String,
+    onOpenInSpotifyButtonClick: () -> Unit,
 ) {
     BoxWithConstraints {
         val boxScope = this
@@ -293,6 +305,21 @@ fun SongDetailsPortraitScreen(
                         title = "artists' genres", data = genres,
                         emptyReplacementText = stringResource(R.string.no_data),
                     )
+
+                    Spacer(Modifier.height(20.dp))
+
+                    val buttonColors = palette?.lightMutedSwatch?.let { Color(it.rgb) }?.let {
+                        ButtonDefaults.buttonColors(
+                            containerColor = it,
+                            contentColor = MaterialTheme.colorScheme.onSurface
+                        )
+                    } ?: ButtonDefaults.buttonColors()
+
+                    OpenInSpotifyButton(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        colors = buttonColors,
+                        onClick = onOpenInSpotifyButtonClick,
+                    )
                 }
 
             }
@@ -301,6 +328,27 @@ fun SongDetailsPortraitScreen(
         }
     }
 
+}
+
+@Composable
+fun OpenInSpotifyButton(
+    modifier: Modifier = Modifier,
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
+    onClick: () -> Unit,
+) {
+    Button(
+        modifier = modifier,
+        colors = colors,
+        onClick = onClick
+    ) {
+        Image(
+            modifier = Modifier
+                .height(30.dp)
+                .padding(end = 10.dp),
+            painter = painterResource(R.drawable.spotify_icon_black),
+            contentDescription = null)
+        Text(text = "Open in Spotify")
+    }
 }
 
 @Composable
@@ -314,6 +362,7 @@ fun SongDetailsLandscapeScreen(
     loudness: String,
     genres: String,
     albumArtUrl: String,
+    onOpenInSpotifyButtonClick: () -> Unit,
 ) {
     Row(modifier) {
 
@@ -455,6 +504,23 @@ fun SongDetailsLandscapeScreen(
                 title = "artists' genres", data = genres,
                 emptyReplacementText = stringResource(R.string.no_data),
             )
+
+            Spacer(Modifier.height(20.dp))
+
+            val buttonColors = palette?.lightMutedSwatch?.let { Color(it.rgb) }?.let {
+                ButtonDefaults.buttonColors(
+                    containerColor = it,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
+            } ?: ButtonDefaults.buttonColors()
+
+            OpenInSpotifyButton(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                colors = buttonColors,
+                onClick = onOpenInSpotifyButtonClick,
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
         }
     }
 }
@@ -566,6 +632,7 @@ fun SongDetailsPortraitScreenPreview() {
         loudness = "-5.2 db",
         genres = "Hip Hop, Rap",
         albumArtUrl = "https://fakeimg.pl/640x640?text=test&font=lobster",
+        onOpenInSpotifyButtonClick = {},
     )
 }
 
@@ -581,6 +648,7 @@ fun SongDetailsLandscapeScreenPreview() {
         loudness = "-5.2 db",
         genres = "Hip Hop, Rap",
         albumArtUrl = "https://fakeimg.pl/640x640?text=test&font=lobster",
+        onOpenInSpotifyButtonClick = {},
     )
 }
 
