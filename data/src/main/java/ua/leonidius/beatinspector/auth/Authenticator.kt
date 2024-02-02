@@ -12,7 +12,6 @@ import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
 import ua.leonidius.beatinspector.data.R
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.CountDownLatch
 
 class Authenticator(
@@ -58,7 +57,8 @@ class Authenticator(
             clientId,
             ResponseTypeValues.CODE,
             Uri.parse("ua.leonidius.beatinspector://login-callback") // todo: redirect uri
-        ).setScope("user-library-read playlist-read-private playlist-read-collaborative user-read-recently-played user-top-read")
+        )
+            //.setScope("user-library-read playlist-read-private playlist-read-collaborative user-read-recently-played user-top-read")
             .build()
 
         return authService.getAuthorizationRequestIntent(authRequest)

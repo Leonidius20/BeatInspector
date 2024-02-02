@@ -4,6 +4,7 @@ import android.app.Application
 import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ua.leonidius.beatinspector.auth.Authenticator
@@ -31,12 +32,15 @@ class BeatInspectorApp: Application() {
 
         val retrofit = Retrofit.Builder()
             .baseUrl("https://api.spotify.com/v1/")
-            .addConverterFactory(GsonConverterFactory. create())
+            .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(NetworkResponseAdapterFactory())
             .client(
 
                 OkHttpClient.Builder()
                 .addInterceptor(authInterceptor)
+                /*.addInterceptor(HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.BODY
+                })*/
                 .build())
             .build()
 
