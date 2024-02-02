@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -112,15 +113,23 @@ fun SearchScreen(
                 )
             },
             trailingIcon = {
-                Icon(
-                    modifier = Modifier.clickable(onClickLabel = "clear search query") { // todo: add localization
-                        if (query.isNotEmpty()) {
-                            onQueryChange("")
-                        }
-                    },
-                    imageVector = Icons.Default.Close,
-                    contentDescription = null,
-                )
+                Row(
+
+                ) {
+                    Icon(
+                        modifier = Modifier.clickable(onClickLabel = "clear search query") { // todo: add localization
+                            if (query.isNotEmpty()) {
+                                onQueryChange("")
+                            }
+                        }.align(Alignment.CenterVertically),
+                        imageVector = Icons.Default.Close,
+                        contentDescription = null,
+                    )
+                    if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                        SpotifyAttributionBoxLandscape()
+                    }
+                }
+
             },
         ) {
 
@@ -176,7 +185,9 @@ fun SearchScreen(
         }
 
         // box for spotify attribution
-        SpotifyAttributionBoxPortrait()
+        if (LocalConfiguration.current.orientation != Configuration.ORIENTATION_LANDSCAPE) {
+            SpotifyAttributionBoxPortrait()
+        }
     }
 
 
@@ -215,6 +226,35 @@ fun SpotifyAttributionBoxPortrait(
                     .height(40.dp)
             )
         }
+    }
+}
+
+@Composable
+fun SpotifyAttributionBoxLandscape(
+    modifier: Modifier = Modifier
+) {
+    Box(modifier.height(70.dp)) {
+        Column(Modifier.align(Alignment.Center).padding(start = 5.dp)) {
+            Text(
+                modifier = Modifier
+                    .padding(start = 5.dp, end = 5.dp, top = 0.dp, bottom = 5.dp)
+                    .width(70.dp)
+                    .wrapContentWidth(),
+                text = "powered by",
+                textAlign = TextAlign.Center,
+                fontSize = TextUnit(10f, TextUnitType.Sp)
+            )
+
+            Image(
+                painterResource(R.drawable.spotify_full_logo_black),
+                contentDescription = null,
+                modifier = Modifier
+                    //.align(Alignment.CenterHorizontally)
+                    .padding(start = 5.dp, end = 5.dp, top = 0.dp, bottom = 0.dp)
+                    .width(70.dp)
+            )
+        }
+
     }
 }
 
