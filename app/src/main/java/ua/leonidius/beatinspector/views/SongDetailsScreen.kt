@@ -1,6 +1,8 @@
 package ua.leonidius.beatinspector.views
 
+import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -66,10 +68,10 @@ fun SongDetailsScreen(
     windowSize: WindowSizeClass,
 ) {
     // todo: why do smart casts work in the other composable, but not inside of this one?
+
     SongDetailsScreen(
         modifier,
         detailsViewModel.uiState,
-        onOpenInSpotifyButtonClick = { /* todo */ }
     )
 }
 
@@ -77,7 +79,6 @@ fun SongDetailsScreen(
 fun SongDetailsScreen(
     modifier: Modifier = Modifier,
     uiState: SongDetailsViewModel.UiState = SongDetailsViewModel.UiState.Loading,
-    onOpenInSpotifyButtonClick: () -> Unit,
 ) {
     when (uiState) {
         is SongDetailsViewModel.UiState.Loading -> {
@@ -114,6 +115,18 @@ fun SongDetailsScreen(
 
         is SongDetailsViewModel.UiState.Loaded -> {
             with(uiState) {
+                val context = LocalContext.current
+
+                // todo: move this? maybe use currying for context
+                val onOpenInSpotifyButtonClick = {
+                    val uri = if (isSpotifyInstalled)
+                        "spotify:track:$songId"
+                    else
+                        "market://details?id=com.spotify.music"
+
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+                    context.startActivity(intent)
+                }
 
                 when (LocalConfiguration.current.orientation) {
                     Configuration.ORIENTATION_LANDSCAPE -> {

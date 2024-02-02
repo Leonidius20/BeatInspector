@@ -16,6 +16,7 @@ import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.SongDataIOException
+import ua.leonidius.beatinspector.entities.Song
 import ua.leonidius.beatinspector.repos.SongsRepository
 import java.text.DecimalFormat
 
@@ -26,9 +27,12 @@ class SongDetailsViewModel(
     private val isSpotifyInstalled: Boolean,
 ): ViewModel() {
 
+    private val songId = savedStateHandle.get<String>("songId")!!
+
     sealed class UiState {
         object Loading: UiState()
         data class Loaded(
+            val songId: String,
             val title: String,
             val artists: String,
             val bpm: String,
@@ -50,7 +54,6 @@ class SongDetailsViewModel(
         private set
 
     init {
-        val songId = savedStateHandle.get<String>("songId")!!
         loadSongDetails(songId)
     }
 
@@ -59,6 +62,7 @@ class SongDetailsViewModel(
             val _songDetails = try {
                 val song = songsRepository.getTrackDetails(id)
                 UiState.Loaded(
+                    songId = song.id,
                     title = song.name,
                     artists = song.artist,
                     bpm = decimalFormat.format(song.bpm),
