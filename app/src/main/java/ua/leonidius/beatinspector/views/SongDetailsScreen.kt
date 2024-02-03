@@ -404,7 +404,7 @@ fun SongDetailsLandscapeScreen(
         BoxWithConstraints(
             Modifier
                 .padding(top = 10.dp, start = 10.dp, bottom = 10.dp)
-                .clip(RoundedCornerShape(10.dp))
+                // .clip(RoundedCornerShape(10.dp))
         ) { // image with title and artists
             val boxScope = this
 
@@ -420,51 +420,57 @@ fun SongDetailsLandscapeScreen(
                 },
                 contentScale = ContentScale.Crop)
 
-
-            Image(
-                modifier = Modifier
-                    .height(boxScope.maxHeight)
-                    .width(boxScope.maxHeight)
-                    .fadingEdge(
-                        Brush.verticalGradient(
-                            0F to MaterialTheme.colorScheme.surface.copy(alpha = 1F), // from top to title
-
-                            //  0.25F to MaterialTheme.colorScheme.surface.copy(alpha = 0.3F), // from title to lowest part
-
-                            0.4F to MaterialTheme.colorScheme.surface.copy(alpha = 0.35F), // from title to lowest part
-                            //0.5F to MaterialTheme.colorScheme.surface.copy(alpha = 0.5F),
-
-                            0.8F to MaterialTheme.colorScheme.surface.copy(alpha = 0.04F),  // lowest part (behind cards)
-                            1F to MaterialTheme.colorScheme.surface.copy(alpha = 0F),
-                        )
-                    ),
-                painter = painter,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-            )
-
-
             Column(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .width(boxScope.maxHeight * 0.9F)
+                Modifier.verticalScroll(rememberScrollState())
             ) {
-                Text(
+
+                Column(
                     modifier = Modifier
-                        .padding(start = 10.dp, end = 10.dp, top = 25.dp, bottom = 10.dp),
-                    text = name,
-                    style = MaterialTheme.typography.headlineLarge,
-                    //color = MaterialTheme.colorScheme.inverseOnSurface,
-                )
-                // todo: do the joining in a different layer (presentation)
-                Text(
+                        // .align(Alignment.BottomStart)
+                        .width(boxScope.maxHeight * 0.9F)
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 10.dp, top = 25.dp, bottom = 10.dp),
+                        text = name,
+                        style = MaterialTheme.typography.headlineLarge,
+                        //color = MaterialTheme.colorScheme.inverseOnSurface,
+                    )
+                    // todo: do the joining in a different layer (presentation)
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 10.dp, end = 10.dp, top = 0.dp, bottom = 25.dp),
+                        text = artistString,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Light,
+                        //color = MaterialTheme.colorScheme.inverseOnSurface,
+                    )
+                }
+
+                Image(
                     modifier = Modifier
-                        .padding(start = 10.dp, end = 10.dp, top = 0.dp, bottom = 25.dp),
-                    text = artistString,
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Light,
-                    //color = MaterialTheme.colorScheme.inverseOnSurface,
+                        .height(boxScope.maxHeight)
+                        .width(boxScope.maxHeight)
+                        /*.fadingEdge(
+                            Brush.verticalGradient(
+                                0F to MaterialTheme.colorScheme.surface.copy(alpha = 1F), // from top to title
+
+                                //  0.25F to MaterialTheme.colorScheme.surface.copy(alpha = 0.3F), // from title to lowest part
+
+                                0.4F to MaterialTheme.colorScheme.surface.copy(alpha = 0.35F), // from title to lowest part
+                                //0.5F to MaterialTheme.colorScheme.surface.copy(alpha = 0.5F),
+
+                                0.8F to MaterialTheme.colorScheme.surface.copy(alpha = 0.04F),  // lowest part (behind cards)
+                                1F to MaterialTheme.colorScheme.surface.copy(alpha = 0F),
+                            )
+                        )*/,
+                    painter = painter,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
                 )
+
+
+
             }
         }
 
