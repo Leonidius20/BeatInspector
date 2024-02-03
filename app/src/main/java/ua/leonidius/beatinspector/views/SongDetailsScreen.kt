@@ -412,6 +412,13 @@ fun SongDetailsLandscapeScreen(
             )
         } ?: CardDefaults.cardColors()
 
+        val buttonColors = palette?.lightMutedSwatch?.let { Color(it.rgb) }?.let {
+            ButtonDefaults.buttonColors(
+                containerColor = it,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            )
+        } ?: ButtonDefaults.buttonColors()
+
         BoxWithConstraints(
             Modifier
                 .padding(top = 10.dp, start = 10.dp, bottom = 10.dp)
@@ -545,12 +552,7 @@ fun SongDetailsLandscapeScreen(
                 emptyReplacementText = stringResource(R.string.no_data),
             )
 
-            val buttonColors = palette?.lightMutedSwatch?.let { Color(it.rgb) }?.let {
-                ButtonDefaults.buttonColors(
-                    containerColor = it,
-                    contentColor = MaterialTheme.colorScheme.onSurface
-                )
-            } ?: ButtonDefaults.buttonColors()
+
 
             OpenInSpotifyButton(
                 modifier = Modifier

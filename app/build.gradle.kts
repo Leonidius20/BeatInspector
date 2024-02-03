@@ -73,7 +73,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false // due to retrofit r8 issues
-            isShrinkResources = false
+            // isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("release")
         }

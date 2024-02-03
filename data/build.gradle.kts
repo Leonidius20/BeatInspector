@@ -14,7 +14,11 @@ android {
         consumerProguardFiles("consumer-rules.pro")
 
         manifestPlaceholders["appAuthRedirectScheme"] = "ua.leonidius.beatinspector"
+
+        resourceConfigurations.addAll(listOf("en")) // only english resources
     }
+
+
 
     buildTypes {
         release {
