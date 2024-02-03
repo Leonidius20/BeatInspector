@@ -190,6 +190,100 @@ fun SongDetailsPortraitScreen(
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         ) {
+            var palette by remember { mutableStateOf<Palette?>(null) }
+
+            if (palette != null) {
+                ChangeStatusBarColor(palette?.darkVibrantSwatch?.rgb ?: Color.Transparent.toArgb())
+            }
+
+
+
+            Column(
+                // modifier = Modifier.align(Alignment.BottomStart)
+            ) {
+                // Spacer(modifier = Modifier.height(boxScope.maxHeight * 0.2F))
+
+                Text(
+                    modifier = Modifier
+                        .padding(start = 10.dp, end = 10.dp, top = 25.dp, bottom = 10.dp),
+                    text = name,
+                    style = MaterialTheme.typography.headlineLarge,
+                    //color = MaterialTheme.colorScheme.inverseOnSurface,
+                )
+
+                Text(
+                    modifier = Modifier
+                        .padding(start = 10.dp, end = 10.dp, top = 0.dp, bottom = 25.dp),
+                    text = artistString,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Light,
+                    //color = MaterialTheme.colorScheme.inverseOnSurface,
+                )
+
+                // Spacer(modifier = Modifier.height(10.dp))
+
+                val cardColors = palette?.lightMutedSwatch?.let { Color(it.rgb) }?.let {
+                    CardDefaults.cardColors(
+                        containerColor = it,
+                    )
+                } ?: CardDefaults.cardColors()
+
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                ) {
+                    InfoCard(
+                        Modifier.weight(1F),
+                        colors = cardColors,
+                        title = "bpm", data = bpm,
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    InfoCard(
+                        Modifier.weight(1F),
+                        colors = cardColors,
+                        title = "key", data = key
+                    )
+                }
+                Spacer(Modifier.height(10.dp))
+
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                ) {
+                    InfoCard(
+                        Modifier.weight(1F),
+                        colors = cardColors,
+                        title = "time signature", data = "$timeSignature/4"
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    InfoCard(
+                        Modifier.weight(1F),
+                        colors = cardColors,
+                        title = "loudness", data = loudness,
+                    )
+                }
+                Spacer(Modifier.height(10.dp))
+
+                CompactInfoCard(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp),
+                    colors = cardColors,
+                    title = "artists' genres", data = genres,
+                    emptyReplacementText = stringResource(R.string.no_data),
+                )
+
+
+
+
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
             Box(
                 modifier = Modifier
                     // .height(boxScope.maxHeight * 0.3F)
@@ -197,11 +291,7 @@ fun SongDetailsPortraitScreen(
                     .fillMaxWidth()
                     .fillMaxHeight(),
             ) {
-                var palette by remember { mutableStateOf<Palette?>(null) }
 
-                if (palette != null) {
-                    ChangeStatusBarColor(palette?.darkVibrantSwatch?.rgb ?: Color.Transparent.toArgb())
-                }
 
                 val painter = rememberAsyncImagePainter(
                     model = ImageRequest.Builder(LocalContext.current)
@@ -219,19 +309,19 @@ fun SongDetailsPortraitScreen(
                     modifier = Modifier
                         .fillMaxHeight()
                         .fillMaxWidth()
-                        .fadingEdge(
-                            Brush.verticalGradient(
-                                0F to MaterialTheme.colorScheme.surface.copy(alpha = 1F), // from top to title
+                    /*.fadingEdge(
+                        Brush.verticalGradient(
+                            0F to MaterialTheme.colorScheme.surface.copy(alpha = 1F), // from top to title
 
-                                //  0.25F to MaterialTheme.colorScheme.surface.copy(alpha = 0.3F), // from title to lowest part
+                            //  0.25F to MaterialTheme.colorScheme.surface.copy(alpha = 0.3F), // from title to lowest part
 
-                                0.4F to MaterialTheme.colorScheme.surface.copy(alpha = 0.35F), // from title to lowest part
-                                //0.5F to MaterialTheme.colorScheme.surface.copy(alpha = 0.5F),
+                            0.4F to MaterialTheme.colorScheme.surface.copy(alpha = 0.35F), // from title to lowest part
+                            //0.5F to MaterialTheme.colorScheme.surface.copy(alpha = 0.5F),
 
-                                0.8F to MaterialTheme.colorScheme.surface.copy(alpha = 0.04F),  // lowest part (behind cards)
-                                1F to MaterialTheme.colorScheme.surface.copy(alpha = 0F),
-                            )
-                        ),
+                            0.8F to MaterialTheme.colorScheme.surface.copy(alpha = 0.04F),  // lowest part (behind cards)
+                            1F to MaterialTheme.colorScheme.surface.copy(alpha = 0F),
+                        )
+                    )*/,
                     painter = painter,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
@@ -239,107 +329,28 @@ fun SongDetailsPortraitScreen(
 
 
 
-                Column(
-                   // modifier = Modifier.align(Alignment.BottomStart)
-                ) {
-                    Spacer(modifier = Modifier.height(boxScope.maxHeight * 0.2F))
 
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 25.dp, bottom = 10.dp),
-                        text = name,
-                        style = MaterialTheme.typography.headlineLarge,
-                        //color = MaterialTheme.colorScheme.inverseOnSurface,
-                    )
-
-                    Text(
-                        modifier = Modifier
-                            .padding(start = 10.dp, end = 10.dp, top = 0.dp, bottom = 25.dp),
-                        text = artistString,
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Light,
-                        //color = MaterialTheme.colorScheme.inverseOnSurface,
-                    )
-
-                   // Spacer(modifier = Modifier.height(10.dp))
-
-                    val cardColors = palette?.lightMutedSwatch?.let { Color(it.rgb) }?.let {
-                        CardDefaults.cardColors(
-                            containerColor = it,
-                        )
-                    } ?: CardDefaults.cardColors()
-
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 10.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                    ) {
-                        InfoCard(
-                            Modifier.weight(1F),
-                            colors = cardColors,
-                            title = "bpm", data = bpm,
-                        )
-                        Spacer(Modifier.width(10.dp))
-                        InfoCard(
-                            Modifier.weight(1F),
-                            colors = cardColors,
-                            title = "key", data = key
-                        )
-                    }
-                    Spacer(Modifier.height(10.dp))
-
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 10.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                    ) {
-                        InfoCard(
-                            Modifier.weight(1F),
-                            colors = cardColors,
-                            title = "time signature", data = "$timeSignature/4"
-                        )
-                        Spacer(Modifier.width(10.dp))
-                        InfoCard(
-                            Modifier.weight(1F),
-                            colors = cardColors,
-                            title = "loudness", data = loudness,
-                        )
-                    }
-                    Spacer(Modifier.height(10.dp))
-
-                    CompactInfoCard(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 10.dp),
-                        colors = cardColors,
-                        title = "artists' genres", data = genres,
-                        emptyReplacementText = stringResource(R.string.no_data),
-                    )
-
-                    val buttonColors = palette?.lightMutedSwatch?.let { Color(it.rgb) }?.let {
-                        ButtonDefaults.buttonColors(
-                            containerColor = it,
-                            contentColor = MaterialTheme.colorScheme.onSurface
-                        )
-                    } ?: ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    )
-
-                    OpenInSpotifyButton(
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(top = 20.dp, bottom = 20.dp),
-                        colors = buttonColors,
-                        onClick = onOpenInSpotifyButtonClick,
-                        isSpotifyInstalled = isSpotifyInstalled,
-                    )
-                }
 
             }
 
+            val buttonColors = palette?.lightMutedSwatch?.let { Color(it.rgb) }?.let {
+                ButtonDefaults.buttonColors(
+                    containerColor = it,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
+            } ?: ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = MaterialTheme.colorScheme.onSurface
+            )
+
+            OpenInSpotifyButton(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(top = 20.dp, bottom = 20.dp),
+                colors = buttonColors,
+                onClick = onOpenInSpotifyButtonClick,
+                isSpotifyInstalled = isSpotifyInstalled,
+            )
 
         }
     }
