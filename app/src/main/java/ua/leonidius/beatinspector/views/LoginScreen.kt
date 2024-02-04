@@ -1,5 +1,6 @@
 package ua.leonidius.beatinspector.views
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,6 +23,7 @@ import ua.leonidius.beatinspector.AuthStatusViewModel
 fun LoginScreen(
     modifier: Modifier = Modifier,
     onLoginButtonPressed: () -> Unit,
+    onNavigateToLegalText: (Int) -> Unit,
     viewModel: AuthStatusViewModel = viewModel(factory = AuthStatusViewModel.Factory),
 ) {
     when(viewModel.uiState) {

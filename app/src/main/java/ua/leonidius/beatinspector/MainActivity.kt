@@ -21,6 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ua.leonidius.beatinspector.ui.theme.BeatInspectorTheme
 import ua.leonidius.beatinspector.views.LoginScreen
+import ua.leonidius.beatinspector.views.LongTextScreen
 import ua.leonidius.beatinspector.views.SearchScreen
 import ua.leonidius.beatinspector.views.SongDetailsScreen
 
@@ -46,9 +47,10 @@ class MainActivity : ComponentActivity() {
 
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                    val navController = rememberNavController()
 
                     if (viewModel.uiState is AuthStatusViewModel.UiState.SuccessfulLogin) {
-                        val navController = rememberNavController()
+
 
                         NavHost(navController = navController, startDestination = "search") {
                             composable("search") {
@@ -60,6 +62,9 @@ class MainActivity : ComponentActivity() {
                             }
                             composable("song/{songId}") {
                                 SongDetailsScreen(windowSize = windowSize)
+                            }
+                            composable("text/{textId}") {
+                                LongTextScreen()
                             }
                         }
                     } else {
