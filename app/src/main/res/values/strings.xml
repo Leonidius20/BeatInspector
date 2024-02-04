@@ -10,8 +10,8 @@
     <string name="play_on_spotify_button_text">PLAY ON SPOTIFY</string>
     <string name="get_spotify_free_button_text">GET SPOTIFY FREE</string>
 
-    <string name="terms_and_conditions">
-        "<b>Terms &amp; Conditions</b> <p>
+    <string name="terms_and_conditions"><![CDATA[
+        <b>Terms &amp; Conditions</b> <p>
             By downloading or using the app, these terms will
             automatically apply to you – you should make sure therefore
             that you read them carefully before using the app. You’re not
@@ -106,11 +106,11 @@
             If you have any questions or suggestions about my
             Terms and Conditions, do not hesitate to contact me
             at https://github.com/Leonidius20/BeatInspector/discussions.
-        </p>"
+        </p>]]>
     </string>
 
-    <string name="privacy_policy">
-        "<b>Privacy Policy</b> <p>
+    <string name="privacy_policy"><![CDATA[
+        <b>Privacy Policy</b> <p>
           Leonidius20 built the BeatInspector app as
           an Open Source app. This SERVICE is provided by
           Leonidius20 at no cost and is intended for use as
@@ -148,7 +148,7 @@
           Cookies are files with a small amount of data that are
           commonly used as anonymous unique identifiers. These are sent
           to your browser from the websites that you visit and are
-          stored on your device's internal memory.
+          stored on your device’s internal memory.
         </p> <p>
           This Service does not use these “cookies” explicitly. However,
           the app may use third-party code and libraries that use
@@ -189,7 +189,7 @@
             identifiable information through
             the Application and/or Services.
             I encourage parents and legal guardians to monitor
-            their children's Internet usage and to help enforce this Policy by instructing
+            their children’s Internet usage and to help enforce this Policy by instructing
             their children never to provide personally identifiable information through the Application and/or Services without their permission. If you have reason to believe that a child
             has provided personally identifiable information to us through the Application and/or Services,
             please contact us. You must also be at least 16 years of age to consent to the processing
@@ -204,7 +204,7 @@
         </p> <p>This policy is effective as of 2024-02-03</p> <p><b>Contact Us</b></p> <p>
           If you have any questions or suggestions about my
           Privacy Policy, do not hesitate to contact me at https://github.com/Leonidius20/BeatInspector/discussions.
-        </p>"
+        </p>]]>
     </string>
 
 </resources>

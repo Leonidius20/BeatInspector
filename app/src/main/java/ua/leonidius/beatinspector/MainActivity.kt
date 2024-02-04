@@ -49,29 +49,39 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
 
-                    if (viewModel.uiState is AuthStatusViewModel.UiState.SuccessfulLogin) {
+                    val loggedIn = viewModel.uiState is AuthStatusViewModel.UiState.SuccessfulLogin
 
-
-                        NavHost(navController = navController, startDestination = "search") {
-                            composable("search") {
-                                SearchScreen(
-                                    windowSize = windowSize,
-                                    onNavigateToSongDetails = {
-                                        navController.navigate("song/${it}")
-                                    })
-                            }
-                            composable("song/{songId}") {
-                                SongDetailsScreen(windowSize = windowSize)
-                            }
-                            composable("text/{textId}") {
-                                LongTextScreen()
+                    NavHost(navController = navController, startDestination = if (!loggedIn) "login" else "search") {
+                        composable("login") {
+                            if (viewModel.uiState is AuthStatusViewModel.UiState.SuccessfulLogin) {
+                                navController.navigate("search") {
+                                    popUpTo("login") {
+                                        inclusive = true
+                                    }
+                                }
+                            } else {
+                                LoginScreen(onLoginButtonPressed = {
+                                    viewModel.launchLoginSequence { loginActivityLauncher.launch(it) }
+                                }, onNavigateToLegalText = { textResId ->
+                                    navController.navigate("text/${textResId}")
+                                })
                             }
                         }
-                    } else {
-                        LoginScreen(onLoginButtonPressed = {
-                            viewModel.launchLoginSequence { loginActivityLauncher.launch(it) }
-                        }) // todo: maybe place inside the nav graph? but make sure cannot get back to it
+                        composable("search") {
+                            SearchScreen(
+                                windowSize = windowSize,
+                                onNavigateToSongDetails = {
+                                    navController.navigate("song/${it}")
+                                })
+                        }
+                        composable("song/{songId}") {
+                            SongDetailsScreen(windowSize = windowSize)
+                        }
+                        composable("text/{textId}") {
+                            LongTextScreen()
+                        }
                     }
+
                 }
             }
         }

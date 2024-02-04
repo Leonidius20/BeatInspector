@@ -10,7 +10,8 @@ class LongTextViewModel(
     private val savedStateHandle: SavedStateHandle,
 ): ViewModel() {
 
-    val textId = savedStateHandle.get<Int>("textId")!!
+    val textId = savedStateHandle.get<String>("textId")!!.toInt()
+
     companion object {
 
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {

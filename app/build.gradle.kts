@@ -141,6 +141,7 @@ dependencies {
     // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
+    implementation("com.github.ireward:compose-html:1.0.2") // todo: apache 2.0, requires attribution
 
     implementation(project(":data"))
 
