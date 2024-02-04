@@ -20,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ua.leonidius.beatinspector.ui.theme.BeatInspectorTheme
+import ua.leonidius.beatinspector.views.LoginScreen
 import ua.leonidius.beatinspector.views.SearchScreen
 import ua.leonidius.beatinspector.views.SongDetailsScreen
 
@@ -37,7 +38,7 @@ class MainActivity : ComponentActivity() {
             viewModel.onLoginActivityResult(result.resultCode == Activity.RESULT_OK, result.data)
         }
 
-        viewModel.checkAuthStatus { loginActivityLauncher.launch(it) }
+        // viewModel.checkAuthStatus { loginActivityLauncher.launch(it) }
 
         setContent {
             BeatInspectorTheme {
@@ -46,7 +47,7 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
 
-                    if (viewModel.uiState.isLoggedIn) {
+                    if (viewModel.uiState is AuthStatusViewModel.UiState.SuccessfulLogin) {
                         val navController = rememberNavController()
 
                         NavHost(navController = navController, startDestination = "search") {
@@ -62,7 +63,9 @@ class MainActivity : ComponentActivity() {
                             }
                         }
                     } else {
-                        Text(text = "Auth required. Follow instructions in browser window")
+                        LoginScreen(onLoginButtonPressed = {
+                            viewModel.launchLoginSequence { loginActivityLauncher.launch(it) }
+                        }) // todo: maybe place inside the nav graph? but make sure cannot get back to it
                     }
                 }
             }

@@ -14,19 +14,37 @@ import ua.leonidius.beatinspector.auth.Authenticator
 
 class AuthStatusViewModel(private val authenticator: Authenticator): ViewModel() {
 
+    sealed class UiState {
+        object LoginInProgress: UiState()
+
+        object LoginOffered: UiState()
+
+        data class LoginError(
+            val errorDescription: String
+        ): UiState()
+
+        object SuccessfulLogin: UiState()
+    }
+
     data class AuthState(
         val isLoggedIn: Boolean,
         val loginError: String? = null
     )
 
-    var uiState by mutableStateOf(AuthState(isLoggedIn = authenticator.isAuthorized()))
+   // var uiState by mutableStateOf(AuthState(isLoggedIn = authenticator.isAuthorized()))
+   //     private set
+
+
+    var uiState by mutableStateOf(
+        if (!authenticator.isAuthorized()) UiState.LoginOffered else UiState.SuccessfulLogin
+    )
         private set
 
     // todo: single source of truth for auth status - authenticator class. maybe make it a stateflow?
     //var isLoggedIn by mutableStateOf(authenticator.isAuthorized())
     //    private set
 
-    fun checkAuthStatus(launchLoginActivityWithIntent: (Intent) -> Unit) {
+    /*fun checkAuthStatus(launchLoginActivityWithIntent: (Intent) -> Unit) {
         if (authenticator.isAuthorized()) { // todo: remove this shit?
             // logged in, do nothing
         } else {
@@ -34,25 +52,34 @@ class AuthStatusViewModel(private val authenticator: Authenticator): ViewModel()
             val intent = authenticator.prepareStepOneIntent()
             launchLoginActivityWithIntent(intent)
         }
+    }*/
+
+    fun launchLoginSequence(launchLoginActivityWithIntent: (Intent) -> Unit) {
+        uiState = UiState.LoginInProgress
+        val intent = authenticator.prepareStepOneIntent()
+        launchLoginActivityWithIntent(intent)
     }
 
     fun onLoginActivityResult(activitySuccess: Boolean, data: Intent?) {
         if (activitySuccess) {
             // call the token-getting method
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch(Dispatchers.IO) { // todo: withContext() in  authenticator.authSecondStep(), not here
                 authenticator.authSecondStep(data) { isSuccessful ->
                     // todo: remove when auth becomes the SSOT?
-                    // although we need error display
-                    uiState = uiState.copy(isLoggedIn = isSuccessful, loginError = null)
-                    //isLoggedIn = isSuccessful
+
+                    uiState = if (isSuccessful) {
+                        UiState.SuccessfulLogin
+                    } else {
+                        UiState.LoginError(
+                            errorDescription = "Error while logging in. Please try again."
+                        )
+                    }
                 }
             }
         } else {
-            uiState = uiState.copy(
-                // todo: remove when auth becomes the SSOT?
-                isLoggedIn = false, loginError = "Error while logging in. Try again."
+            uiState = UiState.LoginError(
+                errorDescription = "Error while logging in. Please try again."
             )
-            // todo: display snakbar with error
         }
     }
 
