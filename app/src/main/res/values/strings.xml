@@ -213,5 +213,6 @@
     <string name="privacy_policy_title">Privacy policy</string>
     <string name="terms_and_conditions_title">Terms and conditions</string>
     <string name="log_out">Log out</string>
+    <string name="open_source_licenses_title">Open source licenses</string>
 
 </resources>
