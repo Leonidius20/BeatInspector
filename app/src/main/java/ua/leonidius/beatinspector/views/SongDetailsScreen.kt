@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -27,7 +26,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
@@ -65,18 +62,17 @@ import ua.leonidius.beatinspector.viewmodels.SongDetailsViewModel
 fun SongDetailsScreen(
     modifier: Modifier = Modifier,
     detailsViewModel: SongDetailsViewModel = viewModel(factory = SongDetailsViewModel.Factory),
-    windowSize: WindowSizeClass,
 ) {
     // todo: why do smart casts work in the other composable, but not inside of this one?
 
-    SongDetailsScreen(
+    SongDetailsScreenI(
         modifier,
         detailsViewModel.uiState,
     )
 }
 
 @Composable
-fun SongDetailsScreen(
+fun SongDetailsScreenI(
     modifier: Modifier = Modifier,
     uiState: SongDetailsViewModel.UiState = SongDetailsViewModel.UiState.Loading,
 ) {

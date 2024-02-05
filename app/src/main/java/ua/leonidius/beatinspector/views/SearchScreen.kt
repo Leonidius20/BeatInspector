@@ -4,9 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -32,7 +30,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
-import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,13 +57,11 @@ fun SearchScreen(
     modifier: Modifier = Modifier,
     searchViewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory),
     onNavigateToSongDetails: (SongId) -> Unit = {},
-    windowSize: WindowSizeClass,
 ) {
     ChangeStatusBarColor(colorArgb = MaterialTheme.colorScheme.primary.toArgb())
 
     SearchScreen(
         modifier,
-        windowSize,
         query = searchViewModel.query,
         onQueryChange = { searchViewModel.query = it },
 
@@ -80,7 +75,6 @@ fun SearchScreen(
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
-    windowSize: WindowSizeClass,
     query: String,
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,

@@ -206,5 +206,7 @@
           Privacy Policy, do not hesitate to contact me at https://github.com/Leonidius20/BeatInspector/discussions.
         </p>]]>
     </string>
+    <string name="search_title">Search</string>
+    <string name="settings_title">Settings</string>
 
 </resources>

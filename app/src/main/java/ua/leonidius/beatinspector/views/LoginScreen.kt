@@ -42,7 +42,7 @@ fun LoginScreen(
                     .fillMaxHeight()
                     .padding(16.dp),
             ) {
-                // todo: add a link to the privacy policy and terms of service
+
                 val linkSpanStyle = SpanStyle(color = Color.Blue, textDecoration = TextDecoration.Underline)
 
                 val annotatedString = buildAnnotatedString {
