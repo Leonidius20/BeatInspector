@@ -68,6 +68,8 @@ class MainActivity : ComponentActivity() {
                             SearchScreen(
                                 onNavigateToSongDetails = {
                                     navController.navigate("song/${it}")
+                                }, onNavigateToSettings = {
+                                    navController.navigate("settings")
                                 })
                         }
                         composable("song/{songId}") {
@@ -77,9 +79,17 @@ class MainActivity : ComponentActivity() {
                             LongTextScreen()
                         }
                         composable("settings") {
-                            SettingsScreen()
+                            SettingsScreen(onLegalDocClicked = {
+                                navController.navigate("text/${it}")
+                            }, onLogOutClicked = {
+                                /*viewModel.logOut()
+                                navController.navigate("login") {
+                                    popUpTo("search") {
+                                        inclusive = true
+                                    }
+                                }*/
+                            })
                         }
-                        // todo: nested MainScreen composable, remove Settings and Search
                     }
 
                 }

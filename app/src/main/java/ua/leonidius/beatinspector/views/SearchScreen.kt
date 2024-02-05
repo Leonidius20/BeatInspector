@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
@@ -57,6 +58,7 @@ fun SearchScreen(
     modifier: Modifier = Modifier,
     searchViewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory),
     onNavigateToSongDetails: (SongId) -> Unit = {},
+    onNavigateToSettings: () -> Unit,
 ) {
     ChangeStatusBarColor(colorArgb = MaterialTheme.colorScheme.primary.toArgb())
 
@@ -67,6 +69,7 @@ fun SearchScreen(
 
         onSearch = { searchViewModel.performSearch() },
         onNavigateToSongDetails = onNavigateToSongDetails,
+        onNavigateToSettings = onNavigateToSettings,
         state = searchViewModel.uiState,
     )
 }
@@ -80,6 +83,7 @@ fun SearchScreen(
     onSearch: (String) -> Unit,
 
     onNavigateToSongDetails: (SongId) -> Unit = {},
+    onNavigateToSettings: () -> Unit,
     state: SearchViewModel.UiState = SearchViewModel.UiState.Uninitialized,
 ) {
     val focusManager = LocalFocusManager.current
@@ -101,21 +105,30 @@ fun SearchScreen(
             onActiveChange = { },
             leadingIcon = {
                 Icon(
+                    modifier = Modifier.clickable(onClick = onNavigateToSettings),
+                    imageVector = Icons.Filled.AccountCircle, // todo load persons icon
+                    contentDescription = null)
+
+
+                /*Icon(
                     imageVector = Icons.Default.Search,
                     tint = MaterialTheme.colorScheme.onSurface,
                     contentDescription = null
-                )
+                )*/
+
             },
             trailingIcon = {
                 Row(
 
                 ) {
                     Icon(
-                        modifier = Modifier.clickable(onClickLabel = "clear search query") { // todo: add localization
-                            if (query.isNotEmpty()) {
-                                onQueryChange("")
+                        modifier = Modifier
+                            .clickable(onClickLabel = "clear search query") { // todo: add localization
+                                if (query.isNotEmpty()) {
+                                    onQueryChange("")
+                                }
                             }
-                        }.align(Alignment.CenterVertically),
+                            .align(Alignment.CenterVertically),
                         imageVector = Icons.Default.Close,
                         contentDescription = null,
                     )
@@ -229,7 +242,10 @@ fun SpotifyAttributionBoxLandscape(
     modifier: Modifier = Modifier
 ) {
     Box(modifier.height(70.dp)) {
-        Column(Modifier.align(Alignment.Center).padding(start = 5.dp)) {
+        Column(
+            Modifier
+                .align(Alignment.Center)
+                .padding(start = 5.dp)) {
             Text(
                 modifier = Modifier
                     .padding(start = 5.dp, end = 5.dp, top = 0.dp, bottom = 5.dp)

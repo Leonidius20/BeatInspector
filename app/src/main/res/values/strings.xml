@@ -208,5 +208,10 @@
     </string>
     <string name="search_title">Search</string>
     <string name="settings_title">Settings</string>
+    <string name="settings_block_title_legal_docs">Legal documents</string>
+    <string name="settings_block_account">Account</string>
+    <string name="privacy_policy_title">Privacy policy</string>
+    <string name="terms_and_conditions_title">Terms and conditions</string>
+    <string name="log_out">Log out</string>
 
 </resources>
