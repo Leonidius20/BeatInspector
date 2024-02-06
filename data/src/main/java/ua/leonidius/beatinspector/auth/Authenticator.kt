@@ -27,7 +27,7 @@ class Authenticator(
             Uri.parse("https://accounts.spotify.com/api/token")
         )
 
-    val authState: AuthState = if (!authStateStorage.isAuthStateStored()) {
+    var authState: AuthState = if (!authStateStorage.isAuthStateStored()) {
         AuthState(authServiceConfig)
     } else {
         try {
@@ -163,6 +163,11 @@ class Authenticator(
         if (exception != null) {
             throw exception!!
         }
+    }
+
+    fun logout() {
+        authState = AuthState(authServiceConfig)
+        authStateStorage.clear()
     }
 
 }

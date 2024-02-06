@@ -3,9 +3,9 @@ package ua.leonidius.beatinspector.repos.account
 import com.haroldadmin.cnradapter.NetworkResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.entities.AccountDetails
 import ua.leonidius.beatinspector.services.SpotifyAccountService
+import ua.leonidius.beatinspector.toUIException
 
 class AccountRepositoryImpl(
     private val spotifyAccountService: SpotifyAccountService,
@@ -28,14 +28,8 @@ class AccountRepositoryImpl(
                     return@withContext account
                 }
             }
-            is NetworkResponse.ServerError -> {
-                throw SongDataIOException.Server(response.code, response.body?.message ?: "< No response body >")
-            }
-            is NetworkResponse.NetworkError -> {
-                throw SongDataIOException.Network(response.error)
-            }
-            is NetworkResponse.UnknownError -> {
-                throw SongDataIOException.Unknown(response.error)
+            is NetworkResponse.Error -> {
+                throw response.toUIException()
             }
         }
 

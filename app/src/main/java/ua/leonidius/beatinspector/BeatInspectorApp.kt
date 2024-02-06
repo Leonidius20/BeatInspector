@@ -13,6 +13,7 @@ import ua.leonidius.beatinspector.auth.Authenticator
 import ua.leonidius.beatinspector.data.R
 import ua.leonidius.beatinspector.repos.SongsRepository
 import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
+import ua.leonidius.beatinspector.repos.account.AccountDataCache
 import ua.leonidius.beatinspector.repos.account.AccountDataSharedPrefCache
 import ua.leonidius.beatinspector.repos.account.AccountRepository
 import ua.leonidius.beatinspector.repos.account.AccountRepositoryImpl
@@ -36,6 +37,8 @@ class BeatInspectorApp: Application() {
     var isSpotifyInstalled = false
 
     private lateinit var authService: AuthorizationService
+
+    lateinit var accountDataCache: AccountDataCache
 
     override fun onCreate() {
         super.onCreate()
@@ -74,7 +77,7 @@ class BeatInspectorApp: Application() {
 
         val spotifyAccountService = retrofit.create(SpotifyAccountService::class.java)
 
-        val accountDataCache = AccountDataSharedPrefCache(getSharedPreferences(getString(ua.leonidius.beatinspector.R.string.preferences_account_data_file_name), MODE_PRIVATE))
+        accountDataCache = AccountDataSharedPrefCache(getSharedPreferences(getString(ua.leonidius.beatinspector.R.string.preferences_account_data_file_name), MODE_PRIVATE))
 
 
         accountRepository = AccountRepositoryImpl(spotifyAccountService, accountDataCache, Dispatchers.IO)

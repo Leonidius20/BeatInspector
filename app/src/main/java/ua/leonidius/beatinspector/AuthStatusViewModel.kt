@@ -105,7 +105,10 @@ class AuthStatusViewModel(
     // based on the state in this viewmodel (authed = true or authed = false) we
     // show either the auth screen or whatever else
 
-
+    fun logout() {
+        authenticator.logout()
+        uiState = UiState.LoginOffered
+    }
 
 
     companion object {

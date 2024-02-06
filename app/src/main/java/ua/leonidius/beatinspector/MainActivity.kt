@@ -82,12 +82,15 @@ class MainActivity : ComponentActivity() {
                             SettingsScreen(onLegalDocClicked = {
                                 navController.navigate("text/${it}")
                             }, onLogOutClicked = {
-                                /*viewModel.logOut()
+                                viewModel.logout()
                                 navController.navigate("login") {
-                                    popUpTo("search") {
+                                    popUpTo("settings") {
                                         inclusive = true
                                     }
-                                }*/
+                                }
+                                // todo: make Auth status observable in Authernicator
+                                // and have the cache observe that?
+                                (application as BeatInspectorApp).accountDataCache.clear()
                             })
                         }
                     }
