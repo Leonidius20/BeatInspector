@@ -208,7 +208,7 @@
     </string>
     <string name="search_title">Search</string>
     <string name="settings_title">Settings</string>
-    <string name="settings_block_title_legal_docs">Legal documents</string>
+    <string name="settings_block_title_legal_docs">About app &amp; legal documents</string>
     <string name="settings_block_account">Spotify Account</string>
     <string name="privacy_policy_title">Privacy policy</string>
     <string name="terms_and_conditions_title">Terms and conditions</string>
@@ -219,5 +219,6 @@
     <string name="settings_block_links">Links</string>
     <string name="github">GitHub Repository</string>
     <string name="github_link" translatable="false">https://github.com/Leonidius20/BeatInspector</string>
+    <string name="settings_block_about">About the app</string>
 
 </resources>

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -29,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,8 +39,10 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import ua.leonidius.beatinspector.BuildConfig
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.viewmodels.SettingsViewModel
 
@@ -52,7 +56,8 @@ fun SettingsScreen(
     onLinkClicked: (String) -> Unit,
     onLicenseClicked: (String) -> Unit,
 ) {
-    val expanded = remember { mutableStateOf(false) }
+    val expanded = rememberSaveable { mutableStateOf(false) }
+    var aboutAppDialogShown by rememberSaveable { mutableStateOf(false) }
 
     LazyColumn(content = {
         item {
@@ -153,6 +158,9 @@ fun SettingsScreen(
                 title = R.string.settings_block_title_legal_docs
             ) {
                 Column {
+                    SettingsItem(title = stringResource(R.string.settings_block_about)) {
+                        aboutAppDialogShown = true
+                    }
                     SettingsItem(title = stringResource(R.string.privacy_policy_title)) {
                         onLegalDocClicked(R.string.privacy_policy)
                     }
@@ -175,6 +183,30 @@ fun SettingsScreen(
         }
 
     })
+    if (aboutAppDialogShown) { // todo: make it a separate composable
+        Dialog(onDismissRequest = { aboutAppDialogShown = false }) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    // .height(200.dp)
+                    .padding(16.dp),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(Modifier.padding(16.dp)) {
+                    Text(
+                        text = stringResource(R.string.app_name),
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.padding(bottom = 8.dp),
+                    )
+                    Text(
+                        text = "Version ${BuildConfig.VERSION_NAME}",
+                        // style = MaterialTheme.typography.bod,
+                    )
+                }
+            }
+        }
+    }
+
 }
 
 @Composable
