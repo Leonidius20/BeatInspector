@@ -36,6 +36,8 @@ class MainActivity : ComponentActivity() {
             viewModel.onLoginActivityResult(result.resultCode == Activity.RESULT_OK, result.data)
         }
 
+        val app = application as BeatInspectorApp // todo: remove?
+
         // viewModel.checkAuthStatus { loginActivityLauncher.launch(it) }
 
         setContent {
@@ -77,7 +79,12 @@ class MainActivity : ComponentActivity() {
                             SongDetailsScreen()
                         }
                         composable("text/{textId}") {
-                            LongTextScreen()
+                            val textId = it.arguments?.getString("textId")!!
+                            LongTextScreen(textId = textId.toInt())
+                        }
+                        composable("license/{licenseHash}") {
+                            val licenseHash = it.arguments?.getString("licenseHash")!!
+                            LongTextScreen(text = app.licenses.find { it.hash == licenseHash }!!.licenseContent!!)
                         }
                         composable("settings") {
                             SettingsScreen(onLegalDocClicked = {
@@ -95,6 +102,8 @@ class MainActivity : ComponentActivity() {
                             }, onLinkClicked = {
                                 val browserIntent = Intent(Intent.ACTION_VIEW, it.toUri())
                                 startActivity(browserIntent)
+                            }, onLicenseClicked = { licenseHash ->
+                                navController.navigate("license/${licenseHash}")
                             })
                         }
                     }

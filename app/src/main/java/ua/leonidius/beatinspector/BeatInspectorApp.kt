@@ -3,6 +3,10 @@ package ua.leonidius.beatinspector
 import android.app.Application
 import android.content.pm.PackageManager
 import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
+import com.mikepenz.aboutlibraries.Libs
+import com.mikepenz.aboutlibraries.entity.Library
+import com.mikepenz.aboutlibraries.entity.License
+import com.mikepenz.aboutlibraries.util.withContext
 import kotlinx.coroutines.Dispatchers
 import net.openid.appauth.AuthorizationService
 import okhttp3.OkHttpClient
@@ -39,6 +43,10 @@ class BeatInspectorApp: Application() {
     private lateinit var authService: AuthorizationService
 
     lateinit var accountDataCache: AccountDataCache
+
+    lateinit var libraries: List<Library>
+
+    lateinit var licenses: Set<License>
 
     override fun onCreate() {
         super.onCreate()
@@ -85,6 +93,12 @@ class BeatInspectorApp: Application() {
         // check if Spotify is installed
         isSpotifyInstalled = isPackageInstalled("com.spotify.music")
 
+        val libs = Libs.Builder()
+            .withContext(this)
+            .build()
+
+        libraries = libs.libraries
+        licenses = libs.licenses
     }
 
     private fun isPackageInstalled(packageName: String): Boolean {

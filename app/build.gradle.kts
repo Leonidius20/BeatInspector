@@ -5,6 +5,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("com.github.alexfu.androidautoversion")
+    id("com.mikepenz.aboutlibraries.plugin")
 }
 
 android {
@@ -145,6 +146,8 @@ dependencies {
     implementation("com.github.ireward:compose-html:1.0.2") // todo: apache 2.0, requires attribution
 
     implementation("net.openid:appauth:0.11.1")
+
+    implementation("com.mikepenz:aboutlibraries-core:10.10.0")
 
     implementation(project(":data"))
 

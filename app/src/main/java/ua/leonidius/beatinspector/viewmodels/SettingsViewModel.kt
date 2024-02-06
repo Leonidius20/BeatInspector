@@ -7,12 +7,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.mikepenz.aboutlibraries.entity.Library
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.repos.account.AccountRepository
 
 class SettingsViewModel(
     private val accountRepository: AccountRepository,
+    private val libraries: List<Library>,
 ): ViewModel() {
 
     sealed class AccountDetailsState {
@@ -30,6 +32,10 @@ class SettingsViewModel(
 
     var accountDetailsState by mutableStateOf<AccountDetailsState>(AccountDetailsState.Loading)
         private set
+
+    val libraryNameAndLicenseHash = libraries.map {
+        Pair(it.name, it.licenses.firstOrNull()?.hash)
+    }.toTypedArray()
 
     init {
         loadAccountDetails()
@@ -63,6 +69,7 @@ class SettingsViewModel(
 
                 return SettingsViewModel(
                     app.accountRepository,
+                    app.libraries,
                 ) as T
             }
 
