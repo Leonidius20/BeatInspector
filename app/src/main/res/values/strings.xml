@@ -216,5 +216,8 @@
     <string name="open_source_licenses_title">Open source licenses</string>
     <string name="logged_in_as">logged in as</string>
     <string name="preferences_account_data_file_name" translatable="false">ua.leonidius.beatinspector.ACCOUNT_CACHE</string>
+    <string name="settings_block_links">Links</string>
+    <string name="github">GitHub Repository</string>
+    <string name="github_link" translatable="false">https://github.com/Leonidius20/BeatInspector</string>
 
 </resources>

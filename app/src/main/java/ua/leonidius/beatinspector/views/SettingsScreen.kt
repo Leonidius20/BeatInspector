@@ -48,6 +48,7 @@ fun SettingsScreen(
     // if DataLoading, show placeholder image and empty text (or wiped out text)
     onLegalDocClicked: (Int) -> Unit,
     onLogOutClicked: () -> Unit,
+    onLinkClicked: (String) -> Unit,
 ) {
     Column(modifier.verticalScroll(rememberScrollState())) {
         Text(
@@ -131,6 +132,13 @@ fun SettingsScreen(
             SettingsItem(title = stringResource(R.string.log_out)) {
                 onLogOutClicked()
             }
+        }
+        SettingsBlock(title = R.string.settings_block_links) {
+            LinkSettingsItem(
+                title = stringResource(R.string.github),
+                link = stringResource(id = R.string.github_link),
+                onLinkClicked = onLinkClicked
+            )
         }
         SettingsBlock(title = R.string.settings_block_title_legal_docs) {
             Column {
@@ -222,4 +230,14 @@ fun ExpandedSettingsItem(
     onClick: () -> Unit,
 ) {
     SettingsItem(modifier = modifier.padding(start = 18.dp), title = title, onClick = onClick)
+}
+
+@Composable
+fun LinkSettingsItem(
+    title: String,
+    modifier: Modifier = Modifier,
+    link: String,
+    onLinkClicked: (String) -> Unit,
+) {
+    SettingsItem(modifier = modifier, title = title, onClick = { onLinkClicked(link) })
 }
