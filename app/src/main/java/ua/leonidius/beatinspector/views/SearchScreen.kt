@@ -45,6 +45,8 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
+import ua.leonidius.beatinspector.AuthStatusViewModel
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.entities.Artist
 import ua.leonidius.beatinspector.entities.SongSearchResult
@@ -84,7 +86,9 @@ fun SearchScreen(
 
     onNavigateToSongDetails: (SongId) -> Unit = {},
     onNavigateToSettings: () -> Unit,
-    state: SearchViewModel.UiState = SearchViewModel.UiState.Uninitialized,
+    state: SearchViewModel.UiState,
+
+    authStatusViewModel: AuthStatusViewModel = viewModel(factory = AuthStatusViewModel.Factory),
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -104,11 +108,25 @@ fun SearchScreen(
             active = true,
             onActiveChange = { },
             leadingIcon = {
-                Icon(
-                    modifier = Modifier.clickable(onClick = onNavigateToSettings),
-                    imageVector = Icons.Filled.AccountCircle, // todo load persons icon
-                    contentDescription = null)
+                val accountImageUrl = when (val authUiState = authStatusViewModel.uiState) {
+                    is AuthStatusViewModel.UiState.SuccessfulLoginAccountDataLoaded -> {
+                        authUiState.accountImageUrl
+                    }
+                    else -> null
+                }
 
+                if (accountImageUrl != null) {
+                    AsyncImage(
+                        model = accountImageUrl,
+                        contentDescription = null,
+                    )
+                } else {
+                    Icon(
+                        modifier = Modifier.clickable(onClick = onNavigateToSettings),
+                        imageVector = Icons.Filled.AccountCircle,
+                        contentDescription = null
+                    )
+                }
 
                 /*Icon(
                     imageVector = Icons.Default.Search,
@@ -118,9 +136,7 @@ fun SearchScreen(
 
             },
             trailingIcon = {
-                Row(
-
-                ) {
+                Row {
                     Icon(
                         modifier = Modifier
                             .clickable(onClickLabel = "clear search query") { // todo: add localization

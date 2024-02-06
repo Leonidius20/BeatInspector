@@ -18,6 +18,7 @@ class AuthInterceptor(private val authenticator: Authenticator): Interceptor {
         val authed = authenticator.authState.isAuthorized
 
         if (!authed) {
+            // todo: just throw an IOException here
             return Response.Builder()
                 .code(418) // teapot code
                 .body(

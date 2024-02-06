@@ -1,6 +1,5 @@
 package ua.leonidius.beatinspector.auth
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
@@ -11,27 +10,17 @@ import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
-import ua.leonidius.beatinspector.data.R
+import ua.leonidius.beatinspector.AuthStateStorage
 import java.util.concurrent.CountDownLatch
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 class Authenticator(
-    val clientId: String,
-    val appContext: Context,
+    private val clientId: String,
+    private val authStateStorage: AuthStateStorage,
+    private val authService: AuthorizationService,
 ) {
-
-    // todo: create an interface for persistant storage, inject implementation with SharedPreferences, to remove direct depedence on app context
-    val prefs = appContext.getSharedPreferences(appContext.getString(
-        R.string.preferences_tokens_file_name
-    ), Context.MODE_PRIVATE)
-
-    private val authStateJson: String
-        get() = prefs.getString(
-            PREF_KEY_AUTH_STATE, "") ?: ""
-
-    companion object {
-        const val RC_AUTH = 1
-        const val PREF_KEY_AUTH_STATE = "auth_state"
-    }
 
     private val authServiceConfig: AuthorizationServiceConfiguration = // todo: replace by "fetchfromissuer" async
         AuthorizationServiceConfiguration(
@@ -39,17 +28,15 @@ class Authenticator(
             Uri.parse("https://accounts.spotify.com/api/token")
         )
 
-    val authState: AuthState = if (authStateJson == "") {
+    val authState: AuthState = if (!authStateStorage.isAuthStateStored()) {
         AuthState(authServiceConfig)
     } else {
         try {
-            AuthState.jsonDeserialize(authStateJson)
+            AuthState.jsonDeserialize(authStateStorage.getJson())
         } catch (e: Error) {
             AuthState(authServiceConfig)
         }
     }
-
-    val authService = AuthorizationService(appContext)
 
     fun prepareStepOneIntent(): Intent {
         val authRequest = AuthorizationRequest.Builder(
@@ -68,7 +55,7 @@ class Authenticator(
      * @param callback what to do after onResponse based on whether the
      * auth succeeded
      */
-    fun authSecondStep(intent: Intent?, callback: (Boolean) -> Unit) {
+    /*suspend fun authSecondStep(intent: Intent?, callback: (Boolean) -> Unit) {
         val resp = AuthorizationResponse.fromIntent(intent!!)
         val ex = AuthorizationException.fromIntent(intent)
 
@@ -103,13 +90,34 @@ class Authenticator(
             ex!!.printStackTrace()
             callback(false)
         }
+    }*/
+
+    suspend fun exchangeCodeForTokens(prevStepIntent: Intent?) = suspendCoroutine {
+        val resp = AuthorizationResponse.fromIntent(prevStepIntent!!)
+        val ex = AuthorizationException.fromIntent(prevStepIntent)
+
+        authState.update(resp, ex)
+
+        if (resp == null) {
+            it.resumeWithException(ex ?: Error("Authenticator: Unknown error when obtaining code before exchanging code for tokens"))
+            return@suspendCoroutine
+        }
+
+        authService.performTokenRequest(
+            resp.createTokenExchangeRequest(),
+        ) { tokenResp, authException ->
+            if (tokenResp == null) {
+                it.resumeWithException(authException ?: Error("Authenticator: Unknown error when exchanging code for tokens"))
+            } else {
+                authState.update(tokenResp, authException)
+                storeAuthState()
+                it.resume(Unit)
+            }
+        }
     }
 
-    fun storeAuthState() {
-        with(prefs.edit()) {
-            putString(PREF_KEY_AUTH_STATE, authState.jsonSerializeString())
-            apply()
-        }
+    private fun storeAuthState() {
+        authStateStorage.storeJson(authState.jsonSerializeString())
     }
 
     fun isAuthorized() = authState.isAuthorized

@@ -11,8 +11,15 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.auth.Authenticator
+import ua.leonidius.beatinspector.repos.SpotifyAccountRepo
 
-class AuthStatusViewModel(private val authenticator: Authenticator): ViewModel() {
+class AuthStatusViewModel(
+    private val authenticator: Authenticator,
+    // todo: maybe make authenticator responsible for account data storage
+    // todo: maybe make authenticator a stateflow
+    private val accountDataCache: AccountDataCache,
+    private val spotifyAccountRepo: SpotifyAccountRepo,
+): ViewModel() {
 
     sealed class UiState {
         object LoginInProgress: UiState()
@@ -23,20 +30,26 @@ class AuthStatusViewModel(private val authenticator: Authenticator): ViewModel()
             val errorDescription: String
         ): UiState()
 
-        object SuccessfulLogin: UiState()
+        sealed class SuccessfulLogin: UiState()
+
+        object SuccessfulLoginAccountDataLoading: SuccessfulLogin()
+
+        object SuccessfulLoginAccountDataLoadingError: SuccessfulLogin()
+
+        class SuccessfulLoginAccountDataLoaded(
+            val accountImageUrl: String?, // null if user has no image
+        ) : SuccessfulLogin()
     }
 
-    data class AuthState(
-        val isLoggedIn: Boolean,
-        val loginError: String? = null
-    )
-
-   // var uiState by mutableStateOf(AuthState(isLoggedIn = authenticator.isAuthorized()))
-   //     private set
-
-
     var uiState by mutableStateOf(
-        if (!authenticator.isAuthorized()) UiState.LoginOffered else UiState.SuccessfulLogin
+        if (!authenticator.isAuthorized())
+            UiState.LoginOffered
+        else if (accountDataCache.isDataAvailable())
+            UiState.SuccessfulLoginAccountDataLoaded(
+                accountImageUrl = accountDataCache.retrieve().imageUrl
+            )
+        else
+            UiState.SuccessfulLoginAccountDataLoading
     )
         private set
 
@@ -61,26 +74,61 @@ class AuthStatusViewModel(private val authenticator: Authenticator): ViewModel()
     }
 
     fun onLoginActivityResult(activitySuccess: Boolean, data: Intent?) {
-        if (activitySuccess) {
-            // call the token-getting method
-            viewModelScope.launch(Dispatchers.IO) { // todo: withContext() in  authenticator.authSecondStep(), not here
-                authenticator.authSecondStep(data) { isSuccessful ->
-                    // todo: remove when auth becomes the SSOT?
-
-                    uiState = if (isSuccessful) {
-                        UiState.SuccessfulLogin
-                    } else {
-                        UiState.LoginError(
-                            errorDescription = "Error while logging in. Please try again."
-                        )
-                    }
-                }
-            }
-        } else {
+        if (!activitySuccess) {
             uiState = UiState.LoginError(
                 errorDescription = "Error while logging in. Please try again."
             )
+            return
         }
+
+        // the code is obtained and now we need to exchange it for tokens to complete auth.
+        // call the token-getting method
+        viewModelScope.launch(Dispatchers.IO) { // todo: withContext() in  authenticator.authSecondStep(), not here
+            /*authenticator.authSecondStep(data) { isSuccessful ->
+                // todo: remove when auth becomes the SSOT?
+
+                if (isSuccessful) {
+                    uiState = UiState.SuccessfulLoginAccountDataLoading
+
+                    // todo: start loading account data
+                    //val accountData = accountDataCache.retrieve()
+                    // accountDataCache.store()
+
+                } else {
+                    uiState = UiState.LoginError(
+                        errorDescription = "Error while logging in. Please try again."
+                    )
+                }
+            }*/
+
+            try {
+                authenticator.exchangeCodeForTokens(data)
+            } catch (e: Exception) {
+                uiState = UiState.LoginError(
+                    errorDescription = "Error while logging in. Please try again. (${e.message})"
+                )
+                return@launch
+            }
+
+
+            uiState = UiState.SuccessfulLoginAccountDataLoading
+
+            try {
+                val accountData = spotifyAccountRepo.getAccountDetails()
+                // accountDataCache.store(accountData)
+
+                uiState = UiState.SuccessfulLoginAccountDataLoaded(
+                    accountImageUrl = accountData.imageUrl
+                )
+            } catch (e: AccountDataIOException) {
+                // authorized, but failed to load account data
+                uiState = UiState.SuccessfulLoginAccountDataLoadingError
+            }
+        }
+    }
+
+    fun clearAccountDataCache() {
+        accountDataCache.clear()
     }
 
     // this is supposed to be a viewmodel for the MainActivity. it should control
@@ -90,7 +138,7 @@ class AuthStatusViewModel(private val authenticator: Authenticator): ViewModel()
     // based on the state in this viewmodel (authed = true or authed = false) we
     // show either the auth screen or whatever else
 
-    // we can assume authed= true, only set it to false after the first failed request
+
 
 
     companion object {
@@ -101,7 +149,11 @@ class AuthStatusViewModel(private val authenticator: Authenticator): ViewModel()
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val app = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]) as BeatInspectorApp
 
-                return AuthStatusViewModel(app.authenticator) as T
+                return AuthStatusViewModel(
+                    app.authenticator,
+                    app.accountDataCache,
+                    app.accountRepository,
+                ) as T
             }
 
         }

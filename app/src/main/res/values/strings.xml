@@ -132,7 +132,7 @@
         </p> <p><b>Information Collection and Use</b></p> <p>
           For a better experience, while using our Service, I
           may require you to provide us with certain personally
-          identifiable information, including but not limited to Spotify ID, email. The information that
+          identifiable information, including but not limited to Spotify ID, username and profile picture. The information that
           I request will be retained on your device and is not collected by me in any way.
         </p> <!----> <p><b>Log Data</b></p> <p>
           I want to inform you that whenever you
@@ -209,10 +209,12 @@
     <string name="search_title">Search</string>
     <string name="settings_title">Settings</string>
     <string name="settings_block_title_legal_docs">Legal documents</string>
-    <string name="settings_block_account">Account</string>
+    <string name="settings_block_account">Spotify Account</string>
     <string name="privacy_policy_title">Privacy policy</string>
     <string name="terms_and_conditions_title">Terms and conditions</string>
     <string name="log_out">Log out</string>
     <string name="open_source_licenses_title">Open source licenses</string>
+    <string name="logged_in_as">logged in as</string>
+    <string name="preferences_account_data_file_name" translatable="false">ua.leonidius.beatinspector.ACCOUNT_CACHE</string>
 
 </resources>
