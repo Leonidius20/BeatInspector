@@ -16,9 +16,11 @@ import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.entities.SongSearchResult
 import ua.leonidius.beatinspector.repos.SongsRepository
 import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
+import ua.leonidius.beatinspector.repos.SpotifyAccountRepo
 
 class SearchViewModel(
-    private val songsRepository: SongsRepository
+    private val songsRepository: SongsRepository,
+    private val accountRepository: SpotifyAccountRepo,
 ) : ViewModel() {
 
     sealed class UiState {
@@ -38,12 +40,51 @@ class SearchViewModel(
 
     }
 
+    sealed class AccountImageState {
+
+        data class Loaded(
+            val imageUrl: String
+        ) : AccountImageState()
+
+        sealed class NotLoaded : AccountImageState()
+
+        object ErrorLoading : NotLoaded()
+
+        object Loading : NotLoaded()
+
+        object NoImageOnAccount : NotLoaded()
+    }
+
     var query by mutableStateOf("")
 
     var uiState by mutableStateOf<UiState>(UiState.Uninitialized)
         private set
 
+    var accountImageState by mutableStateOf<AccountImageState>(AccountImageState.Loading)
+        private set
+
     //val searchQueriesFlow = MutableSharedFlow<String>() // todoL should it be mutable
+
+    init {
+        loadAccountImage()
+    }
+
+    private fun loadAccountImage() {
+        viewModelScope.launch {
+            accountImageState = AccountImageState.Loading
+
+            accountImageState = try {
+                val accountImageUrl = accountRepository.getAccountDetails().imageUrl
+                if (accountImageUrl != null) {
+                    AccountImageState.Loaded(accountImageUrl)
+                } else {
+                    AccountImageState.NoImageOnAccount
+                }
+            } catch (e: Exception) {
+                AccountImageState.ErrorLoading
+            }
+        }
+    }
 
     ///init {
     //    searchQueriesFlow.collect { query ->
@@ -104,7 +145,10 @@ class SearchViewModel(
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
                 val app = checkNotNull(extras[APPLICATION_KEY]) as BeatInspectorApp
 
-                return SearchViewModel(app.songsRepository) as T
+                return SearchViewModel(
+                    app.songsRepository,
+                    app.accountRepository,
+                ) as T
             }
 
         }

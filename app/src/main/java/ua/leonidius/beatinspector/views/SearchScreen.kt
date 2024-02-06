@@ -19,10 +19,10 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,8 +34,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -46,6 +50,7 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import ua.leonidius.beatinspector.AuthStatusViewModel
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.entities.Artist
@@ -73,6 +78,7 @@ fun SearchScreen(
         onNavigateToSongDetails = onNavigateToSongDetails,
         onNavigateToSettings = onNavigateToSettings,
         state = searchViewModel.uiState,
+        accountImageState = searchViewModel.accountImageState,
     )
 }
 
@@ -87,8 +93,7 @@ fun SearchScreen(
     onNavigateToSongDetails: (SongId) -> Unit = {},
     onNavigateToSettings: () -> Unit,
     state: SearchViewModel.UiState,
-
-    authStatusViewModel: AuthStatusViewModel = viewModel(factory = AuthStatusViewModel.Factory),
+    accountImageState: SearchViewModel.AccountImageState,
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -108,24 +113,28 @@ fun SearchScreen(
             active = true,
             onActiveChange = { },
             leadingIcon = {
-                val accountImageUrl = when (val authUiState = authStatusViewModel.uiState) {
-                    is AuthStatusViewModel.UiState.SuccessfulLoginAccountDataLoaded -> {
-                        authUiState.accountImageUrl
+                when (accountImageState) {
+                    // todo: the alternative is having one Image with painters changed
+                    // based on whther there is a URL or not
+                    is SearchViewModel.AccountImageState.Loaded -> {
+                        AsyncImage(
+                            modifier = Modifier
+                                .clickable(onClick = onNavigateToSettings)
+                                .clip(CircleShape),
+                            model = accountImageState.imageUrl,
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            placeholder = rememberVectorPainter(Icons.Filled.AccountCircle), // todo: is rememberVectorPainter a good idea?
+                        )
                     }
-                    else -> null
-                }
-
-                if (accountImageUrl != null) {
-                    AsyncImage(
-                        model = accountImageUrl,
-                        contentDescription = null,
-                    )
-                } else {
-                    Icon(
-                        modifier = Modifier.clickable(onClick = onNavigateToSettings),
-                        imageVector = Icons.Filled.AccountCircle,
-                        contentDescription = null
-                    )
+                    is SearchViewModel.AccountImageState.NotLoaded -> {
+                        Icon(
+                            modifier = Modifier
+                                .clickable(onClick = onNavigateToSettings),
+                            imageVector = Icons.Filled.AccountCircle,
+                            contentDescription = null,
+                        )
+                    }
                 }
 
                 /*Icon(
