@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector
+package ua.leonidius.beatinspector.auth
 
 interface AuthStateStorage {
 

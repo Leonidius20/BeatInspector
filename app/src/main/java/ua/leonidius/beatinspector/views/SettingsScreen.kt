@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -30,21 +31,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ua.leonidius.beatinspector.AuthStatusViewModel
+import coil.compose.AsyncImage
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.viewmodels.SettingsViewModel
 
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
-    viewModel: SettingsViewModel = viewModel(),
-    // todo: in authStatusViewModel, after successfully logging in, start async-ly loading user data
-    // add new UiStates: LoggedInDataLoading, LoggedInDataLoaded
+    viewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory),
     // if DataLoading, show placeholder image and empty text (or wiped out text)
-    authStatusViewModel: AuthStatusViewModel = viewModel(factory = AuthStatusViewModel.Factory),
     onLegalDocClicked: (Int) -> Unit,
     onLogOutClicked: () -> Unit,
 ) {
@@ -61,26 +62,68 @@ fun SettingsScreen(
                 .padding(16.dp)
         ) {
             Row {
-                Image(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(16.dp)
-                        .aspectRatio(1f),
-                    imageVector = Icons.Filled.AccountCircle,
-                    contentDescription = null
-                )
+
+                when(val state = viewModel.accountDetailsState) {
+                    is SettingsViewModel.AccountDetailsState.Loaded -> {
+                        // todo: 1 image with different painters?
+                        AsyncImage(
+                            model = state.bigImageUrl,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .padding(16.dp)
+                                .aspectRatio(1f)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop,
+                            placeholder = rememberVectorPainter(Icons.Filled.AccountCircle),
+                        )
+                    }
+                    else -> {
+                        Image(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .padding(16.dp)
+                                .aspectRatio(1f),
+                            imageVector = Icons.Filled.AccountCircle,
+                            contentDescription = null,
+                        )
+                    }
+                    // todo: loading visalization
+                    /*is SettingsViewModel.AccountDetailsState.Loading -> {
+
+                    }
+                    is SettingsViewModel.AccountDetailsState.Error -> {
+
+                    }*/
+                }
+
+
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(
                     Modifier.align(Alignment.CenterVertically)
                 ) {
                     Text(stringResource(R.string.logged_in_as))
-                    Text("username",
+
+                    val usernameText = when(val state = viewModel.accountDetailsState) {
+                        is SettingsViewModel.AccountDetailsState.Loaded -> {
+                            state.username
+                        }
+                        else -> {
+                            "< loading data >"
+                        }
+                    }
+
+                    Text(
+                        usernameText,
                         style = MaterialTheme.typography.headlineSmall,
-                        modifier = Modifier.padding(bottom = 16.dp, top = 4.dp),
+                        modifier = Modifier.padding(bottom = 16.dp, top = 4.dp, end = 16.dp),
                         maxLines = 2,
                         // todo: text overflow ellipsis
+                        // todo: placeholder if loading
                     )
-                    Text("email@business.net", style = MaterialTheme.typography.labelMedium)
+
+                    // todo remove this from here
+                    Text(stringResource(id = R.string.settings_block_account), style = MaterialTheme.typography.labelMedium)
                 }
             }
         }

@@ -10,7 +10,6 @@ import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
-import ua.leonidius.beatinspector.AuthStateStorage
 import java.util.concurrent.CountDownLatch
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException

@@ -16,11 +16,11 @@ import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.entities.SongSearchResult
 import ua.leonidius.beatinspector.repos.SongsRepository
 import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
-import ua.leonidius.beatinspector.repos.SpotifyAccountRepo
+import ua.leonidius.beatinspector.repos.account.AccountRepository
 
 class SearchViewModel(
     private val songsRepository: SongsRepository,
-    private val accountRepository: SpotifyAccountRepo,
+    private val accountRepository: AccountRepository,
 ) : ViewModel() {
 
     sealed class UiState {
@@ -74,7 +74,7 @@ class SearchViewModel(
             accountImageState = AccountImageState.Loading
 
             accountImageState = try {
-                val accountImageUrl = accountRepository.getAccountDetails().imageUrl
+                val accountImageUrl = accountRepository.getAccountDetails().smallImageUrl
                 if (accountImageUrl != null) {
                     AccountImageState.Loaded(accountImageUrl)
                 } else {

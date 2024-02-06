@@ -1,7 +1,6 @@
-package ua.leonidius.beatinspector
+package ua.leonidius.beatinspector.auth
 
 import android.content.SharedPreferences
-import ua.leonidius.beatinspector.auth.Authenticator
 
 class AuthStateSharedPrefStorage(
     private val prefs: SharedPreferences

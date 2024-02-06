@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.repos.retrofit
+package ua.leonidius.beatinspector.services
 
 import com.google.gson.annotations.SerializedName
 import com.haroldadmin.cnradapter.NetworkResponse
@@ -17,9 +17,11 @@ interface SpotifyAccountService {
 
         val images: List<Image>
     ) {
+       val smallestImage: Image?
+           get() = images.minByOrNull { it.height * it.width }
 
-        val image
-            get() = images.firstOrNull()
+       val biggestImage : Image?
+           get() = images.maxByOrNull { it.height * it.width }
 
     }
 

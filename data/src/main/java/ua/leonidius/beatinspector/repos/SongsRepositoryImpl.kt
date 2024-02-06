@@ -10,7 +10,7 @@ import ua.leonidius.beatinspector.entities.Song
 import ua.leonidius.beatinspector.entities.SongSearchResult
 import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSource
 import ua.leonidius.beatinspector.repos.datasources.SongsInMemCache
-import ua.leonidius.beatinspector.repos.retrofit.SpotifyRetrofitClient
+import ua.leonidius.beatinspector.services.SpotifyRetrofitClient
 
 class SongsRepositoryImpl(
     private val spotifyRetrofitClient: SpotifyRetrofitClient,

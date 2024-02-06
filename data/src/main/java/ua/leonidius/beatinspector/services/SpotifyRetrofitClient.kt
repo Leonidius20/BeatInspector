@@ -1,9 +1,11 @@
-package ua.leonidius.beatinspector.repos.retrofit
+package ua.leonidius.beatinspector.services
 
 import com.haroldadmin.cnradapter.NetworkResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
+import ua.leonidius.beatinspector.repos.retrofit.SpotifySearchResult
+import ua.leonidius.beatinspector.repos.retrofit.SpotifyTrackAnalysisResponse
 
 
 interface SpotifyRetrofitClient {

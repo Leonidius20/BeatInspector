@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector
+package ua.leonidius.beatinspector.repos.account
 
 import java.io.IOException
 

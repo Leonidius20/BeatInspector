@@ -8,17 +8,19 @@ import net.openid.appauth.AuthorizationService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ua.leonidius.beatinspector.auth.AuthStateSharedPrefStorage
 import ua.leonidius.beatinspector.auth.Authenticator
 import ua.leonidius.beatinspector.data.R
 import ua.leonidius.beatinspector.repos.SongsRepository
 import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
-import ua.leonidius.beatinspector.repos.SpotifyAccountRepo
-import ua.leonidius.beatinspector.repos.SpotifyAccountRepoImpl
+import ua.leonidius.beatinspector.repos.account.AccountDataSharedPrefCache
+import ua.leonidius.beatinspector.repos.account.AccountRepository
+import ua.leonidius.beatinspector.repos.account.AccountRepositoryImpl
 import ua.leonidius.beatinspector.repos.datasources.SongsInMemCache
 import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSourceImpl
 import ua.leonidius.beatinspector.repos.retrofit.AuthInterceptor
-import ua.leonidius.beatinspector.repos.retrofit.SpotifyAccountService
-import ua.leonidius.beatinspector.repos.retrofit.SpotifyRetrofitClient
+import ua.leonidius.beatinspector.services.SpotifyAccountService
+import ua.leonidius.beatinspector.services.SpotifyRetrofitClient
 import java.text.DecimalFormat
 
 class BeatInspectorApp: Application() {
@@ -27,15 +29,13 @@ class BeatInspectorApp: Application() {
 
     lateinit var songsRepository: SongsRepository
 
-    lateinit var accountRepository: SpotifyAccountRepo
+    lateinit var accountRepository: AccountRepository
 
     val decimalFormat = DecimalFormat("0.##") // for bpm and loudness
 
     var isSpotifyInstalled = false
 
     private lateinit var authService: AuthorizationService
-
-    lateinit var accountDataCache: AccountDataCache
 
     override fun onCreate() {
         super.onCreate()
@@ -74,12 +74,14 @@ class BeatInspectorApp: Application() {
 
         val spotifyAccountService = retrofit.create(SpotifyAccountService::class.java)
 
-        accountRepository = SpotifyAccountRepoImpl(spotifyAccountService, Dispatchers.IO)
+        val accountDataCache = AccountDataSharedPrefCache(getSharedPreferences(getString(ua.leonidius.beatinspector.R.string.preferences_account_data_file_name), MODE_PRIVATE))
+
+
+        accountRepository = AccountRepositoryImpl(spotifyAccountService, accountDataCache, Dispatchers.IO)
 
         // check if Spotify is installed
         isSpotifyInstalled = isPackageInstalled("com.spotify.music")
 
-        accountDataCache = AccountDataSharedPrefCache(getSharedPreferences(getString(ua.leonidius.beatinspector.R.string.preferences_account_data_file_name), MODE_PRIVATE))
     }
 
     private fun isPackageInstalled(packageName: String): Boolean {

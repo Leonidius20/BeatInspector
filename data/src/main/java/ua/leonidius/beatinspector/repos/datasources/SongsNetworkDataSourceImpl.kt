@@ -7,7 +7,7 @@ import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.entities.Artist
 import ua.leonidius.beatinspector.entities.SongDetails
-import ua.leonidius.beatinspector.repos.retrofit.SpotifyRetrofitClient
+import ua.leonidius.beatinspector.services.SpotifyRetrofitClient
 
 class SongsNetworkDataSourceImpl(
     private val spotifyRetrofitClient: SpotifyRetrofitClient,
