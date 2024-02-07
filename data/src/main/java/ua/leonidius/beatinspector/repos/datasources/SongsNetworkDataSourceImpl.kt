@@ -4,10 +4,10 @@ import com.haroldadmin.cnradapter.NetworkResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.entities.Artist
 import ua.leonidius.beatinspector.entities.SongDetails
 import ua.leonidius.beatinspector.services.SpotifyRetrofitClient
+import ua.leonidius.beatinspector.toUIException
 
 class SongsNetworkDataSourceImpl(
     private val spotifyRetrofitClient: SpotifyRetrofitClient,
@@ -19,51 +19,27 @@ class SongsNetworkDataSourceImpl(
     ): SongDetails = withContext(ioDispatcher) {
 
         val trackAnalysisDeferredResponse = async {
-            spotifyRetrofitClient.getTrackAudioAnalysis(trackId)
+            when (val response = spotifyRetrofitClient.getTrackAudioAnalysis(trackId)) {
+                is NetworkResponse.Success -> Result.success(response.body.track)
+
+                is NetworkResponse.Error -> Result.failure(response.toUIException())
+            }
         }
 
         val genresDeferredResponse = async {
-            spotifyRetrofitClient.getArtists(artists.joinToString(",") { it.id })
-        }
+            when (val response = spotifyRetrofitClient.getArtists(artists.joinToString(",") { it.id })) {
+                is NetworkResponse.Success -> Result.success(
+                    response.body.artists.map { it.genres }.flatten().distinct())
 
-        val trackAnalysis = when (val response = trackAnalysisDeferredResponse.await()) {
-            is NetworkResponse.Success -> response.body.track
-
-            is NetworkResponse.ServerError -> {
-                throw SongDataIOException.Server(
-                    response.code,
-                    response.body?.message ?: "< No response body >"
-                )
-            }
-
-            is NetworkResponse.NetworkError -> {
-                throw SongDataIOException.Network(response.error)
-            }
-
-            is NetworkResponse.UnknownError -> {
-                throw SongDataIOException.Unknown(response.error)
+                is NetworkResponse.Error -> Result.failure(response.toUIException())
+                // ??? throw response.toUIException()
             }
         }
 
-        val genres = when (val response = genresDeferredResponse.await()) {
-            is NetworkResponse.Success -> {
-                response.body.artists.map { it.genres }.flatten().distinct()
-            }
-            is NetworkResponse.ServerError -> {
-                throw SongDataIOException.Server(
-                    response.code,
-                    response.body?.message ?: "< No response body >"
-                )
-            }
+        val trackAnalysis = trackAnalysisDeferredResponse.await().getOrThrow()
 
-            is NetworkResponse.NetworkError -> {
-                throw SongDataIOException.Network(response.error)
-            }
-
-            is NetworkResponse.UnknownError -> {
-                throw SongDataIOException.Unknown(response.error)
-            }
-        }
+        // if genres request fails, we still want to show the song details, so we just show no genres
+        val genres = genresDeferredResponse.await().getOrDefault(emptyList())
 
         // todo: make data mappers a separate thing
         with(trackAnalysis) {
