@@ -80,7 +80,7 @@
         </p> <p>
             At some point, we may wish to update the app. The app is
             currently available on Android – the requirements for the
-            system(and for any additional systems we
+            system (and for any additional systems we
             decide to extend the availability of the app to) may change,
             and you’ll need to download the updates if you want to keep
             using the app. Leonidius20 does not promise that it
@@ -94,14 +94,45 @@
             rights and licenses granted to you in these terms will end;
             (b) you must stop using the app, and (if needed) delete it
             from your device.
-        </p> <p><b>Changes to This Terms and Conditions</b></p> <p>
+        </p> <p><b>Relation to Spotify</b></p> <p>
+           Leonidius20 does not make any warranties or representations
+           on behalf of Spotify and expressly disclaims all implied warranties
+           with respect to the Spotify Platform, Spotify Service and Spotify Content,
+           including the implied warranties of merchantability, fitness
+           for a particular purpose and non-infringement.
+        </p>
+        <p>
+            <ul>
+                <li>In connection with your use of BeatInspector,
+                    you are prohibited and will not assist or enable others to:
+                    <ul>
+                        <li>modify or create derivative works based on the Spotify Platform,
+                         Spotify Service or Spotify Content;</li>
+                        <li>decompile, reverse-engineer, disassemble, and otherwise reduce
+                         the Spotify Platform, Spotify Service, and Spotify Content to source
+                         code or other human-perceivable form, to the full extent allowed by law.</li>
+                    </ul>
+                </li>
+                <li>
+                    Leonidius20 disclaims any liability on the part of Spotify.
+                </li>
+                <li>
+                    Spotify is a third party beneficiary of this agreement
+                    and the BeatInspector privacy policy and is entitled to directly enforce this agreement.
+                </li>
+
+            </ul>
+
+        </p>
+
+        <p><b>Changes to This Terms and Conditions</b></p> <p>
             I may update our Terms and Conditions
             from time to time. Thus, you are advised to review this page
-            periodically for any changes. I will
-            notify you of any changes by posting the new Terms and
-            Conditions on this page.
-        </p> <p>
-            These terms and conditions are effective as of 2024-02-03
+            periodically for any changes.
+        </p>
+
+         <p>
+            These terms and conditions are effective as of 2024-02-07 (YYYY.MM.DD)
         </p> <p><b>Contact Us</b></p> <p>
             If you have any questions or suggestions about my
             Terms and Conditions, do not hesitate to contact me
@@ -127,24 +158,24 @@
           anyone except as described in this Privacy Policy.
         </p> <p>
           The terms used in this Privacy Policy have the same meanings
-          as in our Terms and Conditions, which are accessible at
-          BeatInspector unless otherwise defined in this Privacy Policy.
+          as in our Terms and Conditions, which are accessible in the
+          BeatInspector app unless otherwise defined in this Privacy Policy.
         </p> <p><b>Information Collection and Use</b></p> <p>
           For a better experience, while using our Service, I
           may require you to provide us with certain personally
-          identifiable information, including but not limited to Spotify ID, username and profile picture. The information that
+          identifiable information, including Spotify account ID, username
+          and profile picture. The information that
           I request will be retained on your device and is not collected by me in any way.
-        </p> <!----> <p><b>Log Data</b></p> <p>
-          I want to inform you that whenever you
-          use my Service, in a case of an error in the app
-          I collect data and information (through third-party
-          products) on your phone called Log Data. This Log Data may
-          include information such as your device Internet Protocol
-          (“IP”) address, device name, operating system version, the
-          configuration of the app when utilizing my Service,
-          the time and date of your use of the Service, and other
-          statistics.
-        </p> <p><b>Cookies</b></p> <p>
+          The information collected is used to provide the Service.
+        </p>
+        <p><b>Personal Information removal</b></p>
+        <p>
+            If you have provided us any Personal Information, you may review it by accessing
+            the settings page in the BeatInspector app. You may remove this information from
+            your device and prevent this information from being accessed by the Service
+            by using the Log out function on the settings page of the app.
+        </p>
+        <p><b>Cookies</b></p> <p>
           Cookies are files with a small amount of data that are
           commonly used as anonymous unique identifiers. These are sent
           to your browser from the websites that you visit and are
@@ -157,27 +188,18 @@
           and know when a cookie is being sent to your device. If you
           choose to refuse our cookies, you may not be able to use some
           portions of this Service.
-        </p> <p><b>Service Providers</b></p> <p>
-          I may employ third-party companies and
-          individuals due to the following reasons:
-        </p> <ul><li>To facilitate our Service;</li> <li>To provide the Service on our behalf;</li> <li>To perform Service-related services; or</li> <li>To assist us in analyzing how our Service is used.</li></ul> <p>
-          I want to inform users of this Service
-          that these third parties have access to their Personal
-          Information. The reason is to perform the tasks assigned to
-          them on our behalf. However, they are obligated not to
-          disclose or use the information for any other purpose.
         </p> <p><b>Security</b></p> <p>
           I value your trust in providing us your
           Personal Information, thus we are striving to use commercially
           acceptable means of protecting it. But remember that no method
-          of transmission over the internet, or method of electronic
+          of electronic
           storage is 100% secure and reliable, and I cannot
           guarantee its absolute security.
         </p> <p><b>Links to Other Sites</b></p> <p>
           This Service may contain links to other sites. If you click on
           a third-party link, you will be directed to that site. Note
           that these external sites are not operated by me.
-          Therefore, I bly advise you to review the
+          Therefore, I advise you to review the
           Privacy Policy of these websites. I have
           no control over and assume no responsibility for the content,
           privacy policies, or practices of any third-party sites or
@@ -198,10 +220,8 @@
           </p></div> <p><b>Changes to This Privacy Policy</b></p> <p>
           I may update our Privacy Policy from
           time to time. Thus, you are advised to review this page
-          periodically for any changes. I will
-          notify you of any changes by posting the new Privacy Policy on
-          this page.
-        </p> <p>This policy is effective as of 2024-02-03</p> <p><b>Contact Us</b></p> <p>
+          periodically for any changes.
+        </p> <p>This policy is effective as of 2024-02-07 (YYYY.MM.DD)</p> <p><b>Contact Us</b></p> <p>
           If you have any questions or suggestions about my
           Privacy Policy, do not hesitate to contact me at https://github.com/Leonidius20/BeatInspector/discussions.
         </p>]]>
