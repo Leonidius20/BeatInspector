@@ -149,6 +149,8 @@ dependencies {
 
     implementation("com.mikepenz:aboutlibraries-core:10.10.0")
 
+    implementation("androidx.browser:browser:1.7.0")
+
     implementation(project(":data"))
 
     testImplementation("junit:junit:4.13.2")

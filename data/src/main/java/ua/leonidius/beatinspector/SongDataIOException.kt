@@ -10,12 +10,14 @@ sealed class SongDataIOException(
 
     data class Server(
         val code: Int?,
-        val messageFromApi: String
+        val messageFromApi: String,
+        val rawResponse: String? = null
     ) : SongDataIOException() {
 
         override fun toTextDescription() = """
             Code: $code
             Message from API: $messageFromApi
+            Raw response: $rawResponse
         """.trimIndent()
 
     }
@@ -36,12 +38,14 @@ sealed class SongDataIOException(
     }
 
     data class Unknown(
-        val e: Throwable
+        val e: Throwable,
+        val rawResponse: String? = null
     ): SongDataIOException(e) {
 
         override fun toTextDescription() = """
             Exception type: ${e::class.java.name}
             Exception message: ${e.message}
+            Raw API response: $rawResponse
         """.trimIndent()
 
     }

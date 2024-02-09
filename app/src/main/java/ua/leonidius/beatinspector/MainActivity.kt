@@ -2,12 +2,14 @@ package ua.leonidius.beatinspector
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,6 +24,7 @@ import ua.leonidius.beatinspector.views.LongTextScreen
 import ua.leonidius.beatinspector.views.SearchScreen
 import ua.leonidius.beatinspector.views.SettingsScreen
 import ua.leonidius.beatinspector.views.SongDetailsScreen
+
 
 class MainActivity : ComponentActivity() {
 
@@ -91,6 +94,12 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate("text/${it}")
                             }, onLogOutClicked = {
                                 viewModel.logout()
+
+                                // open the Spotify Manage Apps page
+                                // todo: is it possible to only redirect to login if the tab is closed?
+                                CustomTabsIntent.Builder()
+                                    .build().launchUrl(this@MainActivity, Uri.parse("https://www.spotify.com/account/apps/"))
+
                                 navController.navigate("login") {
                                     popUpTo("settings") {
                                         inclusive = true

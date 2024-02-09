@@ -9,7 +9,9 @@ import com.mikepenz.aboutlibraries.entity.License
 import com.mikepenz.aboutlibraries.util.withContext
 import kotlinx.coroutines.Dispatchers
 import net.openid.appauth.AuthorizationService
+import okhttp3.Cache
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ua.leonidius.beatinspector.auth.AuthStateSharedPrefStorage
@@ -24,6 +26,7 @@ import ua.leonidius.beatinspector.repos.account.AccountRepositoryImpl
 import ua.leonidius.beatinspector.repos.datasources.SongsInMemCache
 import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSourceImpl
 import ua.leonidius.beatinspector.repos.retrofit.AuthInterceptor
+import ua.leonidius.beatinspector.repos.retrofit.FixCacheControlInterceptor
 import ua.leonidius.beatinspector.services.SpotifyAccountService
 import ua.leonidius.beatinspector.services.SpotifyRetrofitClient
 import java.text.DecimalFormat
@@ -48,6 +51,8 @@ class BeatInspectorApp: Application() {
 
     lateinit var licenses: Set<License>
 
+    lateinit var okHttpCache: Cache
+
     override fun onCreate() {
         super.onCreate()
 
@@ -62,18 +67,22 @@ class BeatInspectorApp: Application() {
 
         val authInterceptor = AuthInterceptor(authenticator)
 
+        okHttpCache = Cache(
+            applicationContext.cacheDir,
+            50 * 1024 * 1024 // 50 MB
+        )
+
         val retrofit = Retrofit.Builder()
             .baseUrl("https://api.spotify.com/v1/")
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(NetworkResponseAdapterFactory())
-            .client(
-
-                OkHttpClient.Builder()
+            .client(OkHttpClient.Builder()
                 .addInterceptor(authInterceptor)
-                /*.addInterceptor(HttpLoggingInterceptor().apply {
-                    level = HttpLoggingInterceptor.Level.BODY
-                })*/
-                .build())
+                // .addInterceptor(FixCacheControlInterceptor())
+                .cache(okHttpCache)
+                .addInterceptor(HttpLoggingInterceptor().apply {
+                    level = HttpLoggingInterceptor.Level.HEADERS
+                }).build())
             .build()
 
         val spotifyRetrofitClient = retrofit.create(SpotifyRetrofitClient::class.java)

@@ -17,6 +17,7 @@ class SongsNetworkDataSourceImpl(
     override suspend fun getTrackAudioAnalysis(
         trackId: String, artists: List<Artist>
     ): SongDetails = withContext(ioDispatcher) {
+        // todo: learn how to handle errors in async black outside of it, instead of using result api
 
         val trackAnalysisDeferredResponse = async {
             when (val response = spotifyRetrofitClient.getTrackAudioAnalysis(trackId)) {
@@ -38,8 +39,10 @@ class SongsNetworkDataSourceImpl(
 
         val trackAnalysis = trackAnalysisDeferredResponse.await().getOrThrow()
 
-        // if genres request fails, we still want to show the song details, so we just show no genres
-        val genres = genresDeferredResponse.await().getOrDefault(emptyList())
+        // if genres request fails and we returned an empty list instead,
+        // if would be cached and we will never get those genres at all,
+        // unless we clear the cache, which is not great, so we throw here
+        val genres = genresDeferredResponse.await().getOrThrow()
 
         // todo: make data mappers a separate thing
         with(trackAnalysis) {

@@ -4,13 +4,13 @@ import android.util.Log
 import com.haroldadmin.cnradapter.NetworkResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
-import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.entities.Artist
 import ua.leonidius.beatinspector.entities.Song
 import ua.leonidius.beatinspector.entities.SongSearchResult
-import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSource
 import ua.leonidius.beatinspector.repos.datasources.SongsInMemCache
+import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSource
 import ua.leonidius.beatinspector.services.SpotifyRetrofitClient
+import ua.leonidius.beatinspector.toUIException
 
 class SongsRepositoryImpl(
     private val spotifyRetrofitClient: SpotifyRetrofitClient,
@@ -36,14 +36,8 @@ class SongsRepositoryImpl(
                     )
                 }.onEach { inMemCache.songSearchResults[it.id] = it }
             }
-            is NetworkResponse.ServerError -> {
-                throw SongDataIOException.Server(result.code, result.body?.message ?: "< No response body >")
-            }
-            is NetworkResponse.NetworkError -> {
-                throw SongDataIOException.Network(result.error)
-            }
-            is NetworkResponse.UnknownError -> {
-                throw SongDataIOException.Unknown(result.error)
+            is NetworkResponse.Error -> {
+                throw result.toUIException()
             }
         }
     }

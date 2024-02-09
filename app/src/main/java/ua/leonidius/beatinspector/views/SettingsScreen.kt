@@ -21,11 +21,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +40,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -58,6 +61,7 @@ fun SettingsScreen(
 ) {
     val expanded = rememberSaveable { mutableStateOf(false) }
     var aboutAppDialogShown by rememberSaveable { mutableStateOf(false) }
+    var logoutDialogShown by rememberSaveable { mutableStateOf(false) }
 
     LazyColumn(content = {
         item {
@@ -143,7 +147,7 @@ fun SettingsScreen(
 
             SettingsBlock(title = R.string.settings_block_account) {
                 SettingsItem(title = stringResource(R.string.log_out)) {
-                    onLogOutClicked()
+                    logoutDialogShown = true
                 }
             }
             SettingsBlock(title = R.string.settings_block_links) {
@@ -205,6 +209,13 @@ fun SettingsScreen(
                 }
             }
         }
+    }
+
+    if (logoutDialogShown) {
+        LogOutDialog(
+            onLogOut = onLogOutClicked,
+            onDismissRequest = { logoutDialogShown = false }
+        )
     }
 
 }
@@ -283,4 +294,28 @@ fun LinkSettingsItem(
     onLinkClicked: (String) -> Unit,
 ) {
     SettingsItem(modifier = modifier, title = title, onClick = { onLinkClicked(link) })
+}
+
+@Composable
+fun LogOutDialog(
+    onLogOut: () -> Unit,
+    onDismissRequest: () -> Unit,
+) {
+    AlertDialog(
+        title = {
+            Text(text = stringResource(R.string.log_out))
+                },
+        text = {
+            Text(
+                text = stringResource(R.string.log_out_explanation),
+                textAlign = TextAlign.Justify,
+            )
+        },
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            TextButton(onClick = onLogOut) {
+                Text(text = stringResource(R.string.log_out))
+            }
+        }
+    )
 }
