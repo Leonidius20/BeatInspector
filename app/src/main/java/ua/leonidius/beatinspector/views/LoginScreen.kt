@@ -31,12 +31,12 @@ import ua.leonidius.beatinspector.R
 
 @Composable
 fun LoginScreen(
-    onLoginButtonPressed: (AuthStatusViewModel) -> Unit,
+    onLoginButtonPressed: () -> Unit,
     onNavigateToLegalText: (Int) -> Unit,
     viewModel: AuthStatusViewModel = viewModel(factory = AuthStatusViewModel.Factory),
 ) {
     LoginComposable(
-        onLoginButtonPressed = { onLoginButtonPressed(viewModel) },
+        onLoginButtonPressed = onLoginButtonPressed,
         onNavigateToLegalText = onNavigateToLegalText,
         uiState = viewModel.uiState,
     )
