@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -61,7 +62,9 @@ fun LoginScreen(
                         pop()
                     }
 
-                    append(".")
+                    append(".\n\n")
+
+                    append(stringResource(id = R.string.login_scopes_tip))
                 }
 
                 ClickableText(
@@ -104,7 +107,7 @@ fun LoginScreen(
                     .padding(16.dp),
             ) {
                 Text(
-                    text = "Please follow the instructions in the browser window...",
+                    text = stringResource(R.string.login_in_progress_tip),
                     textAlign = TextAlign.Justify,
                 )
                 Spacer(modifier = Modifier.padding(16.dp))
@@ -120,7 +123,7 @@ fun LoginScreen(
             ) {
                 // todo: add actual error description based on the error type (network, user cancelled, etc)
                 Text(
-                    text = "There was an error during the login process. Please try again.",
+                    text = stringResource(R.string.log_in_error),
                     modifier = Modifier
                         .padding(bottom = 16.dp),
                     textAlign = TextAlign.Justify,

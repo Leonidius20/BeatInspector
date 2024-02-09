@@ -241,5 +241,8 @@
     <string name="github_link" translatable="false">https://github.com/Leonidius20/BeatInspector</string>
     <string name="settings_block_about">About the app</string>
     <string name="log_out_explanation">Upon pressing the Log out button, your data will be wiped from the app. Then, a Spotify \"Manage Apps\" page will be opened in a browser window.\n\nIf you want to disconnect the app from your account, find BeatInspector in the list and press the \"Remove Access\" button next to it.</string>
+    <string name="login_in_progress_tip">Please follow the instructions in the browser window…</string>
+    <string name="log_in_error">There was an error during the login process. Please try again.</string>
+    <string name="login_scopes_tip">We request access to your username and profile picture, so that you can see which account was used to log into the app.</string>
 
 </resources>
