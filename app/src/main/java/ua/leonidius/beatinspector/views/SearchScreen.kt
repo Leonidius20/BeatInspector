@@ -22,7 +22,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +35,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -97,80 +103,103 @@ fun SearchScreen(
     state: SearchViewModel.UiState,
     accountImageState: SearchViewModel.AccountImageState,
 ) {
-    val focusManager = LocalFocusManager.current
+    var searchBarActive by rememberSaveable { mutableStateOf(false) }
 
-    Column {
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    Column(modifier) {
         // search bar and attribution box
-        SearchBar(
-            modifier = modifier
-                .fillMaxWidth()
-                .weight(1f),
-            query = query,
-            onQueryChange = onQueryChange,
-            onSearch = {
-                focusManager.clearFocus()
-                onSearch(it)
-            },
-            placeholder = { Text(stringResource(R.string.searchBar_placeholder)) },
-            active = true,
-            onActiveChange = { },
-            leadingIcon = {
-                IconButton(onClick = onNavigateToSettings) {
+        Column(Modifier.weight(1f)) {// to make sure that the attribution box is at the bottom
+            val paddingTop = if (searchBarActive) 0.dp else 5.dp
 
+            Row(Modifier.padding(top = paddingTop)) {
 
-                    when (accountImageState) {
-                        // todo: the alternative is having one Image with painters changed
-                        // based on whther there is a URL or not
+                val paddingBottom = if (searchBarActive) 0.dp else 5.dp
+                val paddingStart = if (searchBarActive) 0.dp else 16.dp
+                val paddingEnd = if (searchBarActive) 0.dp else if (isLandscape) 8.dp else 16.dp
 
-                        is SearchViewModel.AccountImageState.Loaded -> {
-                            AsyncImage(
-                                modifier = Modifier
-                                    .clip(CircleShape),
-                                model = accountImageState.imageUrl,
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                placeholder = rememberVectorPainter(Icons.Filled.AccountCircle), // todo: is rememberVectorPainter a good idea?
-                            )
-                        }
-
-                        is SearchViewModel.AccountImageState.NotLoaded -> {
-                            Icon(
-                                imageVector = Icons.Filled.AccountCircle,
-                                contentDescription = null,
-                            )
-                        }
-                    }
-                }
-
-                /*Icon(
-                    imageVector = Icons.Default.Search,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    contentDescription = null
-                )*/
-
-            },
-            trailingIcon = {
-                Row {
-                    IconButton(
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        onClick = {
+                SearchBar(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = paddingStart, end = paddingEnd),
+                    query = query,
+                    onQueryChange = onQueryChange,
+                    onSearch = {
                         if (query.isNotEmpty()) {
-                            onQueryChange("")
+                            onSearch(it)
+                            searchBarActive = false
                         }
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = null,
-                        )
-                    }
+                    },
+                    placeholder = { Text(stringResource(R.string.searchBar_placeholder)) },
+                    active = searchBarActive,
+                    onActiveChange = { searchBarActive = it },
+                    leadingIcon = {
+                        if (!searchBarActive) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                contentDescription = null
+                            )
+                        } else {
+                            IconButton(onClick = { searchBarActive = false }) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowBack,
+                                    contentDescription = null
+                                )
+                            }
+                        }
 
-                    if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                        SpotifyAttributionBoxLandscape()
-                    }
+                    },
+                    trailingIcon = {
+                        if (!searchBarActive) {
+                            IconButton(onClick = onNavigateToSettings) {
+
+                                when (accountImageState) {
+                                    // todo: the alternative is having one Image with painters changed
+                                    // based on whther there is a URL or not
+
+                                    is SearchViewModel.AccountImageState.Loaded -> {
+                                        AsyncImage(
+                                            modifier = Modifier
+                                                .clip(CircleShape),
+                                            model = accountImageState.imageUrl,
+                                            contentDescription = null,
+                                            contentScale = ContentScale.Crop,
+                                            placeholder = rememberVectorPainter(Icons.Filled.AccountCircle), // todo: is rememberVectorPainter a good idea?
+                                        )
+                                    }
+
+                                    is SearchViewModel.AccountImageState.NotLoaded -> {
+                                        Icon(
+                                            imageVector = Icons.Filled.AccountCircle,
+                                            contentDescription = null,
+                                        )
+                                    }
+                                }
+                            }
+                        } else {
+                            IconButton(
+                                modifier = Modifier.align(Alignment.CenterVertically),
+                                onClick = {
+                                    if (query.isNotEmpty()) {
+                                        onQueryChange("")
+                                    }
+                                }) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+                    },
+                ) {
+                    // search suggestions here, which we do not have
                 }
 
-            },
-        ) {
+                if (isLandscape && !searchBarActive) {
+                    SpotifyAttributionBoxLandscape(Modifier.padding(end = 16.dp))
+                }
+            }
 
             when(state) {
                 is SearchViewModel.UiState.Uninitialized -> {
@@ -215,8 +244,7 @@ fun SearchScreen(
 
         }
 
-        // box for spotify attribution
-        if (LocalConfiguration.current.orientation != Configuration.ORIENTATION_LANDSCAPE) {
+        if (!isLandscape) {
             SpotifyAttributionBoxPortrait()
         }
     }
