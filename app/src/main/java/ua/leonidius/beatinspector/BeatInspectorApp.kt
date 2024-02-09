@@ -2,6 +2,8 @@ package ua.leonidius.beatinspector
 
 import android.app.Application
 import android.content.pm.PackageManager
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.entity.Library
@@ -26,10 +28,10 @@ import ua.leonidius.beatinspector.repos.account.AccountRepositoryImpl
 import ua.leonidius.beatinspector.repos.datasources.SongsInMemCache
 import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSourceImpl
 import ua.leonidius.beatinspector.repos.retrofit.AuthInterceptor
-import ua.leonidius.beatinspector.repos.retrofit.FixCacheControlInterceptor
 import ua.leonidius.beatinspector.services.SpotifyAccountService
 import ua.leonidius.beatinspector.services.SpotifyRetrofitClient
 import java.text.DecimalFormat
+
 
 class BeatInspectorApp: Application() {
 
@@ -58,11 +60,21 @@ class BeatInspectorApp: Application() {
 
         authService = AuthorizationService(this) // todo: research GC for this (dispose() method?)
 
+        val masterKey = MasterKey.Builder(this)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+
+        val sharedPreferences = EncryptedSharedPreferences.create(
+            this,
+            getString(R.string.preferences_tokens_file_name),
+            masterKey,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+
         authenticator = Authenticator(
             BuildConfig.SPOTIFY_CLIENT_ID,
-            AuthStateSharedPrefStorage(getSharedPreferences(getString(
-                R.string.preferences_tokens_file_name
-            ), MODE_PRIVATE)), authService
+            AuthStateSharedPrefStorage(sharedPreferences), authService
         )
 
         val authInterceptor = AuthInterceptor(authenticator)

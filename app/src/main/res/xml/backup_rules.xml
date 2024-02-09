@@ -7,7 +7,6 @@
 -->
 <full-backup-content>
     <!--
-   <include domain="sharedpref" path="."/>
-   <exclude domain="sharedpref" path="device.xml"/>
--->
+   <include domain="sharedpref" path="."/>-->
+   <exclude domain="sharedpref" path="ua.leonidius.beatinspector.TOKENS.xml"/>
 </full-backup-content>
