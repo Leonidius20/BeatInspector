@@ -6,7 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.browser.customtabs.CustomTabsIntent
@@ -15,6 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -28,15 +29,20 @@ import ua.leonidius.beatinspector.views.SongDetailsScreen
 
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: AuthStatusViewModel by viewModels(factoryProducer = { AuthStatusViewModel.Factory })
-
-    private lateinit var loginActivityLauncher: ActivityResultLauncher<Intent>
+    private lateinit var voodooViewModel: AuthStatusViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        loginActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            viewModel.onLoginActivityResult(result.resultCode == Activity.RESULT_OK, result.data)
+        // val viewModel: AuthStatusViewModel by viewModels(factoryProducer = { AuthStatusViewModel.Factory })
+
+        val callOnViewModelWithLoginResult = { vm: AuthStatusViewModel, result: ActivityResult ->
+            vm.onLoginActivityResult(result.resultCode == Activity.RESULT_OK, result.data)
+        }
+
+
+        val loginActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            callOnViewModelWithLoginResult(voodooViewModel, result)
         }
 
         val app = application as BeatInspectorApp // todo: remove?
@@ -49,6 +55,8 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
+
+                    val viewModel: AuthStatusViewModel by viewModels(factoryProducer = { AuthStatusViewModel.Factory })
 
                     val loggedIn = viewModel.uiState is AuthStatusViewModel.UiState.SuccessfulLogin
 
@@ -63,8 +71,11 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             } else {
-                                LoginScreen(onLoginButtonPressed = {
-                                    viewModel.launchLoginSequence { loginActivityLauncher.launch(it) }
+                                LoginScreen(onLoginButtonPressed = { authViewModel ->
+                                    // for some reason, UI is only recomposed when we use the viewmodel from the argument
+                                    voodooViewModel = authViewModel
+
+                                    authViewModel.launchLoginSequence { loginActivityLauncher.launch(it) }
                                 }, onNavigateToLegalText = { textResId ->
                                     navController.navigate("text/${textResId}")
                                 })

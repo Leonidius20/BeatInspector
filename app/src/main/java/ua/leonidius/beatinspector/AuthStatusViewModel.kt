@@ -1,6 +1,7 @@
 package ua.leonidius.beatinspector
 
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -28,12 +29,12 @@ class AuthStatusViewModel(
         object SuccessfulLogin: UiState()
     }
 
-    var uiState by mutableStateOf(
-        if (!authenticator.isAuthorized())
-            UiState.LoginOffered
-        else
-            UiState.SuccessfulLogin
-    )
+    private val initialState = if (!authenticator.isAuthorized())
+        UiState.LoginOffered
+    else
+        UiState.SuccessfulLogin
+
+    var uiState by mutableStateOf(initialState)
         private set
 
     // todo: single source of truth for auth status - authenticator class. maybe make it a stateflow?
@@ -52,6 +53,7 @@ class AuthStatusViewModel(
 
     fun launchLoginSequence(launchLoginActivityWithIntent: (Intent) -> Unit) {
         uiState = UiState.LoginInProgress
+
         val intent = authenticator.prepareStepOneIntent()
         launchLoginActivityWithIntent(intent)
     }
