@@ -6,14 +6,13 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
 import androidx.navigation.compose.NavHost
@@ -47,9 +46,11 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
 
-                    val loggedIn = viewModel.uiState is AuthStatusViewModel.UiState.SuccessfulLogin
+                    val startDestination = remember {
+                        if (viewModel.uiState !is AuthStatusViewModel.UiState.SuccessfulLogin) "login" else "search"
+                    }
 
-                    NavHost(navController = navController, startDestination = if (!loggedIn) "login" else "search") {
+                    NavHost(navController = navController, startDestination = startDestination) {
                         composable("login") {
                             if (viewModel.uiState is AuthStatusViewModel.UiState.SuccessfulLogin) {
                                 // todo: performance optimization?

@@ -27,6 +27,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
@@ -57,6 +58,7 @@ import ua.leonidius.beatinspector.entities.Artist
 import ua.leonidius.beatinspector.entities.SongSearchResult
 import ua.leonidius.beatinspector.ui.theme.ChangeStatusBarColor
 import ua.leonidius.beatinspector.viewmodels.SearchViewModel
+import ua.leonidius.beatinspector.views.components.LoadingScreen
 
 typealias SongId = String
 
@@ -113,27 +115,30 @@ fun SearchScreen(
             active = true,
             onActiveChange = { },
             leadingIcon = {
-                when (accountImageState) {
-                    // todo: the alternative is having one Image with painters changed
-                    // based on whther there is a URL or not
-                    is SearchViewModel.AccountImageState.Loaded -> {
-                        AsyncImage(
-                            modifier = Modifier
-                                .clickable(onClick = onNavigateToSettings)
-                                .clip(CircleShape),
-                            model = accountImageState.imageUrl,
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            placeholder = rememberVectorPainter(Icons.Filled.AccountCircle), // todo: is rememberVectorPainter a good idea?
-                        )
-                    }
-                    is SearchViewModel.AccountImageState.NotLoaded -> {
-                        Icon(
-                            modifier = Modifier
-                                .clickable(onClick = onNavigateToSettings),
-                            imageVector = Icons.Filled.AccountCircle,
-                            contentDescription = null,
-                        )
+                IconButton(onClick = onNavigateToSettings) {
+
+
+                    when (accountImageState) {
+                        // todo: the alternative is having one Image with painters changed
+                        // based on whther there is a URL or not
+
+                        is SearchViewModel.AccountImageState.Loaded -> {
+                            AsyncImage(
+                                modifier = Modifier
+                                    .clip(CircleShape),
+                                model = accountImageState.imageUrl,
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                placeholder = rememberVectorPainter(Icons.Filled.AccountCircle), // todo: is rememberVectorPainter a good idea?
+                            )
+                        }
+
+                        is SearchViewModel.AccountImageState.NotLoaded -> {
+                            Icon(
+                                imageVector = Icons.Filled.AccountCircle,
+                                contentDescription = null,
+                            )
+                        }
                     }
                 }
 
@@ -146,17 +151,19 @@ fun SearchScreen(
             },
             trailingIcon = {
                 Row {
-                    Icon(
-                        modifier = Modifier
-                            .clickable(onClickLabel = "clear search query") { // todo: add localization
-                                if (query.isNotEmpty()) {
-                                    onQueryChange("")
-                                }
-                            }
-                            .align(Alignment.CenterVertically),
-                        imageVector = Icons.Default.Close,
-                        contentDescription = null,
-                    )
+                    IconButton(
+                        modifier = Modifier.align(Alignment.CenterVertically),
+                        onClick = {
+                        if (query.isNotEmpty()) {
+                            onQueryChange("")
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = null,
+                        )
+                    }
+
                     if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE) {
                         SpotifyAttributionBoxLandscape()
                     }
@@ -169,16 +176,8 @@ fun SearchScreen(
                 is SearchViewModel.UiState.Uninitialized -> {
                     // nothing
                 }
-                is SearchViewModel.UiState.Loading -> {
-                    Box(modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.align(alignment = androidx.compose.ui.Alignment.Center)
-                        )
-                    }
+                is SearchViewModel.UiState.Loading -> LoadingScreen()
 
-                }
                 is SearchViewModel.UiState.Loaded -> {
                     when(LocalConfiguration.current.orientation) {
                         Configuration.ORIENTATION_LANDSCAPE -> {

@@ -53,8 +53,6 @@ class BeatInspectorApp: Application() {
 
     lateinit var licenses: Set<License>
 
-    lateinit var okHttpCache: Cache
-
     override fun onCreate() {
         super.onCreate()
 
@@ -79,7 +77,7 @@ class BeatInspectorApp: Application() {
 
         val authInterceptor = AuthInterceptor(authenticator)
 
-        okHttpCache = Cache(
+        val okHttpCache = Cache(
             applicationContext.cacheDir,
             50 * 1024 * 1024 // 50 MB
         )

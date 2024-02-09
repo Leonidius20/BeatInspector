@@ -57,6 +57,7 @@ import coil.request.ImageRequest
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.ui.theme.ChangeStatusBarColor
 import ua.leonidius.beatinspector.viewmodels.SongDetailsViewModel
+import ua.leonidius.beatinspector.views.components.LoadingScreen
 
 @Composable
 fun SongDetailsScreen(
@@ -77,17 +78,7 @@ fun SongDetailsScreenI(
     uiState: SongDetailsViewModel.UiState = SongDetailsViewModel.UiState.Loading,
 ) {
     when (uiState) {
-        is SongDetailsViewModel.UiState.Loading -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(alignment = Alignment.Center)
-                )
-            }
-        }
+        is SongDetailsViewModel.UiState.Loading -> LoadingScreen()
 
         is SongDetailsViewModel.UiState.Error -> {
             Box(
@@ -378,6 +369,24 @@ fun OpenInSpotifyButton(
                 stringResource(R.string.get_spotify_free_button_text)
         )
     }
+}
+
+@Preview
+@Composable
+fun OpenInSpotifyButtonPreview() {
+    OpenInSpotifyButton(
+        onClick = {},
+        isSpotifyInstalled = true,
+    )
+}
+
+@Preview
+@Composable
+fun GetSpotifyFreeButtonPreview() {
+    OpenInSpotifyButton(
+        onClick = {},
+        isSpotifyInstalled = false,
+    )
 }
 
 @Composable
