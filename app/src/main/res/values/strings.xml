@@ -245,5 +245,6 @@
     <string name="log_in_error">There was an error during the login process. Please try again.</string>
     <string name="login_scopes_tip">We request access to your username and profile picture, so that you can see which account was used to log into the app.</string>
     <string name="login_screen_try_again_button">Try again</string>
+    <string name="version">Version %1$s</string>
 
 </resources>

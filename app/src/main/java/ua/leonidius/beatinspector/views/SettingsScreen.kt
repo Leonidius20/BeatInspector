@@ -1,5 +1,6 @@
 package ua.leonidius.beatinspector.views
 
+import android.content.res.Configuration
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -13,8 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -36,11 +37,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import ua.leonidius.beatinspector.BuildConfig
@@ -84,6 +85,23 @@ fun SettingsScreen(
     var aboutAppDialogShown by rememberSaveable { mutableStateOf(false) }
     var logoutDialogShown by rememberSaveable { mutableStateOf(false) }
 
+    /*val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    if (!isLandscape) {
+        SettingsScreenPortrait(
+            modifier = modifier,
+            accountDetailsState = accountDetailsState,
+            libraryNameAndLicenseHash = libraryNameAndLicenseHash,
+            onLegalDocClicked = onLegalDocClicked,
+            onLogOutOptionChosen = onLogOutClicked,
+            onAboutOptionChosen = { aboutAppDialogShown = true },
+            onLinkClicked = onLinkClicked,
+            onLicenseClicked = onLicenseClicked,
+            expanded = expanded.value,
+            onExpansionStateChanged = { expanded.value = !expanded.value },
+        )
+    }*/
+
     LazyColumn(content = {
         item {
             Text(
@@ -91,117 +109,17 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(16.dp),
             )
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .padding(16.dp)
-            ) {
-                if (accountDetailsState is SettingsViewModel.AccountDetailsState.Error) {
-                    Text(
-                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp),
-                        text = "Failed to load account details.",
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                } else {
-                    Row {
-
-                        if (accountDetailsState is SettingsViewModel.AccountDetailsState.Loaded && accountDetailsState.bigImageUrl != null) {
-                            // todo: 1 image with different painters?
-                            AsyncImage(
-                                model = accountDetailsState.bigImageUrl,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .padding(16.dp)
-                                    .aspectRatio(1f)
-                                    .clip(CircleShape),
-                                contentScale = ContentScale.Crop,
-                                placeholder = rememberVectorPainter(Icons.Filled.AccountCircle),
-                            )
-                        } else {
-                            Image(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .padding(16.dp)
-                                    .aspectRatio(1f),
-                                imageVector = Icons.Filled.AccountCircle,
-                                contentDescription = null,
-                            )
-                        }
-
-                        /*is SettingsViewModel.AccountDetailsState.Loading -> {
-
-                            }*/
-                        // todo: loading visalization with text and image placeholders
+            AccountCardPortrait(uiState = accountDetailsState)
 
 
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Column(
-                            Modifier.align(Alignment.CenterVertically)
-                        ) {
-                            Text(stringResource(R.string.logged_in_as))
-
-                            val usernameText = when(accountDetailsState) {
-                                is SettingsViewModel.AccountDetailsState.Loaded -> {
-                                    accountDetailsState.username
-                                }
-                                else -> {
-                                    "< loading data >"
-                                }
-                            }
-
-                            Text(
-                                usernameText,
-                                style = MaterialTheme.typography.headlineSmall,
-                                modifier = Modifier.padding(bottom = 16.dp, top = 4.dp, end = 16.dp),
-                                maxLines = 2,
-                                // todo: text overflow ellipsis
-                                // todo: placeholder if loading
-                            )
-
-                            // todo remove this from here
-                            Text(stringResource(id = R.string.settings_block_account), style = MaterialTheme.typography.labelMedium)
-                        }
-                    }
-                }
-
-
-            }
-
-            //
-
-            SettingsBlock(title = R.string.settings_block_account) {
-                SettingsItem(title = stringResource(R.string.log_out)) {
-                    logoutDialogShown = true
-                }
-            }
-            SettingsBlock(title = R.string.settings_block_links) {
-                LinkSettingsItem(
-                    title = stringResource(R.string.github),
-                    link = stringResource(id = R.string.github_link),
-                    onLinkClicked = onLinkClicked
-                )
-            }
-            SettingsBlock(
-                modifier = Modifier.padding(bottom = 0.dp),
-                title = R.string.settings_block_title_legal_docs
-            ) {
-                Column {
-                    SettingsItem(title = stringResource(R.string.settings_block_about)) {
-                        aboutAppDialogShown = true
-                    }
-                    SettingsItem(title = stringResource(R.string.privacy_policy_title)) {
-                        onLegalDocClicked(R.string.privacy_policy)
-                    }
-                    SettingsItem(title = stringResource(R.string.terms_and_conditions_title)) {
-                        onLegalDocClicked(R.string.terms_and_conditions)
-                    }
-                    ExpandableSettingsItem(title = stringResource(R.string.open_source_licenses_title), expanded = expanded.value) {
-                        expanded.value = !expanded.value
-                    }
-                }
-            }
+            StaticSettingsBlock(
+                expanded = expanded.value,
+                onExpansionStateChanged = { expanded.value = !expanded.value },
+                onLegalDocClicked = onLegalDocClicked,
+                onLinkClicked = onLinkClicked,
+                onLogoutOptionChosen = { logoutDialogShown = true },
+                onAboutOptionChosen = { aboutAppDialogShown = true },
+            )
         }
         if (expanded.value) {
             items(libraryNameAndLicenseHash.size) { index ->
@@ -213,28 +131,10 @@ fun SettingsScreen(
         }
 
     })
-    if (aboutAppDialogShown) { // todo: make it a separate composable
-        Dialog(onDismissRequest = { aboutAppDialogShown = false }) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    // .height(200.dp)
-                    .padding(16.dp),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Column(Modifier.padding(16.dp)) {
-                    Text(
-                        text = stringResource(R.string.app_name),
-                        style = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier.padding(bottom = 8.dp),
-                    )
-                    Text(
-                        text = "Version ${BuildConfig.VERSION_NAME}",
-                        // style = MaterialTheme.typography.bod,
-                    )
-                }
-            }
-        }
+    if (aboutAppDialogShown) {
+        AboutDialog(
+            onDismissRequest = { aboutAppDialogShown = false },
+        )
     }
 
     if (logoutDialogShown) {
@@ -253,14 +153,231 @@ fun SettingsScreenPortrait(
     libraryNameAndLicenseHash: Array<Pair<String, String?>>,
     // if DataLoading, show placeholder image and empty text (or wiped out text)
     onLegalDocClicked: (Int) -> Unit,
-    onLogOutClicked: () -> Unit,
+    onLogOutOptionChosen: () -> Unit,
+    onAboutOptionChosen: () -> Unit,
     onLinkClicked: (String) -> Unit,
     onLicenseClicked: (String) -> Unit,
     expanded: Boolean,
     onExpansionStateChanged: () -> Unit,
 ) {
+    LazyColumn(modifier) {
+        item {
+            Text(
+                text = stringResource(R.string.settings_title),
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(16.dp),
+            )
+            AccountCardPortrait(uiState = accountDetailsState)
+
+
+            StaticSettingsBlock(
+                expanded = expanded,
+                onExpansionStateChanged = onExpansionStateChanged,
+                onLegalDocClicked = onLegalDocClicked,
+                onLinkClicked = onLinkClicked,
+                onLogoutOptionChosen = onLogOutOptionChosen,
+                onAboutOptionChosen = onAboutOptionChosen,
+            )
+        }
+        if (expanded) {
+            items(libraryNameAndLicenseHash.size) { index ->
+                val (name, licenseHash) = libraryNameAndLicenseHash[index]
+                ExpandedSettingsItem(title = name) {
+                    licenseHash?.let { onLicenseClicked(it) }
+                }
+            }
+        }
+
+    }
+}
+
+@Composable
+fun AboutDialog(
+    onDismissRequest: () -> Unit,
+) {
+    AlertDialog(
+        title = {
+            Text(text = stringResource(R.string.app_name))
+        },
+        text = {
+            Text(
+                text = stringResource(R.string.version, BuildConfig.VERSION_NAME),
+                textAlign = TextAlign.Justify,
+            )
+        },
+        onDismissRequest = onDismissRequest,
+        confirmButton = { }
+    )
+}
+
+@Composable
+fun LazyItemScope.StaticSettingsBlock(
+    expanded: Boolean,
+    onExpansionStateChanged: () -> Unit,
+    onLegalDocClicked: (Int) -> Unit,
+    onLinkClicked: (String) -> Unit,
+    onLogoutOptionChosen: () -> Unit,
+    onAboutOptionChosen: () -> Unit,
+) {
+    SettingsBlock(title = R.string.settings_block_account) {
+        SettingsItem(
+            title = stringResource(R.string.log_out),
+            onClick = onLogoutOptionChosen,
+        )
+    }
+    SettingsBlock(title = R.string.settings_block_links) {
+        LinkSettingsItem(
+            title = stringResource(R.string.github),
+            link = stringResource(id = R.string.github_link),
+            onLinkClicked = onLinkClicked
+        )
+    }
+    SettingsBlock(
+        modifier = Modifier.padding(bottom = 0.dp),
+        title = R.string.settings_block_title_legal_docs
+    ) {
+        Column {
+            SettingsItem(
+                title = stringResource(R.string.settings_block_about),
+                onClick = onAboutOptionChosen,
+            )
+            SettingsItem(title = stringResource(R.string.privacy_policy_title)) {
+                onLegalDocClicked(R.string.privacy_policy)
+            }
+            SettingsItem(title = stringResource(R.string.terms_and_conditions_title)) {
+                onLegalDocClicked(R.string.terms_and_conditions)
+            }
+            ExpandableSettingsItem(
+                title = stringResource(R.string.open_source_licenses_title),
+                expanded = expanded,
+                onExpansionStateChanged = onExpansionStateChanged
+            )
+        }
+    }
+}
+
+@Composable
+fun AccountCardPortrait(
+    modifier: Modifier = Modifier,
+    uiState: SettingsViewModel.AccountDetailsState,
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .padding(16.dp)
+    ) {
+        if (uiState is SettingsViewModel.AccountDetailsState.Error) {
+            Text(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(16.dp),
+                text = "Failed to load account details.",
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        } else {
+            Row {
+
+                val avatarUrl = if (uiState is SettingsViewModel.AccountDetailsState.Loaded)
+                    uiState.bigImageUrl
+                else null
+
+                AccountAvatarImage(imageUrl = avatarUrl)
+
+                /*is SettingsViewModel.AccountDetailsState.Loading -> {
+
+                    }*/
+                // todo: loading visalization with text and image placeholders
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                AccountUsername(
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    uiState = uiState,
+                )
+            }
+        }
+
+
+    }
+}
+
+@Composable
+fun AccountAvatarImage(
+    modifier: Modifier = Modifier,
+    imageUrl: String?,
+) {
+    if (imageUrl != null) {
+        // todo: 1 image with different painters?
+        // todo: placeholder if loading
+        AsyncImage(
+            model = imageUrl,
+            contentDescription = null,
+            modifier = modifier
+                .fillMaxHeight()
+                .padding(16.dp)
+                .aspectRatio(1f)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop,
+            placeholder = rememberVectorPainter(Icons.Filled.AccountCircle),
+        )
+    } else {
+        Image(
+            modifier = modifier
+                .fillMaxHeight()
+                .padding(16.dp)
+                .aspectRatio(1f),
+            imageVector = Icons.Filled.AccountCircle,
+            contentDescription = null,
+        )
+    }
 
 }
+
+@Composable
+fun AccountUsername(
+    modifier: Modifier = Modifier,
+    uiState: SettingsViewModel.AccountDetailsState,
+) {
+    Column(
+        modifier
+    ) {
+        val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+        if (!isLandscape) {
+            Text(stringResource(R.string.logged_in_as))
+        }
+
+        val usernameText = when(uiState) {
+            is SettingsViewModel.AccountDetailsState.Loaded -> {
+                uiState.username
+            }
+            is SettingsViewModel.AccountDetailsState.Loading -> {
+                "< loading data >"
+            }
+            is SettingsViewModel.AccountDetailsState.Error -> {
+                "" // this composable would not be displayed at all
+            }
+        }
+
+        Text(
+            usernameText,
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 16.dp, top = 4.dp, end = 16.dp),
+            maxLines = 2,
+            // todo: text overflow ellipsis
+            // todo: placeholder if loading
+        )
+
+        // todo remove this from here
+        if (!isLandscape) {
+            Text(stringResource(id = R.string.settings_block_account), style = MaterialTheme.typography.labelMedium)
+        }
+
+    }
+}
+
+
 
 @Composable
 fun SettingsBlock(
