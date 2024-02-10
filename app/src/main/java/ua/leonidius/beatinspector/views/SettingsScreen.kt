@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -40,11 +40,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import ua.leonidius.beatinspector.BuildConfig
+import ua.leonidius.beatinspector.Dimens
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.viewmodels.SettingsViewModel
 
@@ -85,7 +87,7 @@ fun SettingsScreen(
     var aboutAppDialogShown by rememberSaveable { mutableStateOf(false) }
     var logoutDialogShown by rememberSaveable { mutableStateOf(false) }
 
-    /*val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     if (!isLandscape) {
         SettingsScreenPortrait(
@@ -93,44 +95,28 @@ fun SettingsScreen(
             accountDetailsState = accountDetailsState,
             libraryNameAndLicenseHash = libraryNameAndLicenseHash,
             onLegalDocClicked = onLegalDocClicked,
-            onLogOutOptionChosen = onLogOutClicked,
+            onLogOutOptionChosen = { logoutDialogShown = true },
             onAboutOptionChosen = { aboutAppDialogShown = true },
             onLinkClicked = onLinkClicked,
             onLicenseClicked = onLicenseClicked,
             expanded = expanded.value,
             onExpansionStateChanged = { expanded.value = !expanded.value },
         )
-    }*/
+    } else {
+        SettingsScreenLandscape(
+            modifier = modifier,
+            accountDetailsState = accountDetailsState,
+            libraryNameAndLicenseHash = libraryNameAndLicenseHash,
+            onLegalDocClicked = onLegalDocClicked,
+            onLogOutOptionChosen = { logoutDialogShown = true },
+            onAboutOptionChosen = { aboutAppDialogShown = true },
+            onLinkClicked = onLinkClicked,
+            onLicenseClicked = onLicenseClicked,
+            expanded = expanded.value,
+            onExpansionStateChanged = { expanded.value = !expanded.value },
+        )
+    }
 
-    LazyColumn(content = {
-        item {
-            Text(
-                text = stringResource(R.string.settings_title),
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(16.dp),
-            )
-            AccountCardPortrait(uiState = accountDetailsState)
-
-
-            StaticSettingsBlock(
-                expanded = expanded.value,
-                onExpansionStateChanged = { expanded.value = !expanded.value },
-                onLegalDocClicked = onLegalDocClicked,
-                onLinkClicked = onLinkClicked,
-                onLogoutOptionChosen = { logoutDialogShown = true },
-                onAboutOptionChosen = { aboutAppDialogShown = true },
-            )
-        }
-        if (expanded.value) {
-            items(libraryNameAndLicenseHash.size) { index ->
-                val (name, licenseHash) = libraryNameAndLicenseHash[index]
-                ExpandedSettingsItem(title = name) {
-                    licenseHash?.let { onLicenseClicked(it) }
-                }
-            }
-        }
-
-    })
     if (aboutAppDialogShown) {
         AboutDialog(
             onDismissRequest = { aboutAppDialogShown = false },
@@ -147,11 +133,58 @@ fun SettingsScreen(
 }
 
 @Composable
+fun SettingsScreenLandscape(
+    modifier: Modifier = Modifier,
+    accountDetailsState: SettingsViewModel.AccountDetailsState,
+    libraryNameAndLicenseHash: Array<Pair<String, String?>>,
+    onLegalDocClicked: (Int) -> Unit,
+    onLogOutOptionChosen: () -> Unit,
+    onAboutOptionChosen: () -> Unit,
+    onLinkClicked: (String) -> Unit,
+    onLicenseClicked: (String) -> Unit,
+    expanded: Boolean,
+    onExpansionStateChanged: () -> Unit,
+) {
+    Column(modifier) {
+        PageTitle(title = R.string.settings_title)
+
+        Row {
+
+            AccountCardLandscape(
+                modifier = Modifier.weight(0.33f),
+                uiState = accountDetailsState
+            )
+
+            LazyColumn(modifier.weight(0.66f)) {
+                item {
+                    StaticSettingsBlock(
+                        expanded = expanded,
+                        onExpansionStateChanged = onExpansionStateChanged,
+                        onLegalDocClicked = onLegalDocClicked,
+                        onLinkClicked = onLinkClicked,
+                        onLogoutOptionChosen = onLogOutOptionChosen,
+                        onAboutOptionChosen = onAboutOptionChosen,
+                    )
+                }
+
+                if (expanded) {
+                    licensesList(
+                        libraryNameAndLicenseHash = libraryNameAndLicenseHash,
+                        onLicenseClicked = onLicenseClicked,
+                    )
+                }
+
+            }
+
+        }
+    }
+}
+
+@Composable
 fun SettingsScreenPortrait(
     modifier: Modifier = Modifier,
     accountDetailsState: SettingsViewModel.AccountDetailsState,
     libraryNameAndLicenseHash: Array<Pair<String, String?>>,
-    // if DataLoading, show placeholder image and empty text (or wiped out text)
     onLegalDocClicked: (Int) -> Unit,
     onLogOutOptionChosen: () -> Unit,
     onAboutOptionChosen: () -> Unit,
@@ -162,13 +195,11 @@ fun SettingsScreenPortrait(
 ) {
     LazyColumn(modifier) {
         item {
-            Text(
-                text = stringResource(R.string.settings_title),
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(16.dp),
-            )
-            AccountCardPortrait(uiState = accountDetailsState)
+            PageTitle(title = R.string.settings_title)
 
+            AccountCardPortrait(
+                uiState = accountDetailsState,
+            )
 
             StaticSettingsBlock(
                 expanded = expanded,
@@ -180,15 +211,36 @@ fun SettingsScreenPortrait(
             )
         }
         if (expanded) {
-            items(libraryNameAndLicenseHash.size) { index ->
-                val (name, licenseHash) = libraryNameAndLicenseHash[index]
-                ExpandedSettingsItem(title = name) {
-                    licenseHash?.let { onLicenseClicked(it) }
-                }
-            }
+            licensesList(
+                libraryNameAndLicenseHash = libraryNameAndLicenseHash,
+                onLicenseClicked = onLicenseClicked,
+            )
         }
 
     }
+}
+
+private fun LazyListScope.licensesList(
+    libraryNameAndLicenseHash: Array<Pair<String, String?>>,
+    onLicenseClicked: (String) -> Unit,
+) {
+    items(libraryNameAndLicenseHash.size) { index ->
+        val (name, licenseHash) = libraryNameAndLicenseHash[index]
+        ExpandedSettingsItem(title = name) {
+            licenseHash?.let { onLicenseClicked(it) }
+        }
+    }
+}
+
+@Composable
+fun PageTitle(
+    @StringRes title: Int,
+) {
+    Text(
+        text = stringResource(id = title),
+        style = MaterialTheme.typography.headlineMedium,
+        modifier = Modifier.padding(Dimens.paddingNormal),
+    )
 }
 
 @Composable
@@ -211,7 +263,7 @@ fun AboutDialog(
 }
 
 @Composable
-fun LazyItemScope.StaticSettingsBlock(
+fun StaticSettingsBlock(
     expanded: Boolean,
     onExpansionStateChanged: () -> Unit,
     onLegalDocClicked: (Int) -> Unit,
@@ -232,8 +284,7 @@ fun LazyItemScope.StaticSettingsBlock(
             onLinkClicked = onLinkClicked
         )
     }
-    SettingsBlock(
-        modifier = Modifier.padding(bottom = 0.dp),
+    SettingsBlockWithTrailingExpandableItem(
         title = R.string.settings_block_title_legal_docs
     ) {
         Column {
@@ -265,13 +316,17 @@ fun AccountCardPortrait(
         modifier = modifier
             .fillMaxWidth()
             .height(200.dp)
-            .padding(16.dp)
+            .padding(
+                start = Dimens.paddingNormal,
+                end = Dimens.paddingNormal,
+                bottom = Dimens.paddingNormal
+            )
     ) {
         if (uiState is SettingsViewModel.AccountDetailsState.Error) {
             Text(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(16.dp),
+                    .padding(Dimens.paddingNormal),
                 text = "Failed to load account details.",
                 style = MaterialTheme.typography.bodyLarge,
             )
@@ -282,23 +337,70 @@ fun AccountCardPortrait(
                     uiState.bigImageUrl
                 else null
 
-                AccountAvatarImage(imageUrl = avatarUrl)
+                AccountAvatarImage(
+                    modifier = Modifier.fillMaxHeight(),
+                    imageUrl = avatarUrl,
+                )
 
                 /*is SettingsViewModel.AccountDetailsState.Loading -> {
 
                     }*/
                 // todo: loading visalization with text and image placeholders
 
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(Dimens.paddingNormal))
 
                 AccountUsername(
-                    modifier = Modifier.align(Alignment.CenterVertically),
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(end = Dimens.paddingNormal),
                     uiState = uiState,
                 )
             }
         }
 
 
+    }
+}
+
+@Composable
+fun AccountCardLandscape(
+    modifier: Modifier = Modifier,
+    uiState: SettingsViewModel.AccountDetailsState,
+) {
+    Card(
+        modifier = modifier
+            .fillMaxHeight()
+            .padding(
+                start = Dimens.paddingNormal,
+                end = Dimens.paddingNormal,
+                bottom = Dimens.paddingNormal
+            )
+    ) {
+        Column {
+            val avatarUrl = if (uiState is SettingsViewModel.AccountDetailsState.Loaded)
+                uiState.bigImageUrl
+            else null
+
+            AccountAvatarImage(
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.CenterHorizontally),
+                imageUrl = avatarUrl
+            )
+
+            // Spacer(modifier = Modifier.height(Dimens.paddingNormal))
+
+            AccountUsername(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(
+                        bottom = Dimens.paddingNormal,
+                        start = Dimens.paddingNormal,
+                        end = Dimens.paddingNormal
+                    ),
+                uiState = uiState,
+            )
+        }
     }
 }
 
@@ -314,7 +416,6 @@ fun AccountAvatarImage(
             model = imageUrl,
             contentDescription = null,
             modifier = modifier
-                .fillMaxHeight()
                 .padding(16.dp)
                 .aspectRatio(1f)
                 .clip(CircleShape),
@@ -324,7 +425,6 @@ fun AccountAvatarImage(
     } else {
         Image(
             modifier = modifier
-                .fillMaxHeight()
                 .padding(16.dp)
                 .aspectRatio(1f),
             imageVector = Icons.Filled.AccountCircle,
@@ -363,8 +463,9 @@ fun AccountUsername(
         Text(
             usernameText,
             style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = 16.dp, top = 4.dp, end = 16.dp),
+            modifier = Modifier.padding(bottom = 16.dp, top = 4.dp),
             maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
             // todo: text overflow ellipsis
             // todo: placeholder if loading
         )
@@ -385,9 +486,23 @@ fun SettingsBlock(
     @StringRes title: Int,
     content: @Composable () -> Unit
 ) {
+    SettingsBlockWithTrailingExpandableItem(
+        modifier = modifier.padding(bottom = Dimens.paddingNormal),
+        title = title,
+        content = content
+    )
+}
+
+
+@Composable
+fun SettingsBlockWithTrailingExpandableItem(
+    modifier: Modifier = Modifier,
+    @StringRes title: Int,
+    content: @Composable () -> Unit
+) {
     Column(modifier) {
         Text(
-            modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
             text = stringResource(id = title),
             style = MaterialTheme.typography.labelMedium.copy(
                 color = MaterialTheme.colorScheme.onSurfaceVariant

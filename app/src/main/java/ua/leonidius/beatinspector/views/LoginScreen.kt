@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
@@ -72,7 +73,8 @@ fun ScreenColumn(
     Column(
         modifier
             .fillMaxHeight()
-            .padding(16.dp),
+            .padding(16.dp)
+            .widthIn(min = 0.dp, max = 250.dp),
         content = content,
     )
 }
