@@ -39,6 +39,17 @@ class MainActivity : ComponentActivity() {
 
         val app = application as BeatInspectorApp // todo: remove?
 
+        val openTrackOnSpotifyOrAppStore = { songId: String ->
+            val uri = if (app.isSpotifyInstalled)
+                "spotify:track:$songId"
+            else
+                "market://details?id=com.spotify.music"
+
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+            startActivity(intent)
+        }
+
+
         setContent {
             BeatInspectorTheme {
 
@@ -76,10 +87,11 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate("song/${it}")
                                 }, onNavigateToSettings = {
                                     navController.navigate("settings")
-                                })
+                                }, onOpenSongInSpotify = openTrackOnSpotifyOrAppStore)
                         }
                         composable("song/{songId}") {
-                            SongDetailsScreen()
+                            SongDetailsScreen(
+                                onOpenInSpotifyButtonClick = openTrackOnSpotifyOrAppStore)
                         }
                         composable("text/{textId}") {
                             val textId = it.arguments?.getString("textId")!!

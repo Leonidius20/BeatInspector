@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -26,7 +28,6 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,8 +47,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -57,8 +56,6 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import ua.leonidius.beatinspector.AuthStatusViewModel
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.entities.Artist
 import ua.leonidius.beatinspector.entities.SongSearchResult
@@ -74,6 +71,7 @@ fun SearchScreen(
     searchViewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory),
     onNavigateToSongDetails: (SongId) -> Unit = {},
     onNavigateToSettings: () -> Unit,
+    onOpenSongInSpotify: (SongId) -> Unit,
 ) {
     ChangeStatusBarColor(colorArgb = MaterialTheme.colorScheme.primary.toArgb())
 
@@ -87,6 +85,7 @@ fun SearchScreen(
         onNavigateToSettings = onNavigateToSettings,
         state = searchViewModel.uiState,
         accountImageState = searchViewModel.accountImageState,
+        onOpenSongInSpotify = onOpenSongInSpotify,
     )
 }
 
@@ -102,6 +101,7 @@ fun SearchScreen(
     onNavigateToSettings: () -> Unit,
     state: SearchViewModel.UiState,
     accountImageState: SearchViewModel.AccountImageState,
+    onOpenSongInSpotify: (SongId) -> Unit,
 ) {
     var searchBarActive by rememberSaveable { mutableStateOf(false) }
 
@@ -152,7 +152,9 @@ fun SearchScreen(
                     },
                     trailingIcon = {
                         if (!searchBarActive) {
-                            IconButton(onClick = onNavigateToSettings) {
+                            IconButton(
+                                onClick = onNavigateToSettings,
+                            ) {
 
                                 when (accountImageState) {
                                     // todo: the alternative is having one Image with painters changed
@@ -212,13 +214,15 @@ fun SearchScreen(
                         Configuration.ORIENTATION_LANDSCAPE -> {
                             SearchResultsGrid(
                                 results = state.searchResults,
-                                onNavigateToSongDetails = onNavigateToSongDetails
+                                onNavigateToSongDetails = onNavigateToSongDetails,
+                                onOpenSongInSpotify = onOpenSongInSpotify,
                             )
                         }
                         else -> {
                             SearchResultsList(
                                 results = state.searchResults,
-                                onNavigateToSongDetails = onNavigateToSongDetails
+                                onNavigateToSongDetails = onNavigateToSongDetails,
+                                onOpenSongInSpotify = onOpenSongInSpotify,
                             )
                         }
                     }
@@ -331,7 +335,8 @@ fun SearchScreenPortraitPreview() {
 
     SearchResultsList(
         results = listOf(song1, song2),
-        onNavigateToSongDetails = {}
+        onNavigateToSongDetails = {},
+        onOpenSongInSpotify = {},
     )
 }
 
@@ -346,7 +351,8 @@ fun SearchResultsGridPreview() {
 
     SearchResultsGrid(
         results = listOf(song1, song2),
-        onNavigateToSongDetails = {}
+        onNavigateToSongDetails = {},
+        onOpenSongInSpotify = {},
     )
 }
 
@@ -354,14 +360,16 @@ fun SearchResultsGridPreview() {
 fun SearchResultsList(
     modifier: Modifier = Modifier,
     results: List<SongSearchResult>,
-    onNavigateToSongDetails: (SongId) -> Unit
+    onNavigateToSongDetails: (SongId) -> Unit,
+    onOpenSongInSpotify: (SongId) -> Unit,
 ) {
-    LazyColumn(modifier.padding(5.dp)) {
+    LazyColumn(modifier.padding(top = 5.dp, bottom = 5.dp)) {
         items(results, key = { it.id }) {
             SearchResultsListItem(
                 Modifier.clickable { onNavigateToSongDetails(it.id) },
                 title = it.name,
-                artist = it.artists.joinToString(", ") { it.name }
+                artist = it.artists.joinToString(", ") { it.name },
+                onOpenSongInSpotify = { onOpenSongInSpotify(it.id) },
             )
         }
     }
@@ -371,20 +379,35 @@ fun SearchResultsList(
 fun SearchResultsListItem(
     modifier: Modifier = Modifier,
     title: String,
-    artist: String
+    artist: String,
+    onOpenSongInSpotify: () -> Unit,
 ) {
     ListItem(
         modifier = modifier,
         headlineContent = { Text(text = title) },
         supportingContent = { Text(text = artist) },
+        trailingContent = {
+            IconButton(
+                onClick = onOpenSongInSpotify,
+                modifier = Modifier.offset(x = (-3.75).dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.spotify_icon_black),
+                    contentDescription = "Open track on Spotify",
+                    modifier = Modifier.size(36.dp)
+                )
+            }
+        }
     )
+
 }
 
 @Composable
 fun SearchResultsGrid(
     modifier: Modifier = Modifier,
     results: List<SongSearchResult>,
-    onNavigateToSongDetails: (SongId) -> Unit
+    onNavigateToSongDetails: (SongId) -> Unit,
+    onOpenSongInSpotify: (SongId) -> Unit,
 ) {
     LazyVerticalGrid(
         modifier = modifier,
@@ -394,7 +417,8 @@ fun SearchResultsGrid(
             SearchResultsListItem(
                 Modifier.clickable { onNavigateToSongDetails(it.id) },
                 title = it.name,
-                artist = it.artists.joinToString(", ") { it.name }
+                artist = it.artists.joinToString(", ") { it.name },
+                onOpenSongInSpotify = { onOpenSongInSpotify(it.id) },
             )
         }
     }

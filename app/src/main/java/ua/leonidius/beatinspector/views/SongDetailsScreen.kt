@@ -1,8 +1,6 @@
 package ua.leonidius.beatinspector.views
 
-import android.content.Intent
 import android.content.res.Configuration
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +21,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -63,12 +60,14 @@ import ua.leonidius.beatinspector.views.components.LoadingScreen
 fun SongDetailsScreen(
     modifier: Modifier = Modifier,
     detailsViewModel: SongDetailsViewModel = viewModel(factory = SongDetailsViewModel.Factory),
+    onOpenInSpotifyButtonClick: (String) -> Unit,
 ) {
     // todo: why do smart casts work in the other composable, but not inside of this one?
 
     SongDetailsScreenI(
         modifier,
         detailsViewModel.uiState,
+        onOpenInSpotifyButtonClick,
     )
 }
 
@@ -76,6 +75,7 @@ fun SongDetailsScreen(
 fun SongDetailsScreenI(
     modifier: Modifier = Modifier,
     uiState: SongDetailsViewModel.UiState = SongDetailsViewModel.UiState.Loading,
+    onOpenInSpotifyButtonClick: (String) -> Unit,
 ) {
     when (uiState) {
         is SongDetailsViewModel.UiState.Loading -> LoadingScreen()
@@ -102,18 +102,6 @@ fun SongDetailsScreenI(
 
         is SongDetailsViewModel.UiState.Loaded -> {
             with(uiState) {
-                val context = LocalContext.current
-
-                // todo: move this? maybe use currying for context
-                val onOpenInSpotifyButtonClick = {
-                    val uri = if (isSpotifyInstalled)
-                        "spotify:track:$songId"
-                    else
-                        "market://details?id=com.spotify.music"
-
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
-                    context.startActivity(intent)
-                }
 
                 when (LocalConfiguration.current.orientation) {
                     Configuration.ORIENTATION_LANDSCAPE -> {
@@ -127,7 +115,7 @@ fun SongDetailsScreenI(
                             loudness = loudness,
                             genres = genres,
                             albumArtUrl = albumArtUrl,
-                            onOpenInSpotifyButtonClick,
+                            onOpenInSpotifyButtonClick = { onOpenInSpotifyButtonClick(songId) },
                             isSpotifyInstalled,
                         )
                     }
@@ -143,7 +131,7 @@ fun SongDetailsScreenI(
                             loudness = loudness,
                             genres = genres,
                             albumArtUrl = albumArtUrl,
-                            onOpenInSpotifyButtonClick,
+                            onOpenInSpotifyButtonClick = { onOpenInSpotifyButtonClick(songId) },
                             isSpotifyInstalled,
                         )
                     }
