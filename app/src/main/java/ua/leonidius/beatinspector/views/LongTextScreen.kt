@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -53,13 +54,15 @@ fun LongTextScreen(
 
             val width = if (boxScope.maxWidth < 500.dp) boxScope.maxWidth else 500.dp
 
-            HtmlText(
-                modifier = modifier
-                    .padding(Dimens.paddingNormal)
-                    .width(width),
-                text = text,
-                style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Justify),
-            )
+            SelectionContainer {
+                HtmlText(
+                    modifier = modifier
+                        .padding(Dimens.paddingNormal)
+                        .width(width),
+                    text = text,
+                    style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Justify),
+                )
+            }
         }
     }
 

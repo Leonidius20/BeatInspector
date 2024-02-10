@@ -151,7 +151,7 @@ fun SettingsScreenLandscape(
         Row {
 
             AccountCardLandscape(
-                modifier = Modifier.weight(0.33f),
+                modifier = Modifier.weight(0.45f),
                 uiState = accountDetailsState
             )
 
@@ -505,7 +505,7 @@ fun SettingsBlockWithTrailingExpandableItem(
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
             text = stringResource(id = title),
             style = MaterialTheme.typography.labelMedium.copy(
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             ),
         )
         content()
