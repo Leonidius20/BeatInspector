@@ -1,12 +1,16 @@
 package ua.leonidius.beatinspector.views
 
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Button
@@ -72,11 +76,23 @@ fun ScreenColumn(
 ) {
     Column(
         modifier
+            .verticalScroll(rememberScrollState())
             .fillMaxHeight()
             .padding(16.dp)
             .widthIn(min = 0.dp, max = 250.dp),
-        content = content,
-    )
+    ) {
+        BoxWithConstraints(
+            Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            val boxScope = this
+
+            val width = if (boxScope.maxWidth < 500.dp) boxScope.maxWidth else 500.dp
+
+            Column(Modifier.width(width)) {
+                content()
+            }
+        }
+    }
 }
 
 @Composable
