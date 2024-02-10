@@ -13,10 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -31,7 +29,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,6 +38,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -53,6 +51,29 @@ import ua.leonidius.beatinspector.viewmodels.SettingsViewModel
 fun SettingsScreen(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory),
+    // if DataLoading, show placeholder image and empty text (or wiped out text)
+    onLegalDocClicked: (Int) -> Unit,
+    onLogOutClicked: () -> Unit,
+    onLinkClicked: (String) -> Unit,
+    onLicenseClicked: (String) -> Unit,
+) {
+    SettingsScreen(
+        modifier = modifier,
+        accountDetailsState = viewModel.accountDetailsState,
+        libraryNameAndLicenseHash = viewModel.libraryNameAndLicenseHash,
+        onLegalDocClicked = onLegalDocClicked,
+        onLogOutClicked = onLogOutClicked,
+        onLinkClicked = onLinkClicked,
+        onLicenseClicked = onLicenseClicked,
+    )
+}
+
+
+@Composable
+fun SettingsScreen(
+    modifier: Modifier = Modifier,
+    accountDetailsState: SettingsViewModel.AccountDetailsState,
+    libraryNameAndLicenseHash: Array<Pair<String, String?>>,
     // if DataLoading, show placeholder image and empty text (or wiped out text)
     onLegalDocClicked: (Int) -> Unit,
     onLogOutClicked: () -> Unit,
@@ -76,13 +97,19 @@ fun SettingsScreen(
                     .height(200.dp)
                     .padding(16.dp)
             ) {
-                Row {
+                if (accountDetailsState is SettingsViewModel.AccountDetailsState.Error) {
+                    Text(
+                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(16.dp),
+                        text = "Failed to load account details.",
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                } else {
+                    Row {
 
-                    when(val state = viewModel.accountDetailsState) {
-                        is SettingsViewModel.AccountDetailsState.Loaded -> {
+                        if (accountDetailsState is SettingsViewModel.AccountDetailsState.Loaded && accountDetailsState.bigImageUrl != null) {
                             // todo: 1 image with different painters?
                             AsyncImage(
-                                model = state.bigImageUrl,
+                                model = accountDetailsState.bigImageUrl,
                                 contentDescription = null,
                                 modifier = Modifier
                                     .fillMaxHeight()
@@ -92,8 +119,7 @@ fun SettingsScreen(
                                 contentScale = ContentScale.Crop,
                                 placeholder = rememberVectorPainter(Icons.Filled.AccountCircle),
                             )
-                        }
-                        else -> {
+                        } else {
                             Image(
                                 modifier = Modifier
                                     .fillMaxHeight()
@@ -103,44 +129,44 @@ fun SettingsScreen(
                                 contentDescription = null,
                             )
                         }
-                        // todo: loading visalization
+
                         /*is SettingsViewModel.AccountDetailsState.Loading -> {
 
-                        }
-                        is SettingsViewModel.AccountDetailsState.Error -> {
-
-                        }*/
-                    }
+                            }*/
+                        // todo: loading visalization with text and image placeholders
 
 
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Column(
-                        Modifier.align(Alignment.CenterVertically)
-                    ) {
-                        Text(stringResource(R.string.logged_in_as))
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column(
+                            Modifier.align(Alignment.CenterVertically)
+                        ) {
+                            Text(stringResource(R.string.logged_in_as))
 
-                        val usernameText = when(val state = viewModel.accountDetailsState) {
-                            is SettingsViewModel.AccountDetailsState.Loaded -> {
-                                state.username
+                            val usernameText = when(accountDetailsState) {
+                                is SettingsViewModel.AccountDetailsState.Loaded -> {
+                                    accountDetailsState.username
+                                }
+                                else -> {
+                                    "< loading data >"
+                                }
                             }
-                            else -> {
-                                "< loading data >"
-                            }
+
+                            Text(
+                                usernameText,
+                                style = MaterialTheme.typography.headlineSmall,
+                                modifier = Modifier.padding(bottom = 16.dp, top = 4.dp, end = 16.dp),
+                                maxLines = 2,
+                                // todo: text overflow ellipsis
+                                // todo: placeholder if loading
+                            )
+
+                            // todo remove this from here
+                            Text(stringResource(id = R.string.settings_block_account), style = MaterialTheme.typography.labelMedium)
                         }
-
-                        Text(
-                            usernameText,
-                            style = MaterialTheme.typography.headlineSmall,
-                            modifier = Modifier.padding(bottom = 16.dp, top = 4.dp, end = 16.dp),
-                            maxLines = 2,
-                            // todo: text overflow ellipsis
-                            // todo: placeholder if loading
-                        )
-
-                        // todo remove this from here
-                        Text(stringResource(id = R.string.settings_block_account), style = MaterialTheme.typography.labelMedium)
                     }
                 }
+
+
             }
 
             //
@@ -178,8 +204,8 @@ fun SettingsScreen(
             }
         }
         if (expanded.value) {
-            items(viewModel.libraryNameAndLicenseHash.size) { index ->
-                val (name, licenseHash) = viewModel.libraryNameAndLicenseHash[index]
+            items(libraryNameAndLicenseHash.size) { index ->
+                val (name, licenseHash) = libraryNameAndLicenseHash[index]
                 ExpandedSettingsItem(title = name) {
                     licenseHash?.let { onLicenseClicked(it) }
                 }
@@ -217,6 +243,22 @@ fun SettingsScreen(
             onDismissRequest = { logoutDialogShown = false }
         )
     }
+
+}
+
+@Composable
+fun SettingsScreenPortrait(
+    modifier: Modifier = Modifier,
+    accountDetailsState: SettingsViewModel.AccountDetailsState,
+    libraryNameAndLicenseHash: Array<Pair<String, String?>>,
+    // if DataLoading, show placeholder image and empty text (or wiped out text)
+    onLegalDocClicked: (Int) -> Unit,
+    onLogOutClicked: () -> Unit,
+    onLinkClicked: (String) -> Unit,
+    onLicenseClicked: (String) -> Unit,
+    expanded: Boolean,
+    onExpansionStateChanged: () -> Unit,
+) {
 
 }
 
@@ -317,5 +359,21 @@ fun LogOutDialog(
                 Text(text = stringResource(R.string.log_out))
             }
         }
+    )
+}
+
+@Composable
+@Preview
+fun SettingsScreenPreview() {
+    SettingsScreen(
+        accountDetailsState = SettingsViewModel.AccountDetailsState.Loaded(
+            username = "username",
+            bigImageUrl = null, // todo: placeholder when couldn't load
+        ),
+        libraryNameAndLicenseHash = arrayOf(),
+        onLegalDocClicked = {},
+        onLogOutClicked = {},
+        onLinkClicked = {},
+        onLicenseClicked = {},
     )
 }

@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -110,21 +111,24 @@ fun SearchScreen(
 
     Column(modifier) {
         // search bar and attribution box
-        Column(Modifier.weight(1f)) {// to make sure that the attribution box is at the bottom
+        val paddingStart = if (searchBarActive) 0.dp else 16.dp
+        val paddingEnd = if (searchBarActive) 0.dp else if (isLandscape) 8.dp else 16.dp
+
+        Column(Modifier.weight(1f).padding(start = paddingStart)) {// to make sure that the attribution box is at the bottom
             val paddingTop = if (searchBarActive) 0.dp else 5.dp
+            val paddingBottom = if (searchBarActive) 0.dp else 5.dp
 
-            Row(Modifier.padding(top = paddingTop)) {
+            Row(Modifier.padding(top = paddingTop, bottom = paddingBottom)) {
 
-                val paddingBottom = if (searchBarActive) 0.dp else 5.dp
-                val paddingStart = if (searchBarActive) 0.dp else 16.dp
-                val paddingEnd = if (searchBarActive) 0.dp else if (isLandscape) 8.dp else 16.dp
+
+
 
                 val keyboardController = LocalSoftwareKeyboardController.current
 
                 SearchBar(
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = paddingStart, end = paddingEnd),
+                        .padding(end = paddingEnd),
                     query = query,
                     onQueryChange = onQueryChange,
                     onSearch = {
@@ -147,7 +151,7 @@ fun SearchScreen(
                         } else {
                             IconButton(onClick = { searchBarActive = false }) {
                                 Icon(
-                                    imageVector = Icons.Default.ArrowBack,
+                                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
                                     contentDescription = null
                                 )
                             }
@@ -367,7 +371,7 @@ fun SearchResultsList(
     onNavigateToSongDetails: (SongId) -> Unit,
     onOpenSongInSpotify: (SongId) -> Unit,
 ) {
-    LazyColumn(modifier.padding(top = 5.dp, bottom = 5.dp)) {
+    LazyColumn(modifier) {
         items(results, key = { it.id }) {
             SearchResultsListItem(
                 Modifier.clickable { onNavigateToSongDetails(it.id) },
@@ -393,7 +397,7 @@ fun SearchResultsListItem(
         trailingContent = {
             IconButton(
                 onClick = onOpenSongInSpotify,
-                modifier = Modifier.offset(x = (-3.75).dp)
+                modifier = Modifier.offset(x = (-3.75).dp),
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.spotify_icon_black),

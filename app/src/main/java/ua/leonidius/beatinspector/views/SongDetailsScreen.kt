@@ -662,10 +662,50 @@ fun CompactInfoCard(
 
 @Composable
 @Preview("SearchScreenPortraitPreview", widthDp = 320, showBackground = true)
+fun SearchScreenPreview() {
+    val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    val artists = remember {
+        listOf("Baby Gronk", "Super Sus", "Some Body", "Micheal Hunt", "Cunning Linguist").joinToString(", ")
+    }
+
+    val name = "Pacifier Very Long Text That Should Not Be Truncated As per the Terms"
+
+    if (isLandscape) {
+        SongDetailsLandscapeScreen(
+            name = name,
+            artistString = artists,
+            bpm = "420",
+            key = "C Maj",
+            timeSignature = 4,
+            loudness = "-5.2 db",
+            genres = "Hip Hop, Rap",
+            albumArtUrl = "https://fakeimg.pl/640x640?text=test&font=lobster",
+            onOpenInSpotifyButtonClick = {},
+            isSpotifyInstalled = true,
+        )
+    } else {
+        SongDetailsPortraitScreen(
+            name = name,
+            artistString = artists,
+            bpm = "420",
+            key = "C Maj",
+            timeSignature = 4,
+            loudness = "-5.2 db",
+            genres = "Hip Hop, Rap",
+            albumArtUrl = "https://fakeimg.pl/640x640?text=test&font=lobster",
+            onOpenInSpotifyButtonClick = {},
+            isSpotifyInstalled = true,
+        )
+    }
+}
+
+@Composable
+@Preview("SearchScreenPortraitPreview", widthDp = 320, showBackground = true)
 fun SongDetailsPortraitScreenPreview() {
     SongDetailsPortraitScreen(
-        name = "Pacifier",
-        artistString = listOf("Baby Gronk", "Super Sus").joinToString(", "),
+        name = "Pacifier Very Long Text That Should Not Be Truncated As per the Terms",
+        artistString = listOf("Baby Gronk", "Super Sus", "Some Body", "Micheal Hunt", "Cunning Linguist").joinToString(", "),
         bpm = "420",
         key = "C Maj",
         timeSignature = 4,
