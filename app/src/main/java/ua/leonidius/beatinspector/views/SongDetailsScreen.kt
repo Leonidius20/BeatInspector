@@ -340,22 +340,28 @@ fun OpenInSpotifyButton(
     isSpotifyInstalled: Boolean,
 ) {
     Button(
-        modifier = modifier,
+        modifier = modifier.height(60.dp),
         colors = colors,
         onClick = onClick
     ) {
-        Image(
-            modifier = Modifier
-                .height(30.dp)
-                .padding(end = 10.dp),
-            painter = painterResource(R.drawable.spotify_icon_black),
-            contentDescription = null)
-        Text(
-            text = if (isSpotifyInstalled)
-                stringResource(R.string.play_on_spotify_button_text)
-            else
-                stringResource(R.string.get_spotify_free_button_text)
-        )
+        if (isSpotifyInstalled) {
+            Text("PLAY ON")
+            Image(
+                modifier = Modifier
+                    .height(30.dp)
+                    .padding(start = 15.dp),
+                painter = painterResource(R.drawable.spotify_full_logo_black),
+                contentDescription = "Spotify")
+        } else {
+            Text("GET")
+            Image(
+                modifier = Modifier
+                    .height(30.dp)
+                    .padding(start = 15.dp, end = 15.dp),
+                painter = painterResource(R.drawable.spotify_full_logo_black),
+                contentDescription = "Spotify")
+            Text("FREE")
+        }
     }
 }
 
