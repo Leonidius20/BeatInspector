@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -118,6 +119,8 @@ fun SearchScreen(
                 val paddingStart = if (searchBarActive) 0.dp else 16.dp
                 val paddingEnd = if (searchBarActive) 0.dp else if (isLandscape) 8.dp else 16.dp
 
+                val keyboardController = LocalSoftwareKeyboardController.current
+
                 SearchBar(
                     modifier = Modifier
                         .weight(1f)
@@ -127,6 +130,7 @@ fun SearchScreen(
                     onSearch = {
                         if (query.isNotEmpty()) {
                             onSearch(it)
+                            keyboardController?.hide()
                             searchBarActive = false
                         }
                     },
