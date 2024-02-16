@@ -9,19 +9,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.entities.SongSearchResult
-import ua.leonidius.beatinspector.repos.Resource
-import ua.leonidius.beatinspector.repos.SongsRepository
-import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
+import ua.leonidius.beatinspector.repos.search.SearchRepository
+import ua.leonidius.beatinspector.repos.search.SearchRepositoryImpl
 import ua.leonidius.beatinspector.repos.account.AccountRepository
 
 class SearchViewModel(
-    private val songsRepository: SongsRepository,
+    private val searchRepository: SearchRepository,
     private val accountRepository: AccountRepository,
 ) : ViewModel() {
 
@@ -104,9 +102,9 @@ class SearchViewModel(
         viewModelScope.launch {
             try {
                 uiState = UiState.Loading
-                val results = songsRepository.searchForSongsByTitle(query)
+                val results = searchRepository.searchForSongsByTitle(query)
                 uiState = UiState.Loaded(results)
-            } catch (e: SongsRepositoryImpl.NotAuthedError) {
+            } catch (e: SearchRepositoryImpl.NotAuthedError) {
                 // todo: check how that is thrown, handle it differently so that it redirects to login page
                 // todo: set this to AuthStatusViewModel and initiate login
 
@@ -147,7 +145,7 @@ class SearchViewModel(
                 val app = checkNotNull(extras[APPLICATION_KEY]) as BeatInspectorApp
 
                 return SearchViewModel(
-                    app.songsRepository,
+                    app.searchRepository,
                     app.accountRepository,
                 ) as T
             }

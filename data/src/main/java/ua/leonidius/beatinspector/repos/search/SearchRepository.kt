@@ -1,9 +1,9 @@
-package ua.leonidius.beatinspector.repos
+package ua.leonidius.beatinspector.repos.search
 
 import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.entities.SongSearchResult
 
-interface SongsRepository {
+interface SearchRepository {
 
     /**
      * @throws SongDataIOException

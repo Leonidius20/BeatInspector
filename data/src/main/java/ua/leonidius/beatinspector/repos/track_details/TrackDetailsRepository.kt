@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.repos
+package ua.leonidius.beatinspector.repos.track_details
 
 import ua.leonidius.beatinspector.entities.Song
 

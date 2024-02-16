@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.SongDataIOException
-import ua.leonidius.beatinspector.repos.TrackDetailsRepository
+import ua.leonidius.beatinspector.repos.track_details.TrackDetailsRepository
 import java.text.DecimalFormat
 
 class SongDetailsViewModel(
