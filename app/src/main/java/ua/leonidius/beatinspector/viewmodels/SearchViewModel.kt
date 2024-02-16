@@ -9,11 +9,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.entities.SongSearchResult
+import ua.leonidius.beatinspector.repos.Resource
 import ua.leonidius.beatinspector.repos.SongsRepository
 import ua.leonidius.beatinspector.repos.SongsRepositoryImpl
 import ua.leonidius.beatinspector.repos.account.AccountRepository
@@ -63,7 +65,23 @@ class SearchViewModel(
     var accountImageState by mutableStateOf<AccountImageState>(AccountImageState.Loading)
         private set
 
-    //val searchQueriesFlow = MutableSharedFlow<String>() // todoL should it be mutable
+
+
+    /*val uiStateFlow = songsRepository.resultsFlow.map {
+        when(it) {
+            is Resource.Success -> UiState.Loaded(it.value)
+            is Resource.ValueWithError -> UiState.Loaded(
+                it.value
+            ) // todo: handle error
+            is Resource.Error -> UiState.Error(
+                R.string.other_error,
+                it.error.message ?: "An error occurred."
+            )
+            is Resource.Loading -> UiState.Loading
+        }
+    }*/
+
+
 
     init {
         loadAccountImage()

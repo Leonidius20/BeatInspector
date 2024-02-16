@@ -37,6 +37,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -114,7 +115,10 @@ fun SearchScreen(
         val paddingStart = if (searchBarActive) 0.dp else 16.dp
         val paddingEnd = if (searchBarActive) 0.dp else if (isLandscape) 8.dp else 16.dp
 
-        Column(Modifier.weight(1f).padding(start = paddingStart)) {// to make sure that the attribution box is at the bottom
+        Column(
+            Modifier
+                .weight(1f)
+                .padding(start = paddingStart)) {// to make sure that the attribution box is at the bottom
             val paddingTop = if (searchBarActive) 0.dp else 5.dp
             val paddingBottom = if (searchBarActive) 0.dp else 5.dp
 

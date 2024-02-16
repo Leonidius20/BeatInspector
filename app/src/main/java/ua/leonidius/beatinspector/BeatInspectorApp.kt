@@ -29,6 +29,8 @@ import ua.leonidius.beatinspector.repos.account.AccountRepositoryImpl
 import ua.leonidius.beatinspector.repos.datasources.SongsInMemCache
 import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSourceImpl
 import ua.leonidius.beatinspector.auth.AuthInterceptor
+import ua.leonidius.beatinspector.datasources.cache.SearchCacheDataSource
+import ua.leonidius.beatinspector.datasources.network.SearchNetworkDataSource
 import ua.leonidius.beatinspector.datasources.network.services.ArtistsService
 import ua.leonidius.beatinspector.datasources.network.services.SearchService
 import ua.leonidius.beatinspector.datasources.network.services.SpotifyAccountService
@@ -111,7 +113,10 @@ class BeatInspectorApp: Application() {
         val songsInMemCache = SongsInMemCache()
         val networkDataSource = SongsNetworkDataSourceImpl(audioAnalService, artistsService, Dispatchers.IO)
 
-        songsRepository = SongsRepositoryImpl(searchService, songsInMemCache, networkDataSource, Dispatchers.IO)
+        val properNetworkDataSourceSongs = SearchNetworkDataSource(searchService)
+        val cacheDataSource = SearchCacheDataSource(properNetworkDataSourceSongs)
+
+        songsRepository = SongsRepositoryImpl(searchService, songsInMemCache, Dispatchers.IO, networkDataSource, cacheDataSource)
 
         val spotifyAccountService = retrofit.create(SpotifyAccountService::class.java)
 

@@ -13,17 +13,17 @@ class SearchNetworkDataSource(
     private val searchService: SearchService
 ) {
 
-    val resultsFlow = MutableSharedFlow<Result<List<SongSearchResult>>>()
+    val resultsFlow = MutableSharedFlow<Pair<String, Result<List<SongSearchResult>>>>()
 
     suspend fun load(query: String) {
         when (val result = searchService.search(query)) {
             is NetworkResponse.Success<SearchResultsResponse, ErrorResponse> -> {
                 resultsFlow.emit(
-                    Result.success(result.body.toListOfDomainObjects()))
+                    query to Result.success(result.body.toListOfDomainObjects()))
             }
             is NetworkResponse.Error<SearchResultsResponse, ErrorResponse> -> {
                 resultsFlow.emit(
-                    Result.failure(result.toUIException()))
+                    query to Result.failure(result.toUIException()))
             }
         }
     }

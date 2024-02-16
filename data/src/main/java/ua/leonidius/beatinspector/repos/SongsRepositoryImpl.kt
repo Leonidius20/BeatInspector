@@ -3,7 +3,13 @@ package ua.leonidius.beatinspector.repos
 import android.util.Log
 import com.haroldadmin.cnradapter.NetworkResponse
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import ua.leonidius.beatinspector.datasources.cache.SearchCacheDataSource
+import ua.leonidius.beatinspector.datasources.network.SearchNetworkDataSource
 import ua.leonidius.beatinspector.datasources.network.services.SearchService
 import ua.leonidius.beatinspector.entities.Artist
 import ua.leonidius.beatinspector.entities.Song
@@ -17,9 +23,24 @@ class SongsRepositoryImpl(
     // private val spotifyRetrofitClient: SpotifyRetrofitClient,
     private val searchService: SearchService, // todo: replace with NetworkDataSource
     private val inMemCache: SongsInMemCache,
-    private val networkDataSource: SongsNetworkDataSource,
+
     private val ioDispatcher: CoroutineDispatcher,
+    private val networkDataSource: SongsNetworkDataSource,
+
+    private val cachedDataSource: SearchCacheDataSource,
 ) : SongsRepository {
+
+    // todo: only combine these flows in the UI layer? or, alternatively,
+    // create 2 separate flows - 1 for results, and one for error messages,
+    // and have the UI show result + error message, e.g. cached result
+    // and a message about how refresh failed
+
+
+    override val resultsFlow = cachedDataSource.resultsFlow
+
+    override suspend fun search(q: String) {
+        cachedDataSource.load(q)
+    }
 
     override suspend fun searchForSongsByTitle(q: String): List<SongSearchResult> = withContext(ioDispatcher) {
         Log.d("SongsRepository", "searchForSongsByTitle: q = $q")
