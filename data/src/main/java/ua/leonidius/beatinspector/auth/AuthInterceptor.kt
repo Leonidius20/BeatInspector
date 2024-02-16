@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.repos.retrofit
+package ua.leonidius.beatinspector.auth
 
 import android.util.Log
 import net.openid.appauth.AuthorizationException

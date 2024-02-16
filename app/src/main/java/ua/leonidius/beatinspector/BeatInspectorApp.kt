@@ -16,6 +16,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 import ua.leonidius.beatinspector.auth.AuthStateSharedPrefStorage
 import ua.leonidius.beatinspector.auth.Authenticator
 import ua.leonidius.beatinspector.data.R
@@ -27,9 +28,12 @@ import ua.leonidius.beatinspector.repos.account.AccountRepository
 import ua.leonidius.beatinspector.repos.account.AccountRepositoryImpl
 import ua.leonidius.beatinspector.repos.datasources.SongsInMemCache
 import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSourceImpl
-import ua.leonidius.beatinspector.repos.retrofit.AuthInterceptor
-import ua.leonidius.beatinspector.services.SpotifyAccountService
-import ua.leonidius.beatinspector.services.SpotifyRetrofitClient
+import ua.leonidius.beatinspector.auth.AuthInterceptor
+import ua.leonidius.beatinspector.datasources.network.services.ArtistsService
+import ua.leonidius.beatinspector.datasources.network.services.SearchService
+import ua.leonidius.beatinspector.datasources.network.services.SpotifyAccountService
+import ua.leonidius.beatinspector.datasources.network.services.SpotifyRetrofitClient
+import ua.leonidius.beatinspector.datasources.network.services.TrackAudioAnalysisService
 import java.text.DecimalFormat
 
 
@@ -53,6 +57,8 @@ class BeatInspectorApp: Application() {
 
     lateinit var licenses: Set<License>
 
+    // val Context.authStateDataStore: DataStore<Preferences> by preferencesDataStore(name = getString(R.string.preferences_tokens_file_name))
+
     override fun onCreate() {
         super.onCreate()
 
@@ -69,6 +75,8 @@ class BeatInspectorApp: Application() {
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
+
+
 
         authenticator = Authenticator(
             BuildConfig.SPOTIFY_CLIENT_ID,
@@ -95,12 +103,15 @@ class BeatInspectorApp: Application() {
                 }).build())
             .build()
 
-        val spotifyRetrofitClient = retrofit.create(SpotifyRetrofitClient::class.java)
+        // val spotifyRetrofitClient = retrofit.create(SpotifyRetrofitClient::class.java)
+        val searchService = retrofit.create(SearchService::class.java)
+        val audioAnalService = retrofit.create(TrackAudioAnalysisService::class.java)
+        val artistsService = retrofit.create(ArtistsService::class.java)
 
         val songsInMemCache = SongsInMemCache()
-        val networkDataSource = SongsNetworkDataSourceImpl(spotifyRetrofitClient, Dispatchers.IO)
+        val networkDataSource = SongsNetworkDataSourceImpl(audioAnalService, artistsService, Dispatchers.IO)
 
-        songsRepository = SongsRepositoryImpl(spotifyRetrofitClient, songsInMemCache, networkDataSource, Dispatchers.IO)
+        songsRepository = SongsRepositoryImpl(searchService, songsInMemCache, networkDataSource, Dispatchers.IO)
 
         val spotifyAccountService = retrofit.create(SpotifyAccountService::class.java)
 

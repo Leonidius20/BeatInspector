@@ -56,4 +56,6 @@ dependencies {
     implementation("net.openid:appauth:0.11.1")
 
     implementation("com.github.haroldadmin:NetworkResponseAdapter:5.0.0")
+
+    implementation ("androidx.datastore:datastore-preferences:1.0.0")
 }

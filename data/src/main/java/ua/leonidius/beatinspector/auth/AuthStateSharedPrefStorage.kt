@@ -6,6 +6,9 @@ class AuthStateSharedPrefStorage(
     private val prefs: SharedPreferences
 ): AuthStateStorage {
 
+    // todo maybe put the flow here, and make wrapper authState.update functions
+    // that also update the json in shareprefs and make a flow emit updated AuthState
+
     private val PREF_KEY_AUTH_STATE = "auth_state"
 
     override fun storeJson(jsonString: String) {

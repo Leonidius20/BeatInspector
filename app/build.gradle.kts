@@ -152,6 +152,8 @@ dependencies {
 
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
 
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
     implementation(project(":data"))
 
     testImplementation("junit:junit:4.13.2")

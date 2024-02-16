@@ -4,13 +4,17 @@ import com.haroldadmin.cnradapter.NetworkResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
+import ua.leonidius.beatinspector.datasources.network.services.ArtistsService
 import ua.leonidius.beatinspector.entities.Artist
 import ua.leonidius.beatinspector.entities.SongDetails
-import ua.leonidius.beatinspector.services.SpotifyRetrofitClient
+import ua.leonidius.beatinspector.datasources.network.services.SpotifyRetrofitClient
+import ua.leonidius.beatinspector.datasources.network.services.TrackAudioAnalysisService
 import ua.leonidius.beatinspector.toUIException
 
 class SongsNetworkDataSourceImpl(
-    private val spotifyRetrofitClient: SpotifyRetrofitClient,
+    // private val spotifyRetrofitClient: SpotifyRetrofitClient,
+    private val audioAnalysisService: TrackAudioAnalysisService, // todo replace with datasource
+    private val artistsService: ArtistsService,
     private val ioDispatcher: CoroutineDispatcher
 ) : SongsNetworkDataSource {
 
@@ -20,7 +24,7 @@ class SongsNetworkDataSourceImpl(
         // todo: learn how to handle errors in async black outside of it, instead of using result api
 
         val trackAnalysisDeferredResponse = async {
-            when (val response = spotifyRetrofitClient.getTrackAudioAnalysis(trackId)) {
+            when (val response = audioAnalysisService.getTrackAudioAnalysis(trackId)) {
                 is NetworkResponse.Success -> Result.success(response.body.track)
 
                 is NetworkResponse.Error -> Result.failure(response.toUIException())
@@ -28,7 +32,7 @@ class SongsNetworkDataSourceImpl(
         }
 
         val genresDeferredResponse = async {
-            when (val response = spotifyRetrofitClient.getArtists(artists.joinToString(",") { it.id })) {
+            when (val response = artistsService.getArtists(artists.joinToString(",") { it.id })) {
                 is NetworkResponse.Success -> Result.success(
                     response.body.artists.map { it.genres }.flatten().distinct())
 

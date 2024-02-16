@@ -1,9 +1,9 @@
 package ua.leonidius.beatinspector
 
 import com.haroldadmin.cnradapter.NetworkResponse
-import ua.leonidius.beatinspector.services.SpotifyRetrofitClient
+import ua.leonidius.beatinspector.datasources.network.dto.ErrorResponse
 
-fun <S> NetworkResponse.Error<S, SpotifyRetrofitClient.SpotifyError>.toUIException(): SongDataIOException {
+fun <S> NetworkResponse.Error<S, ErrorResponse>.toUIException(): SongDataIOException {
     return when (this) {
         is NetworkResponse.ServerError -> {
             SongDataIOException.Server(

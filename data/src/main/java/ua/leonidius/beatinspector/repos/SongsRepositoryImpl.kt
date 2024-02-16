@@ -4,16 +4,18 @@ import android.util.Log
 import com.haroldadmin.cnradapter.NetworkResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import ua.leonidius.beatinspector.datasources.network.services.SearchService
 import ua.leonidius.beatinspector.entities.Artist
 import ua.leonidius.beatinspector.entities.Song
 import ua.leonidius.beatinspector.entities.SongSearchResult
 import ua.leonidius.beatinspector.repos.datasources.SongsInMemCache
 import ua.leonidius.beatinspector.repos.datasources.SongsNetworkDataSource
-import ua.leonidius.beatinspector.services.SpotifyRetrofitClient
+import ua.leonidius.beatinspector.datasources.network.services.SpotifyRetrofitClient
 import ua.leonidius.beatinspector.toUIException
 
 class SongsRepositoryImpl(
-    private val spotifyRetrofitClient: SpotifyRetrofitClient,
+    // private val spotifyRetrofitClient: SpotifyRetrofitClient,
+    private val searchService: SearchService, // todo: replace with NetworkDataSource
     private val inMemCache: SongsInMemCache,
     private val networkDataSource: SongsNetworkDataSource,
     private val ioDispatcher: CoroutineDispatcher,
@@ -22,7 +24,7 @@ class SongsRepositoryImpl(
     override suspend fun searchForSongsByTitle(q: String): List<SongSearchResult> = withContext(ioDispatcher) {
         Log.d("SongsRepository", "searchForSongsByTitle: q = $q")
 
-        val result = spotifyRetrofitClient.searchForSongs(q) // may throw SongDataIOException.TokenRefresh
+        val result = searchService.search(q) // may throw SongDataIOException.TokenRefresh
 
         when(result) {
             is NetworkResponse.Success -> {

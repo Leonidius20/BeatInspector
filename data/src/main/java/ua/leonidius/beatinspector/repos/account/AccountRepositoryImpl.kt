@@ -4,7 +4,7 @@ import com.haroldadmin.cnradapter.NetworkResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.entities.AccountDetails
-import ua.leonidius.beatinspector.services.SpotifyAccountService
+import ua.leonidius.beatinspector.datasources.network.services.SpotifyAccountService
 import ua.leonidius.beatinspector.toUIException
 
 class AccountRepositoryImpl(

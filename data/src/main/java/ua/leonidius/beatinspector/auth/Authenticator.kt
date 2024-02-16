@@ -3,6 +3,10 @@ package ua.leonidius.beatinspector.auth
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
@@ -18,6 +22,7 @@ import kotlin.coroutines.suspendCoroutine
 class Authenticator(
     private val clientId: String,
     private val authStateStorage: AuthStateStorage,
+   // private val authStateFlowingStorage: AuthStateFlowingStorage,
     private val authService: AuthorizationService,
 ) {
 
@@ -37,6 +42,26 @@ class Authenticator(
         }
     }
 
+    //val authStateFlow = MutableSharedFlow<AuthState>()
+
+    init {
+        /*authStateFlowingStorage.jsonAuthStateFlow
+            .map { json ->
+                if (json == null) {
+                    AuthState(authServiceConfig)
+                } else {
+                    try {
+                        AuthState.jsonDeserialize(json)
+                    } catch (e: Error) {
+                        AuthState(authServiceConfig)
+                    }
+                }
+            }
+            .onEach { authState = it }
+            .onEach { authStateFlow.emit(it) }
+            .catch { e -> Log.e("Authenticator", "authStateFlow error", e) }*/
+    }
+
     fun prepareStepOneIntent(): Intent {
         val authRequest = AuthorizationRequest.Builder(
             authServiceConfig,
@@ -44,7 +69,14 @@ class Authenticator(
             ResponseTypeValues.CODE,
             Uri.parse("ua.leonidius.beatinspector://login-callback") // todo: redirect uri
         )
-            //.setScope("user-library-read playlist-read-private playlist-read-collaborative user-read-recently-played user-top-read")
+            /*
+             * user-library-read: view saved tracks
+             * playlist-read-private: view private playlists
+             * playlist-read-collaborative: view collaborative playlists
+             * user-read-recently-played: view recently played tracks
+             * user-top-read: view top tracks
+             */
+            .setScope("user-library-read playlist-read-private playlist-read-collaborative user-read-recently-played user-top-read")
             .build()
 
         return authService.getAuthorizationRequestIntent(authRequest)
