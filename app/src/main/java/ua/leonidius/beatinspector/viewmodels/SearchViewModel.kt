@@ -66,23 +66,6 @@ class SearchViewModel(
         private set
 
 
-
-    /*val uiStateFlow = songsRepository.resultsFlow.map {
-        when(it) {
-            is Resource.Success -> UiState.Loaded(it.value)
-            is Resource.ValueWithError -> UiState.Loaded(
-                it.value
-            ) // todo: handle error
-            is Resource.Error -> UiState.Error(
-                R.string.other_error,
-                it.error.message ?: "An error occurred."
-            )
-            is Resource.Loading -> UiState.Loading
-        }
-    }*/
-
-
-
     init {
         loadAccountImage()
     }

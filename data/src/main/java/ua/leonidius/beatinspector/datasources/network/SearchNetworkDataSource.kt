@@ -1,7 +1,6 @@
 package ua.leonidius.beatinspector.datasources.network
 
 import com.haroldadmin.cnradapter.NetworkResponse
-import kotlinx.coroutines.flow.MutableSharedFlow
 import ua.leonidius.beatinspector.datasources.network.dto.ErrorResponse
 import ua.leonidius.beatinspector.datasources.network.dto.SearchResultsResponse
 import ua.leonidius.beatinspector.datasources.network.mappers.toListOfDomainObjects
@@ -13,17 +12,14 @@ class SearchNetworkDataSource(
     private val searchService: SearchService
 ) {
 
-    val resultsFlow = MutableSharedFlow<Pair<String, Result<List<SongSearchResult>>>>()
-
-    suspend fun load(query: String) {
-        when (val result = searchService.search(query)) {
+    suspend fun load(query: String): List<SongSearchResult> {
+        return when (val result = searchService.search(query)) {
             is NetworkResponse.Success<SearchResultsResponse, ErrorResponse> -> {
-                resultsFlow.emit(
-                    query to Result.success(result.body.toListOfDomainObjects()))
+               result.body.toListOfDomainObjects()
             }
+
             is NetworkResponse.Error<SearchResultsResponse, ErrorResponse> -> {
-                resultsFlow.emit(
-                    query to Result.failure(result.toUIException()))
+                throw result.toUIException()
             }
         }
     }

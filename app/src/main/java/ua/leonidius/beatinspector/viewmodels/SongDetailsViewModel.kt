@@ -16,13 +16,13 @@ import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.SongDataIOException
-import ua.leonidius.beatinspector.entities.Song
-import ua.leonidius.beatinspector.repos.SongsRepository
+import ua.leonidius.beatinspector.repos.TrackDetailsRepository
 import java.text.DecimalFormat
 
 class SongDetailsViewModel(
     private val savedStateHandle: SavedStateHandle,
-    private val songsRepository: SongsRepository,
+    //private val songsRepository: SongsRepository,
+    private val trackDetailsRepository: TrackDetailsRepository,
     private val decimalFormat: DecimalFormat,
     private val isSpotifyInstalled: Boolean,
 ): ViewModel() {
@@ -60,7 +60,7 @@ class SongDetailsViewModel(
     private fun loadSongDetails(id: String) {
         viewModelScope.launch {
             val _songDetails = try {
-                val song = songsRepository.getTrackDetails(id)
+                val song = trackDetailsRepository.getFullDetails(id)
                 UiState.Loaded(
                     songId = song.id,
                     title = song.name,
@@ -108,7 +108,7 @@ class SongDetailsViewModel(
 
                 return SongDetailsViewModel(
                     extras.createSavedStateHandle(),
-                    app.songsRepository,
+                    app.trackDetailsRepository,
                     app.decimalFormat,
                     app.isSpotifyInstalled
                 ) as T
