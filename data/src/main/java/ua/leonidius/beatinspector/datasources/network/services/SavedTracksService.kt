@@ -8,7 +8,7 @@ import ua.leonidius.beatinspector.datasources.network.dto.SavedTracksResponse
 
 interface SavedTracksService {
 
-    @GET("v1/me/tracks")
+    @GET("me/tracks")
     suspend fun getSavedTracks(
         @Query("limit") limit: Int,
         @Query("offset") offset: Int

@@ -28,11 +28,15 @@ import ua.leonidius.beatinspector.repos.account.AccountRepositoryImpl
 import ua.leonidius.beatinspector.auth.AuthInterceptor
 import ua.leonidius.beatinspector.datasources.cache.FullTrackDetailsCacheDataSource
 import ua.leonidius.beatinspector.datasources.cache.SearchCacheDataSource
+import ua.leonidius.beatinspector.datasources.network.SavedTracksNetworkDataSource
 import ua.leonidius.beatinspector.datasources.network.SearchNetworkDataSource
 import ua.leonidius.beatinspector.datasources.network.services.ArtistsService
+import ua.leonidius.beatinspector.datasources.network.services.SavedTracksService
 import ua.leonidius.beatinspector.datasources.network.services.SearchService
 import ua.leonidius.beatinspector.datasources.network.services.SpotifyAccountService
 import ua.leonidius.beatinspector.datasources.network.services.TrackAudioAnalysisService
+import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksRepository
+import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksRepositoryImpl
 import ua.leonidius.beatinspector.repos.track_details.TrackDetailsRepository
 import ua.leonidius.beatinspector.repos.track_details.TrackDetailsRepositoryImpl
 import java.text.DecimalFormat
@@ -59,6 +63,8 @@ class BeatInspectorApp: Application() {
     lateinit var licenses: Set<License>
 
     lateinit var trackDetailsRepository: TrackDetailsRepository
+
+    lateinit var savedTracksRepository: SavedTracksRepository
 
     // val Context.authStateDataStore: DataStore<Preferences> by preferencesDataStore(name = getString(R.string.preferences_tokens_file_name))
 
@@ -124,6 +130,9 @@ class BeatInspectorApp: Application() {
             audioAnalysisService,
             Dispatchers.IO
         )
+
+        val savedTracksService = retrofit.create(SavedTracksService::class.java)
+        savedTracksRepository = SavedTracksRepositoryImpl(SavedTracksNetworkDataSource(savedTracksService), searchCacheDataSource)
 
         val spotifyAccountService = retrofit.create(SpotifyAccountService::class.java)
 

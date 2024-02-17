@@ -21,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import ua.leonidius.beatinspector.ui.theme.BeatInspectorTheme
 import ua.leonidius.beatinspector.views.LoginScreen
 import ua.leonidius.beatinspector.views.LongTextScreen
+import ua.leonidius.beatinspector.views.SavedTracksScreen
 import ua.leonidius.beatinspector.views.SearchScreen
 import ua.leonidius.beatinspector.views.SettingsScreen
 import ua.leonidius.beatinspector.views.SongDetailsScreen
@@ -87,7 +88,12 @@ class MainActivity : ComponentActivity() {
                                     navController.navigate("song/${it}")
                                 }, onNavigateToSettings = {
                                     navController.navigate("settings")
-                                }, onOpenSongInSpotify = openTrackOnSpotifyOrAppStore)
+                                },
+                                onOpenSongInSpotify = openTrackOnSpotifyOrAppStore,
+                                onOpenSavedTracks = {
+                                    navController.navigate("saved_tracks")
+                                }
+                            )
                         }
                         composable("song/{songId}") {
                             SongDetailsScreen(
@@ -126,6 +132,14 @@ class MainActivity : ComponentActivity() {
                             }, onLicenseClicked = { licenseHash ->
                                 navController.navigate("license/${licenseHash}")
                             })
+                        }
+                        composable("saved_tracks") {
+                            SavedTracksScreen(
+                                onOpenSongInSpotify = openTrackOnSpotifyOrAppStore,
+                                onNavigateToSongDetails = {
+                                    navController.navigate("song/${it}")
+                                }
+                            )
                         }
                     }
 

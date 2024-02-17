@@ -21,12 +21,15 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -75,6 +78,7 @@ fun SearchScreen(
     onNavigateToSongDetails: (SongId) -> Unit = {},
     onNavigateToSettings: () -> Unit,
     onOpenSongInSpotify: (SongId) -> Unit,
+    onOpenSavedTracks: () -> Unit,
 ) {
     ChangeStatusBarColor(colorArgb = MaterialTheme.colorScheme.primary.toArgb())
 
@@ -89,6 +93,7 @@ fun SearchScreen(
         state = searchViewModel.uiState,
         accountImageState = searchViewModel.accountImageState,
         onOpenSongInSpotify = onOpenSongInSpotify,
+        onOpenSavedTracks = onOpenSavedTracks,
     )
 }
 
@@ -105,6 +110,7 @@ fun SearchScreen(
     state: SearchViewModel.UiState,
     accountImageState: SearchViewModel.AccountImageState,
     onOpenSongInSpotify: (SongId) -> Unit,
+    onOpenSavedTracks: () -> Unit,
 ) {
     var searchBarActive by rememberSaveable { mutableStateOf(false) }
 
@@ -217,7 +223,23 @@ fun SearchScreen(
 
             when(state) {
                 is SearchViewModel.UiState.Uninitialized -> {
-                    // nothing
+                    // todo: refactor maybe into a different file
+                    Column(Modifier.verticalScroll(rememberScrollState())) {
+                        ListItem(
+                            modifier = Modifier.clickable {
+                                onOpenSavedTracks()
+                            },
+                            headlineContent = {
+                                Text("Liked Tracks")
+                            },
+                            leadingContent = {
+                                Icon(
+                                    Icons.Filled.Favorite,
+                                    contentDescription = null,
+                                )
+                            }
+                        )
+                    }
                 }
                 is SearchViewModel.UiState.Loading -> LoadingScreen()
 
