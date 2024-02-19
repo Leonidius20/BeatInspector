@@ -7,15 +7,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.cachedIn
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.entities.SongSearchResult
+import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksNetworkPagingSource
 import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksRepository
 
 class SavedTracksViewModel(
     private val savedTracksRepository: SavedTracksRepository,
+    private val pagingSource: SavedTracksNetworkPagingSource, // todo: remove
 ): ViewModel() {
+
+    val flow = Pager(PagingConfig(pageSize = 20)) {
+        pagingSource
+    }.flow.cachedIn(viewModelScope)
 
     sealed class UiState {
 
@@ -32,15 +41,15 @@ class SavedTracksViewModel(
 
     }
 
-    var uiState by mutableStateOf<UiState>(UiState.Loading)
-        private set
+    //var uiState by mutableStateOf<UiState>(UiState.Loading)
+    //    private set
 
     init {
-        load()
+       // load()
     }
 
     private fun load() {
-        uiState = UiState.Loading
+        /*uiState = UiState.Loading
         viewModelScope.launch {
             uiState = try {
                 val result = savedTracksRepository.get()
@@ -51,7 +60,7 @@ class SavedTracksViewModel(
                     error.toTextDescription()
                 )
             }
-        }
+        }*/
     }
 
     companion object {
@@ -64,6 +73,7 @@ class SavedTracksViewModel(
 
                 return SavedTracksViewModel(
                     app.savedTracksRepository,
+                    app.savedTracksNetworkPagingSource,
                 ) as T
             }
 

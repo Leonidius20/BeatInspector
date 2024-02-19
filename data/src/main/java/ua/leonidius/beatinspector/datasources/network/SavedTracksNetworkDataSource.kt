@@ -10,8 +10,10 @@ class SavedTracksNetworkDataSource(
     private val service: SavedTracksService,
 ) {
 
-    suspend fun get(): List<SongSearchResult> {
-        when (val resp = service.getSavedTracks(50, 0)) { // TODO: pagination
+    suspend fun get(page: Int = 1): List<SongSearchResult> {
+        val limit = 20
+        val offset = (page - 1) * limit
+        when (val resp = service.getSavedTracks(limit, offset)) {
             is NetworkResponse.Success -> {
                 return resp.body.items.map { it.track.toDomainObject() }
             }

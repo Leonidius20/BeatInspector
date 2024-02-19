@@ -58,4 +58,8 @@ dependencies {
     implementation("com.github.haroldadmin:NetworkResponseAdapter:5.0.0")
 
     implementation ("androidx.datastore:datastore-preferences:1.0.0")
+
+    val paging_version = "3.2.1"
+
+    implementation("androidx.paging:paging-runtime-ktx:$paging_version")
 }

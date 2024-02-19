@@ -3,22 +3,30 @@ package ua.leonidius.beatinspector.views
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.LoadState
+import androidx.paging.PagingData
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
+import kotlinx.coroutines.flow.Flow
 import ua.leonidius.beatinspector.Dimens
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.entities.SongSearchResult
@@ -32,7 +40,8 @@ fun SavedTracksScreen(
     onNavigateToSongDetails: (String) -> Unit,
 ) {
     SavedTracksScreen(
-        uiState = viewModel.uiState,
+        //uiState = viewModel.uiState,
+        pagingFlow = viewModel.flow,
         onOpenSongInSpotify = onOpenSongInSpotify,
         onNavigateToSongDetails = onNavigateToSongDetails,
     )
@@ -40,12 +49,51 @@ fun SavedTracksScreen(
 
 @Composable
 private fun SavedTracksScreen(
-    uiState: SavedTracksViewModel.UiState,
+    //uiState: SavedTracksViewModel.UiState,
+    pagingFlow: Flow<PagingData<SongSearchResult>>,
     onOpenSongInSpotify: (String) -> Unit,
     onNavigateToSongDetails: (String) -> Unit,
 ) {
     // todo: landscape grid
-    when(uiState) {
+
+    val lazyItems = pagingFlow.collectAsLazyPagingItems()
+
+    LazyColumn {
+        if (lazyItems.loadState.refresh == LoadState.Loading) {
+            item {
+                LoadingScreen()
+            }
+        }
+
+        items(count = lazyItems.itemCount) { index ->
+            val track = lazyItems[index] ?: return@items
+            TrackListItem(
+                Modifier.clickable {
+                    onNavigateToSongDetails(track.id)
+                },
+                track = track,
+                onOpenSongInSpotify = { onOpenSongInSpotify(track.id) }
+            )
+
+        }
+
+        if (lazyItems.loadState.append == LoadState.Loading) {
+            item {
+                CircularProgressIndicator(
+                    modifier = Modifier.fillMaxWidth()
+                        .wrapContentWidth(Alignment.CenterHorizontally)
+                )
+            }
+        }
+    }
+
+
+
+
+
+
+
+    /*when(uiState) {
         is SavedTracksViewModel.UiState.Loading -> {
             LoadingScreen()
         }
@@ -64,11 +112,11 @@ private fun SavedTracksScreen(
                 onNavigateToSongDetails = onNavigateToSongDetails,
             )
         }
-    }
+    }*/
 
 }
 
-@Composable
+/*@Composable
 private fun SavedTracksScreenLoaded(
     tracks: List<SongSearchResult>,
     onOpenSongInSpotify: (String) -> Unit,
@@ -94,7 +142,7 @@ private fun SavedTracksScreenLoaded(
             )
         }
     }
-}
+}*/
 
 @Composable
 private fun TrackListItem(
@@ -120,7 +168,9 @@ private fun TrackListItem(
         },
         leadingContent = {
             AsyncImage(
-                modifier = Modifier.size(40.dp).aspectRatio(1f),
+                modifier = Modifier
+                    .size(40.dp)
+                    .aspectRatio(1f),
                 model = track.imageUrl,
                 contentDescription = null
             )

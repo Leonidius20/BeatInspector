@@ -35,6 +35,7 @@ import ua.leonidius.beatinspector.datasources.network.services.SavedTracksServic
 import ua.leonidius.beatinspector.datasources.network.services.SearchService
 import ua.leonidius.beatinspector.datasources.network.services.SpotifyAccountService
 import ua.leonidius.beatinspector.datasources.network.services.TrackAudioAnalysisService
+import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksNetworkPagingSource
 import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksRepository
 import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksRepositoryImpl
 import ua.leonidius.beatinspector.repos.track_details.TrackDetailsRepository
@@ -67,6 +68,8 @@ class BeatInspectorApp: Application() {
     lateinit var savedTracksRepository: SavedTracksRepository
 
     // val Context.authStateDataStore: DataStore<Preferences> by preferencesDataStore(name = getString(R.string.preferences_tokens_file_name))
+
+    lateinit var savedTracksNetworkPagingSource: SavedTracksNetworkPagingSource
 
     override fun onCreate() {
         super.onCreate()
@@ -132,7 +135,8 @@ class BeatInspectorApp: Application() {
         )
 
         val savedTracksService = retrofit.create(SavedTracksService::class.java)
-        savedTracksRepository = SavedTracksRepositoryImpl(SavedTracksNetworkDataSource(savedTracksService), searchCacheDataSource)
+        val savedTracksNetworkDataSource = SavedTracksNetworkDataSource(savedTracksService)
+        savedTracksRepository = SavedTracksRepositoryImpl(savedTracksNetworkDataSource, searchCacheDataSource)
 
         val spotifyAccountService = retrofit.create(SpotifyAccountService::class.java)
 
@@ -150,6 +154,8 @@ class BeatInspectorApp: Application() {
 
         libraries = libs.libraries
         licenses = libs.licenses
+
+        savedTracksNetworkPagingSource = SavedTracksNetworkPagingSource(savedTracksNetworkDataSource, searchCacheDataSource)
     }
 
     private fun isPackageInstalled(packageName: String): Boolean {
