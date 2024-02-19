@@ -60,6 +60,7 @@ private fun SavedTracksScreen(
 
     LazyColumn {
         if (lazyItems.loadState.refresh == LoadState.Loading) {
+ // todo error handling            lazyItems.loadState.refresh / append is LoadState.Error
             item {
                 LoadingScreen()
             }
@@ -80,7 +81,9 @@ private fun SavedTracksScreen(
         if (lazyItems.loadState.append == LoadState.Loading) {
             item {
                 CircularProgressIndicator(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(Dimens.paddingNormal)
                         .wrapContentWidth(Alignment.CenterHorizontally)
                 )
             }
@@ -171,7 +174,7 @@ private fun TrackListItem(
                 modifier = Modifier
                     .size(40.dp)
                     .aspectRatio(1f),
-                model = track.imageUrl,
+                model = track.smallestImageUrl,
                 contentDescription = null
             )
         },

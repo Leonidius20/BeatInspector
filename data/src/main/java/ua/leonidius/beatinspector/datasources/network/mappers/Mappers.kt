@@ -14,7 +14,8 @@ fun TrackDto.toDomainObject(): SongSearchResult {
         id = id,
         name = name,
         artists = artists.map { it.toDomainObject() },
-        imageUrl = album.images[0].url
+        imageUrl = album.images[0].url,
+        smallestImageUrl = album.images.minByOrNull { it.width * it.height }?.url,
     )
 }
 

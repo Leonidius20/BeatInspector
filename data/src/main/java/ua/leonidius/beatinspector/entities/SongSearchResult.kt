@@ -5,4 +5,5 @@ data class SongSearchResult(
     val name: String,
     val artists: List<Artist>,
     val imageUrl: String,
+    val smallestImageUrl: String? = null,
 )
