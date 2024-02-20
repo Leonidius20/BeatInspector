@@ -6,6 +6,7 @@ import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.datasources.cache.SearchCacheDataSource
 import ua.leonidius.beatinspector.datasources.network.SearchNetworkDataSource
 import ua.leonidius.beatinspector.entities.SongSearchResult
+import ua.leonidius.beatinspector.repos.BasicRepository
 
 class SearchRepositoryImpl(
 
@@ -17,7 +18,7 @@ class SearchRepositoryImpl(
 
     // we don't save query results in cache, because they are cached by okhttp
 
-    override suspend fun searchForSongsByTitle(q: String): List<SongSearchResult> = withContext(ioDispatcher) {
+    override suspend fun get(q: String): List<SongSearchResult> = withContext(ioDispatcher) {
         val results = properNetworkDataSource.load(q)
         launch {
             searchCacheDataSource.updateCache(q, results)

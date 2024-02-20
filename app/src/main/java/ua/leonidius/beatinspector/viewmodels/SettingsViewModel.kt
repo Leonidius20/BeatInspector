@@ -10,10 +10,12 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import com.mikepenz.aboutlibraries.entity.Library
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
+import ua.leonidius.beatinspector.entities.AccountDetails
+import ua.leonidius.beatinspector.repos.BasicRepository
 import ua.leonidius.beatinspector.repos.account.AccountRepository
 
 class SettingsViewModel(
-    private val accountRepository: AccountRepository,
+    private val accountRepository: BasicRepository<Unit, AccountDetails>,
     private val libraries: List<Library>,
 ): ViewModel() {
 
@@ -45,7 +47,7 @@ class SettingsViewModel(
         accountDetailsState = AccountDetailsState.Loading
         viewModelScope.launch {
             accountDetailsState = try {
-                val details = accountRepository.getAccountDetails()
+                val details = accountRepository.get(Unit)
                 AccountDetailsState.Loaded(
                     details.username, details.bigImageUrl,
                 )

@@ -73,7 +73,7 @@ class SearchViewModel(
             accountImageState = AccountImageState.Loading
 
             accountImageState = try {
-                val accountImageUrl = accountRepository.getAccountDetails().smallImageUrl
+                val accountImageUrl = accountRepository.get(Unit).smallImageUrl
                 if (accountImageUrl != null) {
                     AccountImageState.Loaded(accountImageUrl)
                 } else {
@@ -102,7 +102,7 @@ class SearchViewModel(
         viewModelScope.launch {
             try {
                 uiState = UiState.Loading
-                val results = searchRepository.searchForSongsByTitle(query)
+                val results = searchRepository.get(query)
                 uiState = UiState.Loaded(results)
             } catch (e: SearchRepositoryImpl.NotAuthedError) {
                 // todo: check how that is thrown, handle it differently so that it redirects to login page

@@ -28,6 +28,7 @@ import ua.leonidius.beatinspector.repos.account.AccountRepositoryImpl
 import ua.leonidius.beatinspector.auth.AuthInterceptor
 import ua.leonidius.beatinspector.datasources.cache.FullTrackDetailsCacheDataSource
 import ua.leonidius.beatinspector.datasources.cache.SearchCacheDataSource
+import ua.leonidius.beatinspector.datasources.network.AccountNetworkDataSource
 import ua.leonidius.beatinspector.datasources.network.SavedTracksNetworkDataSource
 import ua.leonidius.beatinspector.datasources.network.SearchNetworkDataSource
 import ua.leonidius.beatinspector.datasources.network.services.ArtistsService
@@ -35,6 +36,8 @@ import ua.leonidius.beatinspector.datasources.network.services.SavedTracksServic
 import ua.leonidius.beatinspector.datasources.network.services.SearchService
 import ua.leonidius.beatinspector.datasources.network.services.SpotifyAccountService
 import ua.leonidius.beatinspector.datasources.network.services.TrackAudioAnalysisService
+import ua.leonidius.beatinspector.entities.AccountDetails
+import ua.leonidius.beatinspector.repos.BasicRepository
 import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksNetworkPagingSource
 import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksRepository
 import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksRepositoryImpl
@@ -143,7 +146,7 @@ class BeatInspectorApp: Application() {
         accountDataCache = AccountDataSharedPrefCache(getSharedPreferences(getString(ua.leonidius.beatinspector.R.string.preferences_account_data_file_name), MODE_PRIVATE))
 
 
-        accountRepository = AccountRepositoryImpl(spotifyAccountService, accountDataCache, Dispatchers.IO)
+        accountRepository = AccountRepositoryImpl(AccountNetworkDataSource(spotifyAccountService), accountDataCache, Dispatchers.IO)
 
         // check if Spotify is installed
         isSpotifyInstalled = isPackageInstalled("com.spotify.music")
