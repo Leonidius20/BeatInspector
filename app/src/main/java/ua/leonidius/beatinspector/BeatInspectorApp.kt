@@ -155,7 +155,7 @@ class BeatInspectorApp: Application() {
         libraries = libs.libraries
         licenses = libs.licenses
 
-        savedTracksNetworkPagingSource = SavedTracksNetworkPagingSource(savedTracksNetworkDataSource, searchCacheDataSource)
+        savedTracksNetworkPagingSource = SavedTracksNetworkPagingSource(savedTracksService, searchCacheDataSource)
     }
 
     private fun isPackageInstalled(packageName: String): Boolean {

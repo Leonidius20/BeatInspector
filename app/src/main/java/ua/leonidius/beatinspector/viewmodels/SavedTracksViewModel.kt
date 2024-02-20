@@ -22,7 +22,7 @@ class SavedTracksViewModel(
     private val pagingSource: SavedTracksNetworkPagingSource, // todo: remove
 ): ViewModel() {
 
-    val flow = Pager(PagingConfig(pageSize = 20)) {
+    val flow = Pager(PagingConfig(pageSize = pagingSource.itemsPerPage)) {
         pagingSource
     }.flow.cachedIn(viewModelScope)
 
