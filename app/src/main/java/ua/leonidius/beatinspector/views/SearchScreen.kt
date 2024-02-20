@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -61,9 +62,14 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
+import ua.leonidius.beatinspector.Dimens
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.entities.Artist
+import ua.leonidius.beatinspector.entities.PlaylistSearchResult
 import ua.leonidius.beatinspector.entities.SongSearchResult
 import ua.leonidius.beatinspector.ui.theme.ChangeStatusBarColor
 import ua.leonidius.beatinspector.viewmodels.SearchViewModel
@@ -91,6 +97,7 @@ fun SearchScreen(
         onNavigateToSongDetails = onNavigateToSongDetails,
         onNavigateToSettings = onNavigateToSettings,
         state = searchViewModel.uiState,
+        playlistsPaging = searchViewModel.playlistsPagingFlow.collectAsLazyPagingItems(),
         accountImageState = searchViewModel.accountImageState,
         onOpenSongInSpotify = onOpenSongInSpotify,
         onOpenSavedTracks = onOpenSavedTracks,
@@ -108,6 +115,7 @@ fun SearchScreen(
     onNavigateToSongDetails: (SongId) -> Unit = {},
     onNavigateToSettings: () -> Unit,
     state: SearchViewModel.UiState,
+    playlistsPaging: LazyPagingItems<PlaylistSearchResult>,
     accountImageState: SearchViewModel.AccountImageState,
     onOpenSongInSpotify: (SongId) -> Unit,
     onOpenSavedTracks: () -> Unit,
@@ -224,22 +232,10 @@ fun SearchScreen(
             when(state) {
                 is SearchViewModel.UiState.Uninitialized -> {
                     // todo: refactor maybe into a different file
-                    Column(Modifier.verticalScroll(rememberScrollState())) {
-                        ListItem(
-                            modifier = Modifier.clickable {
-                                onOpenSavedTracks()
-                            },
-                            headlineContent = {
-                                Text("Liked Tracks")
-                            },
-                            leadingContent = {
-                                Icon(
-                                    Icons.Filled.Favorite,
-                                    contentDescription = null,
-                                )
-                            }
-                        )
-                    }
+                    PlaylistsList(
+                        playlists = playlistsPaging,
+                        onOpenSavedTracks = onOpenSavedTracks,
+                    )
                 }
                 is SearchViewModel.UiState.Loading -> LoadingScreen()
 
@@ -456,4 +452,105 @@ fun SearchResultsGrid(
             )
         }
     }
+}
+
+@Composable
+fun PlaylistsList(
+    modifier: Modifier = Modifier,
+    playlists: LazyPagingItems<PlaylistSearchResult>,
+    onOpenSavedTracks: () -> Unit,
+) {
+    LazyColumn(modifier) {
+
+        item {
+            PlaylistsListItem(
+                onClick = onOpenSavedTracks,
+                title = "Liked Tracks",
+                leadingContent = {
+                    Icon(
+                        Icons.Filled.Favorite,
+                        contentDescription = null,
+                    )
+                }
+            )
+        }
+
+        item {
+            Text(
+                modifier = Modifier.padding(start = Dimens.paddingNormal, end = Dimens.paddingNormal, bottom = 8.dp),
+                text = "Your playlists",
+                style = MaterialTheme.typography.labelMedium.copy(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                ),
+            )
+        }
+
+        if (playlists.loadState.refresh == LoadState.Loading) {
+            // todo error handling            lazyItems.loadState.refresh / append is LoadState.Error
+            item {
+                LoadingScreen()
+            }
+        }
+
+        items(count = playlists.itemCount) { index ->
+            val playlist = playlists[index] ?: return@items
+            PlaylistWithImageListItem(
+                title = playlist.name,
+                imageUrl = playlist.smallImageUrl,
+                onClick = { /* todo: open playlist by id */},
+            )
+
+        }
+
+        if (playlists.loadState.append == LoadState.Loading) {
+            item {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(Dimens.paddingNormal)
+                        .wrapContentWidth(Alignment.CenterHorizontally)
+                )
+            }
+        }
+
+    }
+}
+
+@Composable
+fun PlaylistsListItem(
+    modifier: Modifier = Modifier,
+    title: String,
+    onClick: () -> Unit,
+    leadingContent: @Composable () -> Unit,
+) {
+    ListItem(
+        modifier = modifier.clickable(onClick = onClick),
+        headlineContent = {
+            Text(title)
+        },
+        leadingContent = leadingContent,
+    )
+}
+
+@Composable
+fun PlaylistWithImageListItem(
+    modifier: Modifier = Modifier,
+    title: String,
+    onClick: () -> Unit,
+    imageUrl: String?,
+) {
+    PlaylistsListItem(
+        modifier = modifier,
+        title = title,
+        onClick = onClick,
+        leadingContent = {
+            AsyncImage(
+                modifier = Modifier.size(40.dp),
+                model = imageUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                placeholder = rememberVectorPainter(Icons.Filled.AccountCircle),
+            )
+        },
+    )
 }

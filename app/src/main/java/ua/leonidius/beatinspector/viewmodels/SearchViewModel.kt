@@ -11,16 +11,19 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
+import ua.leonidius.beatinspector.PagingDataSource
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.SongDataIOException
+import ua.leonidius.beatinspector.entities.PlaylistSearchResult
 import ua.leonidius.beatinspector.entities.SongSearchResult
+import ua.leonidius.beatinspector.repos.account.AccountRepository
 import ua.leonidius.beatinspector.repos.search.SearchRepository
 import ua.leonidius.beatinspector.repos.search.SearchRepositoryImpl
-import ua.leonidius.beatinspector.repos.account.AccountRepository
 
 class SearchViewModel(
     private val searchRepository: SearchRepository,
     private val accountRepository: AccountRepository,
+    myPlaylistsPagingDataSource: PagingDataSource<PlaylistSearchResult>,
 ) : ViewModel() {
 
     sealed class UiState {
@@ -63,6 +66,7 @@ class SearchViewModel(
     var accountImageState by mutableStateOf<AccountImageState>(AccountImageState.Loading)
         private set
 
+    val playlistsPagingFlow = myPlaylistsPagingDataSource.getFlow(viewModelScope)
 
     init {
         loadAccountImage()
@@ -147,6 +151,7 @@ class SearchViewModel(
                 return SearchViewModel(
                     app.searchRepository,
                     app.accountRepository,
+                    app.myPlaylistsPagingDataSource,
                 ) as T
             }
 

@@ -76,7 +76,7 @@ class Authenticator(
              * user-read-recently-played: view recently played tracks
              * user-top-read: view top tracks
              */
-            .setScope("user-library-read playlist-read-private playlist-read-collaborative user-read-recently-played user-top-read")
+            .setScope("user-library-read playlist-read-private user-read-recently-played user-top-read")
             .build()
 
         return authService.getAuthorizationRequestIntent(authRequest)

@@ -33,6 +33,9 @@ import ua.leonidius.beatinspector.entities.SongSearchResult
 import ua.leonidius.beatinspector.viewmodels.SavedTracksViewModel
 import ua.leonidius.beatinspector.views.components.LoadingScreen
 
+
+// todo: make this into a universal playlist screen
+// todo: mayb add a button to open the playlist in spotify
 @Composable
 fun SavedTracksScreen(
     viewModel: SavedTracksViewModel = viewModel(factory = SavedTracksViewModel.Factory),

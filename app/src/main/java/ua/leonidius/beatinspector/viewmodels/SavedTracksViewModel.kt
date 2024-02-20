@@ -1,8 +1,5 @@
 package ua.leonidius.beatinspector.viewmodels
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -10,15 +7,11 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
-import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
-import ua.leonidius.beatinspector.SongDataIOException
 import ua.leonidius.beatinspector.entities.SongSearchResult
 import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksNetworkPagingSource
-import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksRepository
 
 class SavedTracksViewModel(
-    private val savedTracksRepository: SavedTracksRepository,
     private val pagingSource: SavedTracksNetworkPagingSource, // todo: remove
 ): ViewModel() {
 
@@ -72,7 +65,6 @@ class SavedTracksViewModel(
                 val app = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]) as BeatInspectorApp
 
                 return SavedTracksViewModel(
-                    app.savedTracksRepository,
                     app.savedTracksNetworkPagingSource,
                 ) as T
             }
