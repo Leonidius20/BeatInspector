@@ -140,6 +140,13 @@ class SearchViewModel(
         }
     }
 
+    /**
+     * Return to the list of user's playlists, hide the search results
+     */
+    fun returnToUninitialized() {
+        uiState = UiState.Uninitialized
+    }
+
     companion object {
 
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {

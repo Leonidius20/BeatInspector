@@ -21,13 +21,10 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
@@ -41,7 +38,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -101,6 +97,10 @@ fun SearchScreen(
         accountImageState = searchViewModel.accountImageState,
         onOpenSongInSpotify = onOpenSongInSpotify,
         onOpenSavedTracks = onOpenSavedTracks,
+        // called when pressing clear function to go back to the list of user's playlists
+        onReturnToPlaylistsList = {
+            searchViewModel.returnToUninitialized()
+        },
     )
 }
 
@@ -119,6 +119,7 @@ fun SearchScreen(
     accountImageState: SearchViewModel.AccountImageState,
     onOpenSongInSpotify: (SongId) -> Unit,
     onOpenSavedTracks: () -> Unit,
+    onReturnToPlaylistsList: () -> Unit,
 ) {
     var searchBarActive by rememberSaveable { mutableStateOf(false) }
 
@@ -161,11 +162,24 @@ fun SearchScreen(
                     onActiveChange = { searchBarActive = it },
                     leadingIcon = {
                         if (!searchBarActive) {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                tint = MaterialTheme.colorScheme.onSurface,
-                                contentDescription = null
-                            )
+                            if (state !is SearchViewModel.UiState.Uninitialized) {
+                                IconButton(onClick = {
+                                    onReturnToPlaylistsList()
+                                    onQueryChange("")
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                        contentDescription = null
+                                    )
+                                }
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.Search,
+                                    tint = MaterialTheme.colorScheme.onSurface,
+                                    contentDescription = null
+                                )
+                            }
+
                         } else {
                             IconButton(onClick = { searchBarActive = false }) {
                                 Icon(
@@ -212,6 +226,7 @@ fun SearchScreen(
                                     if (query.isNotEmpty()) {
                                         onQueryChange("")
                                     }
+                                    onReturnToPlaylistsList()
                                 }) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
