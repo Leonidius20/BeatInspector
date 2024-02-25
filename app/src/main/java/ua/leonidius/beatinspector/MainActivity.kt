@@ -15,14 +15,18 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ua.leonidius.beatinspector.ui.theme.BeatInspectorTheme
+import ua.leonidius.beatinspector.viewmodels.TrackListViewModel
 import ua.leonidius.beatinspector.views.LoginScreen
 import ua.leonidius.beatinspector.views.LongTextScreen
 import ua.leonidius.beatinspector.views.PlaylistsScreen
-import ua.leonidius.beatinspector.views.SavedTracksScreen
+import ua.leonidius.beatinspector.views.TrackListScreen
 import ua.leonidius.beatinspector.views.SearchScreen
 import ua.leonidius.beatinspector.views.SettingsScreen
 import ua.leonidius.beatinspector.views.SongDetailsScreen
@@ -50,7 +54,6 @@ class MainActivity : ComponentActivity() {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
             startActivity(intent)
         }
-
 
 
         setContent {
@@ -140,7 +143,8 @@ class MainActivity : ComponentActivity() {
                             })
                         }
                         composable("saved_tracks") {
-                            SavedTracksScreen(
+                            TrackListScreen(
+                                viewModel(factory = TrackListViewModel.SavedTracksFactory),
                                 onOpenSongInSpotify = openTrackOnSpotifyOrAppStore,
                                 onNavigateToSongDetails = {
                                     navController.navigate("song/${it}")
@@ -152,6 +156,16 @@ class MainActivity : ComponentActivity() {
                                 onSearch = { goTo(Screen.Search.route(it)) },
                                 goToSettings = { goTo(Screen.Settings.route()) },
                                 goToSavedTracks = { goTo("saved_tracks") },
+                                goToRecentlyPlayed = { goTo("recently_played") }
+                            )
+                        }
+                        composable("recently_played") {
+                            TrackListScreen(
+                                viewModel(factory = TrackListViewModel.RecentlyPlayedFactory),
+                                onOpenSongInSpotify = openTrackOnSpotifyOrAppStore,
+                                onNavigateToSongDetails = {
+                                    navController.navigate("song/${it}")
+                                }
                             )
                         }
                     }
@@ -207,3 +221,5 @@ class MainActivity : ComponentActivity() {
     }
 
 }
+
+

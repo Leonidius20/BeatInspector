@@ -1,6 +1,8 @@
 package ua.leonidius.beatinspector.datasources.network.dto
 
 import com.google.gson.annotations.SerializedName
+import ua.leonidius.beatinspector.datasources.network.mappers.ListMapper
+import ua.leonidius.beatinspector.entities.SongSearchResult
 
 data class SavedTracksResponse(
 
@@ -17,4 +19,10 @@ data class SavedTracksResponse(
     val limit: Int,
 
     val items: List<SavedTrackDto>
-)
+): ListMapper<SongSearchResult> {
+
+    override fun toDomainObject(): List<SongSearchResult> {
+        return items.map { it.toDomainObject() }
+    }
+
+}

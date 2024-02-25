@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -27,19 +26,19 @@ import kotlinx.coroutines.flow.Flow
 import ua.leonidius.beatinspector.Dimens
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.entities.SongSearchResult
-import ua.leonidius.beatinspector.viewmodels.SavedTracksViewModel
+import ua.leonidius.beatinspector.viewmodels.TrackListViewModel
 import ua.leonidius.beatinspector.views.components.LoadingScreen
 
 
 // todo: make this into a universal playlist screen
 // todo: mayb add a button to open the playlist in spotify
 @Composable
-fun SavedTracksScreen(
-    viewModel: SavedTracksViewModel = viewModel(factory = SavedTracksViewModel.Factory),
+fun TrackListScreen(
+    viewModel: TrackListViewModel,
     onOpenSongInSpotify: (String) -> Unit,
     onNavigateToSongDetails: (String) -> Unit,
 ) {
-    SavedTracksScreen(
+    TrackListScreen(
         //uiState = viewModel.uiState,
         pagingFlow = viewModel.flow,
         onOpenSongInSpotify = onOpenSongInSpotify,
@@ -48,7 +47,7 @@ fun SavedTracksScreen(
 }
 
 @Composable
-private fun SavedTracksScreen(
+private fun TrackListScreen(
     //uiState: SavedTracksViewModel.UiState,
     pagingFlow: Flow<PagingData<SongSearchResult>>,
     onOpenSongInSpotify: (String) -> Unit,

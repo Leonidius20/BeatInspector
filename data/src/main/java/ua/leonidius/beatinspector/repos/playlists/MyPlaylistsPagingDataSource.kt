@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.repos.saved_tracks
+package ua.leonidius.beatinspector.repos.playlists
 
 import ua.leonidius.beatinspector.datasources.network.dto.responses.MyPlaylistsResponse
 import ua.leonidius.beatinspector.datasources.network.services.MyPlaylistsService

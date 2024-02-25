@@ -32,12 +32,15 @@ import ua.leonidius.beatinspector.datasources.network.AccountNetworkDataSource
 import ua.leonidius.beatinspector.datasources.network.SearchNetworkDataSource
 import ua.leonidius.beatinspector.datasources.network.services.ArtistsService
 import ua.leonidius.beatinspector.datasources.network.services.MyPlaylistsService
+import ua.leonidius.beatinspector.datasources.network.services.RecentlyPlayedApi
 import ua.leonidius.beatinspector.datasources.network.services.SavedTracksService
 import ua.leonidius.beatinspector.datasources.network.services.SearchService
 import ua.leonidius.beatinspector.datasources.network.services.SpotifyAccountService
 import ua.leonidius.beatinspector.datasources.network.services.TrackAudioAnalysisService
 import ua.leonidius.beatinspector.entities.PlaylistSearchResult
-import ua.leonidius.beatinspector.repos.saved_tracks.MyPlaylistsPagingDataSource
+import ua.leonidius.beatinspector.entities.SongSearchResult
+import ua.leonidius.beatinspector.repos.playlists.MyPlaylistsPagingDataSource
+import ua.leonidius.beatinspector.repos.recently_played.RecentlyPlayedDataSource
 import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksNetworkPagingSource
 import ua.leonidius.beatinspector.repos.track_details.TrackDetailsRepository
 import ua.leonidius.beatinspector.repos.track_details.TrackDetailsRepositoryImpl
@@ -71,6 +74,8 @@ class BeatInspectorApp: Application() {
     lateinit var savedTracksNetworkPagingSource: SavedTracksNetworkPagingSource
 
     lateinit var myPlaylistsPagingDataSource: PagingDataSource<PlaylistSearchResult>
+
+    lateinit var recentlyPlayedDataSource: PagingDataSource<SongSearchResult>
 
     override fun onCreate() {
         super.onCreate()
@@ -158,6 +163,9 @@ class BeatInspectorApp: Application() {
 
         val myPlaylistService = retrofit.create(MyPlaylistsService::class.java)
         myPlaylistsPagingDataSource = MyPlaylistsPagingDataSource(myPlaylistService)
+
+        val recentlyPlayedApi = retrofit.create(RecentlyPlayedApi::class.java)
+        recentlyPlayedDataSource = RecentlyPlayedDataSource(recentlyPlayedApi, searchCacheDataSource)
     }
 
     private fun isPackageInstalled(packageName: String): Boolean {

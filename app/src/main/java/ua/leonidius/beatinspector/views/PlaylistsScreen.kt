@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -41,6 +42,7 @@ fun PlaylistsScreen(
     onSearch: (String) -> Unit,
     goToSettings: () -> Unit,
     goToSavedTracks: () -> Unit,
+    goToRecentlyPlayed: () -> Unit,
 ) {
     val viewModel: PlaylistsViewModel = viewModel(factory = PlaylistsViewModel.Factory)
 
@@ -56,6 +58,7 @@ fun PlaylistsScreen(
         onSearch = onSearch,
         goToSettings,
         goToSavedTracks,
+        goToRecentlyPlayed,
         searchBarActive,
         setSearchBarActive = { searchBarActive = it },
     )
@@ -70,6 +73,7 @@ fun PlaylistsScreen(
     onSearch: (String) -> Unit,
     goToSettings: () -> Unit,
     goToSavedTracks: () -> Unit,
+    goToRecentlyPlayed: () -> Unit,
     searchBarActive: Boolean,
     setSearchBarActive: (Boolean) -> Unit,
 ) {
@@ -85,6 +89,7 @@ fun PlaylistsScreen(
         PlaylistsList(
             playlists = playlistsPaging,
             onOpenSavedTracks = goToSavedTracks,
+            goToRecentlyPlayed = goToRecentlyPlayed,
         )
     }
 }
@@ -94,6 +99,7 @@ fun PlaylistsList(
     modifier: Modifier = Modifier,
     playlists: LazyPagingItems<PlaylistSearchResult>,
     onOpenSavedTracks: () -> Unit,
+    goToRecentlyPlayed: () -> Unit,
 ) {
     LazyColumn(modifier) {
 
@@ -104,6 +110,19 @@ fun PlaylistsList(
                 leadingContent = {
                     Icon(
                         Icons.Filled.Favorite,
+                        contentDescription = null,
+                    )
+                }
+            )
+        }
+
+        item {
+            PlaylistsListItem(
+                onClick = goToRecentlyPlayed,
+                title = "Recently Played",
+                leadingContent = {
+                    Icon(
+                        Icons.Filled.DateRange,
                         contentDescription = null,
                     )
                 }
