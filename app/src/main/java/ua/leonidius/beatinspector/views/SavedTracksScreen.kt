@@ -1,7 +1,6 @@
 package ua.leonidius.beatinspector.views
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -13,13 +12,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
@@ -61,37 +58,49 @@ private fun SavedTracksScreen(
 
     val lazyItems = pagingFlow.collectAsLazyPagingItems()
 
-    LazyColumn {
-        if (lazyItems.loadState.refresh == LoadState.Loading) {
- // todo error handling            lazyItems.loadState.refresh / append is LoadState.Error
-            item {
-                LoadingScreen()
-            }
-        }
+    val refreshState = lazyItems.loadState.refresh
 
-        items(count = lazyItems.itemCount) { index ->
-            val track = lazyItems[index] ?: return@items
-            TrackListItem(
-                Modifier.clickable {
-                    onNavigateToSongDetails(track.id)
-                },
-                track = track,
-                onOpenSongInSpotify = { onOpenSongInSpotify(track.id) }
-            )
+    if (refreshState is LoadState.Error) {
+        // todo: universal error screen
+        Text("Error loading, ${refreshState.error.message}")
 
-        }
+    } else if (lazyItems.loadState.refresh is LoadState.Loading) {
+        LoadingScreen()
+    } else {
+        LazyColumn {
 
-        if (lazyItems.loadState.append == LoadState.Loading) {
-            item {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(Dimens.paddingNormal)
-                        .wrapContentWidth(Alignment.CenterHorizontally)
+            items(count = lazyItems.itemCount) { index ->
+                val track = lazyItems[index] ?: return@items
+                TrackListItem(
+                    Modifier.clickable {
+                        onNavigateToSongDetails(track.id)
+                    },
+                    track = track,
+                    onOpenSongInSpotify = { onOpenSongInSpotify(track.id) }
                 )
+
+            }
+
+            val appendState = lazyItems.loadState.append
+
+            if (appendState is LoadState.Loading) {
+                item {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(Dimens.paddingNormal)
+                            .wrapContentWidth(Alignment.CenterHorizontally)
+                    )
+                }
+            } else if (appendState is LoadState.Error) {
+                item {
+                    Text("Error loading, ${appendState.error.message}")
+                }
             }
         }
     }
+
+
 
 
 

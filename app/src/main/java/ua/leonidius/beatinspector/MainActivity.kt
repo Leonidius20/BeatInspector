@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
                                 })
                             }
                         }
-                        composable("search/{query}") {
+                        composable( "search/{query}") {
                             SearchScreen(
                                 onNavigateToSongDetails = {
                                     goTo("song/${it}")
@@ -147,10 +147,10 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
-                        composable("playlists") {
+                        composable(Screen.Playlists.routeTemplate) {
                             PlaylistsScreen(
-                                onSearch = { goTo("search/$it") },
-                                goToSettings = { goTo("settings") },
+                                onSearch = { goTo(Screen.Search.route(it)) },
+                                goToSettings = { goTo(Screen.Settings.route()) },
                                 goToSavedTracks = { goTo("saved_tracks") },
                             )
                         }
@@ -160,6 +160,50 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+    }
+
+
+
+    sealed class Screen(
+        val routeTemplate: String,
+    ) {
+        override fun toString() = routeTemplate
+
+        sealed class NoParametersScreen(routeTemplate: String): Screen(routeTemplate) {
+            fun route() = routeTemplate
+        }
+
+        sealed class ScreenWithParameters(
+            route: String,
+            parameterNames: Array<String>,
+            parameterValues: Array<Any>
+        )
+
+        object Playlists: NoParametersScreen("playlists")
+
+        object Search: ScreenWithParameters("search/{query}", arrayOf(), arrayOf("")) {
+
+            val parameterQuery = "query"
+
+            fun route(query: String) = "search/$query"
+
+        }
+
+        object Settings: NoParametersScreen("settings")
+
+        object SavedTracks: NoParametersScreen("saved_tracks")
+
+        object SongDetails: Screen("song/{songId}") {
+
+            fun route(id: String) = "song/$id"
+
+        }
+
+        object License: Screen("license/{licenseHash}") {
+
+            fun route(licenseHash: String) = "license/$licenseHash"
+
+        }
     }
 
 }
