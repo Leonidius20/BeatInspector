@@ -4,27 +4,27 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
-import ua.leonidius.beatinspector.PagingDataSource
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.SongDataIOException
-import ua.leonidius.beatinspector.entities.PlaylistSearchResult
 import ua.leonidius.beatinspector.entities.SongSearchResult
 import ua.leonidius.beatinspector.repos.account.AccountRepository
 import ua.leonidius.beatinspector.repos.search.SearchRepository
 import ua.leonidius.beatinspector.repos.search.SearchRepositoryImpl
 
 class SearchViewModel(
+    savedStateHandle: SavedStateHandle,
     private val searchRepository: SearchRepository,
-    private val accountRepository: AccountRepository,
-    myPlaylistsPagingDataSource: PagingDataSource<PlaylistSearchResult>,
-) : ViewModel() {
+    accountRepository: AccountRepository,
+) : ViewModel(), AccountImageViewModel by AccountImageViewModelImpl(accountRepository) {
 
     sealed class UiState {
 
@@ -43,62 +43,20 @@ class SearchViewModel(
 
     }
 
-    sealed class AccountImageState {
 
-        data class Loaded(
-            val imageUrl: String
-        ) : AccountImageState()
-
-        sealed class NotLoaded : AccountImageState()
-
-        object ErrorLoading : NotLoaded()
-
-        object Loading : NotLoaded()
-
-        object NoImageOnAccount : NotLoaded()
-    }
-
-    var query by mutableStateOf("")
+    var query by mutableStateOf(savedStateHandle["query"] ?: "")
 
     var uiState by mutableStateOf<UiState>(UiState.Uninitialized)
         private set
 
-    var accountImageState by mutableStateOf<AccountImageState>(AccountImageState.Loading)
-        private set
-
-    val playlistsPagingFlow = myPlaylistsPagingDataSource.getFlow(viewModelScope)
-
     init {
-        loadAccountImage()
-    }
-
-    private fun loadAccountImage() {
-        viewModelScope.launch {
-            accountImageState = AccountImageState.Loading
-
-            accountImageState = try {
-                val accountImageUrl = accountRepository.get(Unit).smallImageUrl
-                if (accountImageUrl != null) {
-                    AccountImageState.Loaded(accountImageUrl)
-                } else {
-                    AccountImageState.NoImageOnAccount
-                }
-            } catch (e: Exception) {
-                AccountImageState.ErrorLoading
-            }
+        if (query.isNotEmpty()) {
+            performSearch()
         }
+        loadAccountImage(viewModelScope)
     }
 
-    ///init {
-    //    searchQueriesFlow.collect { query ->
-            // lauch a coroutine to perform search
-            // cancel previous request if it is still running
-            // should we be cancelling a coroutine ?
-            // no, only not letting next requests happen,
-            // but how do we know that the prev is still running?
-            // how do we combine network coroutines with this flow though
-     ///   }
-    //}
+
 
     fun performSearch() {
         //searchQueriesFlow.emit(query)
@@ -156,9 +114,9 @@ class SearchViewModel(
                 val app = checkNotNull(extras[APPLICATION_KEY]) as BeatInspectorApp
 
                 return SearchViewModel(
+                    extras.createSavedStateHandle(),
                     app.searchRepository,
                     app.accountRepository,
-                    app.myPlaylistsPagingDataSource,
                 ) as T
             }
 

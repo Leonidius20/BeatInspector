@@ -21,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import ua.leonidius.beatinspector.ui.theme.BeatInspectorTheme
 import ua.leonidius.beatinspector.views.LoginScreen
 import ua.leonidius.beatinspector.views.LongTextScreen
+import ua.leonidius.beatinspector.views.PlaylistsScreen
 import ua.leonidius.beatinspector.views.SavedTracksScreen
 import ua.leonidius.beatinspector.views.SearchScreen
 import ua.leonidius.beatinspector.views.SettingsScreen
@@ -51,6 +52,7 @@ class MainActivity : ComponentActivity() {
         }
 
 
+
         setContent {
             BeatInspectorTheme {
 
@@ -58,8 +60,12 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
 
+                    val goTo = remember {
+                        { route: String -> navController.navigate(route) }
+                    }
+
                     val startDestination = remember {
-                        if (viewModel.uiState !is AuthStatusViewModel.UiState.SuccessfulLogin) "login" else "search"
+                        if (viewModel.uiState !is AuthStatusViewModel.UiState.SuccessfulLogin) "login" else "playlists"
                     }
 
                     NavHost(navController = navController, startDestination = startDestination) {
@@ -82,16 +88,16 @@ class MainActivity : ComponentActivity() {
                                 })
                             }
                         }
-                        composable("search") {
+                        composable("search/{query}") {
                             SearchScreen(
                                 onNavigateToSongDetails = {
-                                    navController.navigate("song/${it}")
+                                    goTo("song/${it}")
                                 }, onNavigateToSettings = {
-                                    navController.navigate("settings")
+                                    goTo("settings")
                                 },
                                 onOpenSongInSpotify = openTrackOnSpotifyOrAppStore,
                                 onOpenSavedTracks = {
-                                    navController.navigate("saved_tracks")
+                                    goTo("saved_tracks")
                                 }
                             )
                         }
@@ -139,6 +145,13 @@ class MainActivity : ComponentActivity() {
                                 onNavigateToSongDetails = {
                                     navController.navigate("song/${it}")
                                 }
+                            )
+                        }
+                        composable("playlists") {
+                            PlaylistsScreen(
+                                onSearch = { goTo("search/$it") },
+                                goToSettings = { goTo("settings") },
+                                goToSavedTracks = { goTo("saved_tracks") },
                             )
                         }
                     }
