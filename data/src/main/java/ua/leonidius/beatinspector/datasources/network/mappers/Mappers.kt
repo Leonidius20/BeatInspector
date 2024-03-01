@@ -10,6 +10,7 @@ import ua.leonidius.beatinspector.entities.Song
 import ua.leonidius.beatinspector.entities.SongSearchResult
 
 fun TrackDto.toDomainObject(): SongSearchResult {
+    val name = if (this.explicit) "$name \uD83C\uDD74" else name // "E" emoji
     return SongSearchResult(
         id = id,
         name = name,

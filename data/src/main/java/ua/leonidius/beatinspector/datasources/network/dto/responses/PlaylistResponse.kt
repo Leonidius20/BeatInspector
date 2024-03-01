@@ -20,7 +20,8 @@ data class PlaylistResponse(
             val name: String,
             val type: String,              // "track" or "episode"
             val artists: List<ArtistDto>?, // null if this is a podcast episode
-            val album: AlbumDto?           // null if this is a podcast episode
+            val album: AlbumDto?,          // null if this is a podcast episode
+            val explicit: Boolean,
         ) {
             fun isTrack() = type == "track"
         }
@@ -34,7 +35,8 @@ data class PlaylistResponse(
             id = it.track.id,
             name = it.track.name,
             artists = it.track.artists!!,
-            album = it.track.album!!
+            album = it.track.album!!,
+            explicit = it.track.explicit,
         )
     }
 
