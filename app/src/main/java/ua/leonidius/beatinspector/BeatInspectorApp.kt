@@ -13,7 +13,6 @@ import kotlinx.coroutines.Dispatchers
 import net.openid.appauth.AuthorizationService
 import okhttp3.Cache
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ua.leonidius.beatinspector.auth.AuthStateSharedPrefStorage
@@ -126,9 +125,10 @@ class BeatInspectorApp: Application() {
             .client(OkHttpClient.Builder()
                 .addInterceptor(authInterceptor)
                 .cache(okHttpCache)
-                .addInterceptor(HttpLoggingInterceptor().apply {
+                /*.addInterceptor(HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.HEADERS
-                }).build())
+                })*/
+                .build())
             .build()
 
 

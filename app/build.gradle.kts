@@ -73,8 +73,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false // due to retrofit r8 issues
-            // isShrinkResources = true
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("release")
         }
@@ -126,10 +126,10 @@ dependencies {
 
     implementation("androidx.navigation:navigation-compose:2.7.7")
 
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:retrofit:2.10.0-SNAPSHOT")
     // implementation("com.google.code.gson:gson:2.8.9")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.10.0-SNAPSHOT")
+    // implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     implementation("io.coil-kt:coil-base:2.5.0")
     implementation("io.coil-kt:coil-compose:2.5.0")
@@ -140,7 +140,7 @@ dependencies {
     implementation("com.github.haroldadmin:NetworkResponseAdapter:5.0.0")
 
     // https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    // implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     implementation("com.github.ireward:compose-html:1.0.2") // todo: apache 2.0, requires attribution
 

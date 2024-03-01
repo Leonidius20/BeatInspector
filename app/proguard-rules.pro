@@ -18,7 +18,7 @@
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
--renamesourcefileattribute SourceFile
+#-renamesourcefileattribute SourceFile
 
 # Save mapping between original and obfuscated class names
 # for stack traces decoding in the future
@@ -33,6 +33,14 @@
 -printseeds ./build/app-full-r8-seeds.txt
 
 # maybe this will keep the NetworkResponseAdapter library working
--keep class com.haroldadmin.cnradapter.** { *; }
+#-keep class com.haroldadmin.cnradapter.** { *; }
 
 -verbose
+#generated
+-dontwarn com.google.errorprone.annotations.CanIgnoreReturnValue
+-dontwarn com.google.errorprone.annotations.CheckReturnValue
+-dontwarn com.google.errorprone.annotations.Immutable
+-dontwarn com.google.errorprone.annotations.RestrictedApi
+
+-dontobfuscate
+ -keep class ua.leonidius.beatinspector.datasources.network.dto.** {*;}
