@@ -48,6 +48,7 @@ import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksNetworkPagingSou
 import ua.leonidius.beatinspector.repos.top_tracks.TopTracksPagingDataSource
 import ua.leonidius.beatinspector.repos.track_details.TrackDetailsRepository
 import ua.leonidius.beatinspector.repos.track_details.TrackDetailsRepositoryImpl
+import ua.leonidius.beatinspector.settings.SettingsStore
 import java.text.DecimalFormat
 
 
@@ -84,6 +85,8 @@ class BeatInspectorApp: Application() {
     lateinit var playlistDataSourceFactory: (String) -> PlaylistPagingDataSource
 
     lateinit var topTracksDataSource: PagingDataSource<SongSearchResult>
+
+    lateinit var settingsStore: SettingsStore
 
     override fun onCreate() {
         super.onCreate()
@@ -182,6 +185,8 @@ class BeatInspectorApp: Application() {
 
         val topTracksApi = retrofit.create(TopTracksApi::class.java)
         topTracksDataSource = TopTracksPagingDataSource(topTracksApi, searchCacheDataSource)
+
+        settingsStore = SettingsStore(getSharedPreferences(getString(ua.leonidius.beatinspector.R.string.preferences_settings_file_name), MODE_PRIVATE))
     }
 
     private fun isPackageInstalled(packageName: String): Boolean {

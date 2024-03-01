@@ -25,6 +25,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -68,6 +69,8 @@ fun SettingsScreen(
         onLogOutClicked = onLogOutClicked,
         onLinkClicked = onLinkClicked,
         onLicenseClicked = onLicenseClicked,
+        explicitHidden = viewModel.hideExplicit,
+        onExplicitHiddenChanged = { viewModel.toggleHideExplicit(it) },
     )
 }
 
@@ -82,6 +85,8 @@ fun SettingsScreen(
     onLogOutClicked: () -> Unit,
     onLinkClicked: (String) -> Unit,
     onLicenseClicked: (String) -> Unit,
+    explicitHidden: Boolean,
+    onExplicitHiddenChanged: (Boolean) -> Unit,
 ) {
     val expanded = rememberSaveable { mutableStateOf(false) }
     var aboutAppDialogShown by rememberSaveable { mutableStateOf(false) }
@@ -101,6 +106,8 @@ fun SettingsScreen(
             onLicenseClicked = onLicenseClicked,
             expanded = expanded.value,
             onExpansionStateChanged = { expanded.value = !expanded.value },
+            explicitHidden = explicitHidden,
+            onExplicitHiddenChanged = onExplicitHiddenChanged,
         )
     } else {
         SettingsScreenLandscape(
@@ -114,6 +121,8 @@ fun SettingsScreen(
             onLicenseClicked = onLicenseClicked,
             expanded = expanded.value,
             onExpansionStateChanged = { expanded.value = !expanded.value },
+            explicitHidden = explicitHidden,
+            onExplicitHiddenChanged = onExplicitHiddenChanged,
         )
     }
 
@@ -144,6 +153,8 @@ fun SettingsScreenLandscape(
     onLicenseClicked: (String) -> Unit,
     expanded: Boolean,
     onExpansionStateChanged: () -> Unit,
+    explicitHidden: Boolean,
+    onExplicitHiddenChanged: (Boolean) -> Unit,
 ) {
     Column(modifier) {
         PageTitle(title = R.string.settings_title)
@@ -164,6 +175,8 @@ fun SettingsScreenLandscape(
                         onLinkClicked = onLinkClicked,
                         onLogoutOptionChosen = onLogOutOptionChosen,
                         onAboutOptionChosen = onAboutOptionChosen,
+                        isExplicitHidden = explicitHidden,
+                        onExplicitHiddenChanged = onExplicitHiddenChanged,
                     )
                 }
 
@@ -192,6 +205,8 @@ fun SettingsScreenPortrait(
     onLicenseClicked: (String) -> Unit,
     expanded: Boolean,
     onExpansionStateChanged: () -> Unit,
+    explicitHidden: Boolean,
+    onExplicitHiddenChanged: (Boolean) -> Unit,
 ) {
     LazyColumn(modifier) {
         item {
@@ -208,6 +223,8 @@ fun SettingsScreenPortrait(
                 onLinkClicked = onLinkClicked,
                 onLogoutOptionChosen = onLogOutOptionChosen,
                 onAboutOptionChosen = onAboutOptionChosen,
+                isExplicitHidden = explicitHidden,
+                onExplicitHiddenChanged = onExplicitHiddenChanged,
             )
         }
         if (expanded) {
@@ -270,11 +287,20 @@ fun StaticSettingsBlock(
     onLinkClicked: (String) -> Unit,
     onLogoutOptionChosen: () -> Unit,
     onAboutOptionChosen: () -> Unit,
+    isExplicitHidden: Boolean,
+    onExplicitHiddenChanged: (Boolean) -> Unit,
 ) {
     SettingsBlock(title = R.string.settings_block_account) {
         SettingsItem(
             title = stringResource(R.string.log_out),
             onClick = onLogoutOptionChosen,
+        )
+    }
+    SettingsBlock(title = R.string.settings_block_content) {
+        ToggleSettingsItem(
+            title = "Hide explicit content",
+            checked = isExplicitHidden,
+            onCheckedChange = onExplicitHiddenChanged,
         )
     }
     SettingsBlock(title = R.string.settings_block_links) {
@@ -527,6 +553,24 @@ fun SettingsItem(
 }
 
 @Composable
+fun ToggleSettingsItem(
+    modifier: Modifier = Modifier,
+    title: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    ListItem(
+        modifier = modifier,
+        headlineContent = {
+            Text(text = title)
+        },
+        trailingContent = {
+            Switch(checked, onCheckedChange)
+        }
+    )
+}
+
+@Composable
 fun ExpandableSettingsItem(
     modifier: Modifier = Modifier,
     title: String,
@@ -607,5 +651,7 @@ fun SettingsScreenPreview() {
         onLogOutClicked = {},
         onLinkClicked = {},
         onLicenseClicked = {},
+        explicitHidden = false,
+        onExplicitHiddenChanged = {},
     )
 }

@@ -12,11 +12,12 @@ import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.entities.AccountDetails
 import ua.leonidius.beatinspector.repos.BasicRepository
-import ua.leonidius.beatinspector.repos.account.AccountRepository
+import ua.leonidius.beatinspector.settings.SettingsStore
 
 class SettingsViewModel(
     private val accountRepository: BasicRepository<Unit, AccountDetails>,
     private val libraries: List<Library>,
+    private val settingsStore: SettingsStore,
 ): ViewModel() {
 
     sealed class AccountDetailsState {
@@ -39,6 +40,9 @@ class SettingsViewModel(
         Pair(it.name, it.licenses.firstOrNull()?.hash)
     }.toTypedArray()
 
+    var hideExplicit by mutableStateOf(settingsStore.hideExplicit)
+        private set // todo replace with datastore and flow
+
     init {
         loadAccountDetails()
     }
@@ -60,6 +64,11 @@ class SettingsViewModel(
         }
     }
 
+    fun toggleHideExplicit(value: Boolean) {
+        settingsStore.hideExplicit = value
+        hideExplicit = value
+    }
+
 
     companion object {
 
@@ -72,6 +81,7 @@ class SettingsViewModel(
                 return SettingsViewModel(
                     app.accountRepository,
                     app.libraries,
+                    app.settingsStore,
                 ) as T
             }
 
