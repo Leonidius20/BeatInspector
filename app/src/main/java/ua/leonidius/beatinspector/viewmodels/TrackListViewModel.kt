@@ -2,6 +2,7 @@ package ua.leonidius.beatinspector.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import ua.leonidius.beatinspector.BeatInspectorApp
@@ -35,6 +36,20 @@ class TrackListViewModel(
 
         val RecentlyPlayedFactory = getFactoryForSource { it.recentlyPlayedDataSource }
 
+        val PlaylistFactory = object : ViewModelProvider.Factory {
+
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+                val app = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]) as BeatInspectorApp
+
+                val savedStateHandle = extras.createSavedStateHandle()
+
+                return TrackListViewModel(
+                    app.playlistDataSourceFactory(savedStateHandle.get<String>("playlistId")!!),
+                ) as T
+            }
+
+        }
     }
 
 }

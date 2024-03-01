@@ -43,6 +43,7 @@ fun PlaylistsScreen(
     goToSettings: () -> Unit,
     goToSavedTracks: () -> Unit,
     goToRecentlyPlayed: () -> Unit,
+    goToPlaylist: (String) -> Unit,
 ) {
     val viewModel: PlaylistsViewModel = viewModel(factory = PlaylistsViewModel.Factory)
 
@@ -59,6 +60,7 @@ fun PlaylistsScreen(
         goToSettings,
         goToSavedTracks,
         goToRecentlyPlayed,
+        goToPlaylist,
         searchBarActive,
         setSearchBarActive = { searchBarActive = it },
     )
@@ -74,6 +76,7 @@ fun PlaylistsScreen(
     goToSettings: () -> Unit,
     goToSavedTracks: () -> Unit,
     goToRecentlyPlayed: () -> Unit,
+    goToPlaylist: (String) -> Unit,
     searchBarActive: Boolean,
     setSearchBarActive: (Boolean) -> Unit,
 ) {
@@ -90,6 +93,7 @@ fun PlaylistsScreen(
             playlists = playlistsPaging,
             onOpenSavedTracks = goToSavedTracks,
             goToRecentlyPlayed = goToRecentlyPlayed,
+            goToPlaylist = goToPlaylist,
         )
     }
 }
@@ -100,6 +104,7 @@ fun PlaylistsList(
     playlists: LazyPagingItems<PlaylistSearchResult>,
     onOpenSavedTracks: () -> Unit,
     goToRecentlyPlayed: () -> Unit,
+    goToPlaylist: (String) -> Unit,
 ) {
     LazyColumn(modifier) {
 
@@ -151,7 +156,7 @@ fun PlaylistsList(
             PlaylistWithImageListItem(
                 title = playlist.name,
                 imageUrl = playlist.smallImageUrl,
-                onClick = { /* todo: open playlist by id */},
+                onClick = { goToPlaylist(playlist.id) },
             )
 
         }

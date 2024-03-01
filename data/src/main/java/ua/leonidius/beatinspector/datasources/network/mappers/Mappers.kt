@@ -19,13 +19,6 @@ fun TrackDto.toDomainObject(): SongSearchResult {
     )
 }
 
-fun ArtistDto.toDomainObject(): Artist {
-    return Artist(
-        id = id,
-        name = name
-    )
-}
-
 fun SearchResultsResponse.toListOfDomainObjects(): List<SongSearchResult> {
     return tracks.items.map { it.toDomainObject() }
 }
