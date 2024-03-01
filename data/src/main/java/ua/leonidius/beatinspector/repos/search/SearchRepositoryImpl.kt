@@ -26,6 +26,12 @@ class SearchRepositoryImpl(
         results
     }
 
+    override fun getById(id: String): SongSearchResult {
+        return searchCacheDataSource.getTitleInfo(id)
+            ?: throw Error("no base info found in cache for song id $id")
+        // todo maybe add network call here if not found in cache
+    }
+
     class NotAuthedError: Error() // todo: find a place for this
 
 }

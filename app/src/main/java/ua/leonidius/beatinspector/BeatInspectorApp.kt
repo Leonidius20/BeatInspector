@@ -145,7 +145,7 @@ class BeatInspectorApp: Application() {
 
         trackDetailsRepository = TrackDetailsRepositoryImpl(
             trackDetailsCacheDataSource,
-            searchCacheDataSource,
+            searchRepository,
             artistsService,
             audioAnalysisService,
             Dispatchers.IO

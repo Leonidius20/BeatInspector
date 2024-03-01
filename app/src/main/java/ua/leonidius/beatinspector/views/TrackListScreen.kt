@@ -1,6 +1,7 @@
 package ua.leonidius.beatinspector.views
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -8,10 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,12 +41,16 @@ fun TrackListScreen(
     viewModel: TrackListViewModel,
     onOpenSongInSpotify: (String) -> Unit,
     onNavigateToSongDetails: (String) -> Unit,
+    openCategoryInApp: (() -> Unit)? = null,
+    isAppInstalled: Boolean? = null,
 ) {
     TrackListScreen(
         //uiState = viewModel.uiState,
         pagingFlow = viewModel.flow,
         onOpenSongInSpotify = onOpenSongInSpotify,
         onNavigateToSongDetails = onNavigateToSongDetails,
+        openCategoryInApp = openCategoryInApp,
+        isAppInstalled = isAppInstalled,
     )
 }
 
@@ -52,6 +60,8 @@ private fun TrackListScreen(
     pagingFlow: Flow<PagingData<SongSearchResult>>,
     onOpenSongInSpotify: (String) -> Unit,
     onNavigateToSongDetails: (String) -> Unit,
+    openCategoryInApp: (() -> Unit)?,
+    isAppInstalled: Boolean? = null,
 ) {
     // todo: landscape grid
 
@@ -67,6 +77,25 @@ private fun TrackListScreen(
         LoadingScreen()
     } else {
         LazyColumn {
+
+            if (openCategoryInApp != null) {
+                item {
+                    Box(Modifier.fillMaxWidth()) {
+                        OpenInSpotifyButton(
+                            modifier = Modifier
+                                .padding(Dimens.paddingNormal)
+                                .align(Alignment.Center),
+                            onClick = openCategoryInApp,
+                            isSpotifyInstalled = isAppInstalled!!,
+                            colors = ButtonDefaults.buttonColors().copy(
+                                containerColor = MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.5f),
+                                contentColor = MaterialTheme.colorScheme.onSurface,
+                            ) //todo  temorary until can extract color from playlist img
+                        )
+                    }
+
+                }
+            }
 
             items(count = lazyItems.itemCount) { index ->
                 val track = lazyItems[index] ?: return@items

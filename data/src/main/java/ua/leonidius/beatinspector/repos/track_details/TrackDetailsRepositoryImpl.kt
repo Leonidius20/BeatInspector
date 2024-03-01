@@ -5,16 +5,16 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.datasources.cache.FullTrackDetailsCacheDataSource
-import ua.leonidius.beatinspector.datasources.cache.SearchCacheDataSource
 import ua.leonidius.beatinspector.datasources.network.mappers.assembleTrackDomainObject
 import ua.leonidius.beatinspector.datasources.network.services.ArtistsService
 import ua.leonidius.beatinspector.datasources.network.services.TrackAudioAnalysisService
 import ua.leonidius.beatinspector.entities.Song
+import ua.leonidius.beatinspector.repos.search.SearchRepository
 import ua.leonidius.beatinspector.toUIException
 
 class TrackDetailsRepositoryImpl(
     private val trackDetailsCacheDataSource: FullTrackDetailsCacheDataSource,
-    private val searchCacheDataSource: SearchCacheDataSource, // for title and artists
+    private val searchRepository: SearchRepository, // for title and artists
     private val artistsService: ArtistsService,
     private val audioAnalysisService: TrackAudioAnalysisService,
     private val ioDispatcher: CoroutineDispatcher,
@@ -24,9 +24,7 @@ class TrackDetailsRepositoryImpl(
         trackDetailsCacheDataSource.getFromCache(id)
             ?.let { return@withContext it }
 
-        // try getting base info
-        val baseInfo = searchCacheDataSource.getTitleInfo(id)
-            ?: throw Error("no base info found in cache for song id $id")
+        val baseInfo = searchRepository.getById(id)
 
         val trackAnalysisDeferredResponse = async {
             when (val response = audioAnalysisService.getTrackAudioAnalysis(baseInfo.id)) {

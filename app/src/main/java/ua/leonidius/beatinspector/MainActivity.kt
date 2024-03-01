@@ -188,7 +188,11 @@ class MainActivity : ComponentActivity() {
                                 onOpenSongInSpotify = openTrackOnSpotifyOrAppStore,
                                 onNavigateToSongDetails = {
                                     navController.navigate("song/${it}")
-                                }
+                                },
+                                openCategoryInApp = {
+                                    // todo
+                                },
+                                isAppInstalled = app.isSpotifyInstalled,
                             )
                         }
                         composable("top_tracks") {
