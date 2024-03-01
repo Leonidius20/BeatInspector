@@ -164,7 +164,9 @@
           For a better experience, while using our Service, I
           may require you to provide us with certain personally
           identifiable information, including Spotify account ID, username
-          and profile picture. The information that
+          and profile picture, as well as the list and the contents of your Spotify playlists,
+          your liked tracks, recently played tracks and top tracks.
+          The information that
           I request will be retained on your device and is not collected by me in any way.
           The information collected is used to provide the Service.
         </p>
@@ -243,7 +245,7 @@
     <string name="log_out_explanation">Upon pressing the Log out button, your data will be wiped from the app. Then, a Spotify \"Manage Apps\" page will be opened in a browser window.\n\nIf you want to disconnect the app from your account, find BeatInspector in the list and press the \"Remove Access\" button next to it.</string>
     <string name="login_in_progress_tip">Please follow the instructions in the browser window…</string>
     <string name="log_in_error">There was an error during the login process. Please try again.</string>
-    <string name="login_scopes_tip">We request access to your username and profile picture, so that you can see which account was used to log into the app.</string>
+    <string name="login_scopes_tip">We request access to your username and profile picture, so that you can see which account was used to log into the app.\n\nWe request access to your playlists, liked (saved) tracks, top tracks and recently played tracks, so that you can view the information about them.</string>
     <string name="login_screen_try_again_button">Try again</string>
     <string name="version">Version %1$s</string>
 

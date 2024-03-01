@@ -36,6 +36,8 @@ class TrackListViewModel(
 
         val RecentlyPlayedFactory = getFactoryForSource { it.recentlyPlayedDataSource }
 
+        val TopTracksFactory = getFactoryForSource { it.topTracksDataSource }
+
         val PlaylistFactory = object : ViewModelProvider.Factory {
 
             @Suppress("UNCHECKED_CAST")

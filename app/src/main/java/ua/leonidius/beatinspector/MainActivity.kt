@@ -155,7 +155,8 @@ class MainActivity : ComponentActivity() {
                                 goToSettings = { goTo(Screen.Settings.route()) },
                                 goToSavedTracks = { goTo("saved_tracks") },
                                 goToRecentlyPlayed = { goTo("recently_played") },
-                                goToPlaylist = { goTo("playlist/${it}") }
+                                goToPlaylist = { goTo("playlist/${it}") },
+                                goToTopTracks = { goTo("top_tracks") }
                             )
                         }
                         composable("recently_played") {
@@ -170,6 +171,15 @@ class MainActivity : ComponentActivity() {
                         composable("playlist/{playlistId}") {
                             TrackListScreen(
                                 viewModel(factory = TrackListViewModel.PlaylistFactory),
+                                onOpenSongInSpotify = openTrackOnSpotifyOrAppStore,
+                                onNavigateToSongDetails = {
+                                    navController.navigate("song/${it}")
+                                }
+                            )
+                        }
+                        composable("top_tracks") {
+                            TrackListScreen(
+                                viewModel(factory = TrackListViewModel.TopTracksFactory),
                                 onOpenSongInSpotify = openTrackOnSpotifyOrAppStore,
                                 onNavigateToSongDetails = {
                                     navController.navigate("song/${it}")

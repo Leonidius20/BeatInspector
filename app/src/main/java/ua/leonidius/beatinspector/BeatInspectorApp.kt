@@ -37,6 +37,7 @@ import ua.leonidius.beatinspector.datasources.network.services.RecentlyPlayedApi
 import ua.leonidius.beatinspector.datasources.network.services.SavedTracksService
 import ua.leonidius.beatinspector.datasources.network.services.SearchService
 import ua.leonidius.beatinspector.datasources.network.services.SpotifyAccountService
+import ua.leonidius.beatinspector.datasources.network.services.TopTracksApi
 import ua.leonidius.beatinspector.datasources.network.services.TrackAudioAnalysisService
 import ua.leonidius.beatinspector.entities.PlaylistSearchResult
 import ua.leonidius.beatinspector.entities.SongSearchResult
@@ -44,6 +45,7 @@ import ua.leonidius.beatinspector.repos.playlists.MyPlaylistsPagingDataSource
 import ua.leonidius.beatinspector.repos.playlists.PlaylistPagingDataSource
 import ua.leonidius.beatinspector.repos.recently_played.RecentlyPlayedDataSource
 import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksNetworkPagingSource
+import ua.leonidius.beatinspector.repos.top_tracks.TopTracksPagingDataSource
 import ua.leonidius.beatinspector.repos.track_details.TrackDetailsRepository
 import ua.leonidius.beatinspector.repos.track_details.TrackDetailsRepositoryImpl
 import java.text.DecimalFormat
@@ -80,6 +82,8 @@ class BeatInspectorApp: Application() {
     lateinit var recentlyPlayedDataSource: PagingDataSource<SongSearchResult>
 
     lateinit var playlistDataSourceFactory: (String) -> PlaylistPagingDataSource
+
+    lateinit var topTracksDataSource: PagingDataSource<SongSearchResult>
 
     override fun onCreate() {
         super.onCreate()
@@ -175,6 +179,9 @@ class BeatInspectorApp: Application() {
         playlistDataSourceFactory = { playlistId ->
             PlaylistPagingDataSource(playlistApi, searchCacheDataSource, playlistId)
         }
+
+        val topTracksApi = retrofit.create(TopTracksApi::class.java)
+        topTracksDataSource = TopTracksPagingDataSource(topTracksApi, searchCacheDataSource)
     }
 
     private fun isPackageInstalled(packageName: String): Boolean {

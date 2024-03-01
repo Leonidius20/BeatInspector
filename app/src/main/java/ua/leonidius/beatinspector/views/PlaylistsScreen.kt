@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -43,6 +44,7 @@ fun PlaylistsScreen(
     goToSettings: () -> Unit,
     goToSavedTracks: () -> Unit,
     goToRecentlyPlayed: () -> Unit,
+    goToTopTracks: () -> Unit,
     goToPlaylist: (String) -> Unit,
 ) {
     val viewModel: PlaylistsViewModel = viewModel(factory = PlaylistsViewModel.Factory)
@@ -60,6 +62,7 @@ fun PlaylistsScreen(
         goToSettings,
         goToSavedTracks,
         goToRecentlyPlayed,
+        goToTopTracks,
         goToPlaylist,
         searchBarActive,
         setSearchBarActive = { searchBarActive = it },
@@ -76,6 +79,7 @@ fun PlaylistsScreen(
     goToSettings: () -> Unit,
     goToSavedTracks: () -> Unit,
     goToRecentlyPlayed: () -> Unit,
+    goToTopTracks: () -> Unit,
     goToPlaylist: (String) -> Unit,
     searchBarActive: Boolean,
     setSearchBarActive: (Boolean) -> Unit,
@@ -93,6 +97,7 @@ fun PlaylistsScreen(
             playlists = playlistsPaging,
             onOpenSavedTracks = goToSavedTracks,
             goToRecentlyPlayed = goToRecentlyPlayed,
+            goToTopTracks = goToTopTracks,
             goToPlaylist = goToPlaylist,
         )
     }
@@ -104,6 +109,7 @@ fun PlaylistsList(
     playlists: LazyPagingItems<PlaylistSearchResult>,
     onOpenSavedTracks: () -> Unit,
     goToRecentlyPlayed: () -> Unit,
+    goToTopTracks: () -> Unit,
     goToPlaylist: (String) -> Unit,
 ) {
     LazyColumn(modifier) {
@@ -114,7 +120,7 @@ fun PlaylistsList(
                 title = "Liked Tracks",
                 leadingContent = {
                     Icon(
-                        Icons.Filled.Favorite,
+                        Icons.Filled.ThumbUp,
                         contentDescription = null,
                     )
                 }
@@ -128,6 +134,19 @@ fun PlaylistsList(
                 leadingContent = {
                     Icon(
                         Icons.Filled.DateRange,
+                        contentDescription = null,
+                    )
+                }
+            )
+        }
+
+        item {
+            PlaylistsListItem(
+                onClick = goToTopTracks,
+                title = "Top Tracks",
+                leadingContent = {
+                    Icon(
+                        Icons.Filled.Favorite,
                         contentDescription = null,
                     )
                 }
