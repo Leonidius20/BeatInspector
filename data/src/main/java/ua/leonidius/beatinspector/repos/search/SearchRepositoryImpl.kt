@@ -14,12 +14,18 @@ class SearchRepositoryImpl(
 
     private val properNetworkDataSource: SearchNetworkDataSource,
     private val searchCacheDataSource: SearchCacheDataSource,
+    private val isHideExplicit: () -> Boolean
 ) : SearchRepository {
 
     // we don't save query results in cache, because they are cached by okhttp
 
     override suspend fun get(q: String): List<SongSearchResult> = withContext(ioDispatcher) {
-        val results = properNetworkDataSource.load(q)
+        var results = properNetworkDataSource.load(q)
+
+        if (isHideExplicit()) {
+            results = results.filter { !it.isExplicit }
+        }
+
         launch {
             searchCacheDataSource.updateCache(q, results)
         }

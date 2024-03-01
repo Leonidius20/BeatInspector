@@ -161,8 +161,8 @@ fun SearchScreen(
 fun SearchScreenPortraitPreview() {
     val artist1 = Artist("1", "artist1")
     val artist2 = Artist("2", "artist2")
-    val song1 = SongSearchResult("1", "song1", listOf(artist1, artist2), "")
-    val song2 = SongSearchResult("2", "song2", listOf(artist1), "")
+    val song1 = SongSearchResult("1", "song1", listOf(artist1, artist2), true,"")
+    val song2 = SongSearchResult("2", "song2", listOf(artist1), true,"")
 
     SearchResultsList(
         results = listOf(song1, song2),
@@ -177,8 +177,8 @@ fun SearchResultsGridPreview() {
     val artist1 = Artist("1", "artist1")
     val artist2 = Artist("2", "artist2")
     // todo: maybe there should be a factory so that we don't depend on SongSearchResult directly
-    val song1 = SongSearchResult("1", "song1", listOf(artist1, artist2),"")
-    val song2 = SongSearchResult("2", "song2", listOf(artist1), "")
+    val song1 = SongSearchResult("1", "song1", listOf(artist1, artist2), true,"")
+    val song2 = SongSearchResult("2", "song2", listOf(artist1), true,"")
 
     SearchResultsGrid(
         results = listOf(song1, song2),

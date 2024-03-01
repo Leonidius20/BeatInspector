@@ -12,9 +12,11 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.auth.Authenticator
+import ua.leonidius.beatinspector.settings.SettingsStore
 
 class AuthStatusViewModel(
     private val authenticator: Authenticator,
+    private val settingsStore: SettingsStore,
 ): ViewModel() {
 
     sealed class UiState {
@@ -51,8 +53,12 @@ class AuthStatusViewModel(
         }
     }*/
 
+    var iAmAMinorOptionSelected by mutableStateOf(false)
+
     fun launchLoginSequence(launchLoginActivityWithIntent: (Intent) -> Unit) {
         uiState = UiState.LoginInProgress
+
+        settingsStore.hideExplicit = iAmAMinorOptionSelected
 
         val intent = authenticator.prepareStepOneIntent()
         launchLoginActivityWithIntent(intent)
@@ -123,6 +129,7 @@ class AuthStatusViewModel(
 
                 return AuthStatusViewModel(
                     app.authenticator,
+                    app.settingsStore,
                 ) as T
             }
 

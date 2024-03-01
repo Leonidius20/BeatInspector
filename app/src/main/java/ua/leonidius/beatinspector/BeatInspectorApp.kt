@@ -105,7 +105,7 @@ class BeatInspectorApp: Application() {
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
 
-
+        settingsStore = SettingsStore(getSharedPreferences(getString(ua.leonidius.beatinspector.R.string.preferences_settings_file_name), MODE_PRIVATE))
 
         authenticator = Authenticator(
             BuildConfig.SPOTIFY_CLIENT_ID,
@@ -139,7 +139,7 @@ class BeatInspectorApp: Application() {
         val searchNetworkDataSource = SearchNetworkDataSource(searchService)
         val searchCacheDataSource = SearchCacheDataSource()
 
-        searchRepository = SearchRepositoryImpl(Dispatchers.IO, searchNetworkDataSource, searchCacheDataSource)
+        searchRepository = SearchRepositoryImpl(Dispatchers.IO, searchNetworkDataSource, searchCacheDataSource, settingsStore::hideExplicit)
 
         val trackDetailsCacheDataSource = FullTrackDetailsCacheDataSource()
 
@@ -186,7 +186,7 @@ class BeatInspectorApp: Application() {
         val topTracksApi = retrofit.create(TopTracksApi::class.java)
         topTracksDataSource = TopTracksPagingDataSource(topTracksApi, searchCacheDataSource)
 
-        settingsStore = SettingsStore(getSharedPreferences(getString(ua.leonidius.beatinspector.R.string.preferences_settings_file_name), MODE_PRIVATE))
+
     }
 
     private fun isPackageInstalled(packageName: String): Boolean {

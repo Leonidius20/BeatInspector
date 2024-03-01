@@ -3,7 +3,9 @@ package ua.leonidius.beatinspector.views
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -14,7 +16,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,6 +48,8 @@ fun LoginScreen(
         onLoginButtonPressed = onLoginButtonPressed,
         onNavigateToLegalText = onNavigateToLegalText,
         uiState = viewModel.uiState,
+        isUserAMinor = viewModel.iAmAMinorOptionSelected,
+        onUserAMinorCheckboxChange = { viewModel.iAmAMinorOptionSelected = it },
     )
 
 }
@@ -53,11 +59,15 @@ fun LoginComposable(
     onLoginButtonPressed: () -> Unit,
     onNavigateToLegalText: (Int) -> Unit,
     uiState: AuthStatusViewModel.UiState,
+    isUserAMinor: Boolean,
+    onUserAMinorCheckboxChange: (Boolean) -> Unit,
 ) {
     when(uiState) {
         is AuthStatusViewModel.UiState.LoginOffered -> LoginOfferScreen(
             onLoginButtonPressed = onLoginButtonPressed,
             onNavigateToLegalText = onNavigateToLegalText,
+            isUserAMinor = isUserAMinor,
+            onUserAMinorCheckboxChange = onUserAMinorCheckboxChange,
         )
 
         is AuthStatusViewModel.UiState.LoginInProgress -> LoginInProgressScreen()
@@ -150,6 +160,8 @@ fun LoginInProgressScreen() {
 fun LoginOfferScreen(
     onLoginButtonPressed: () -> Unit,
     onNavigateToLegalText: (Int) -> Unit,
+    isUserAMinor: Boolean,
+    onUserAMinorCheckboxChange: (Boolean) -> Unit,
 ) {
     ScreenColumn {
 
@@ -182,8 +194,6 @@ fun LoginOfferScreen(
 
         ClickableText(
             annotatedString,
-            modifier = Modifier
-                .padding(bottom = 16.dp),
             style = MaterialTheme.typography.bodyLarge.copy(textAlign = TextAlign.Justify),
             onClick = { offset ->
                 annotatedString.getStringAnnotations("link", offset, offset)
@@ -200,6 +210,14 @@ fun LoginOfferScreen(
             },
         )
 
+        LabelledCheckbox(
+            modifier = Modifier
+                .padding(bottom = 16.dp),
+            label = stringResource(R.string.login_i_am_a_minor),
+            checked = isUserAMinor,
+            onCheckedChange = onUserAMinorCheckboxChange,
+        )
+
         CenteredButton(
             onClick = onLoginButtonPressed
         ) {
@@ -209,5 +227,31 @@ fun LoginOfferScreen(
                 imageVector = Icons.Default.ArrowForward,
                 contentDescription = null)
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LabelledCheckbox(
+    modifier: Modifier = Modifier,
+    label: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        //CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+            Checkbox(
+                checked = checked,
+                onCheckedChange = onCheckedChange
+            )
+        //}
+
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = label,
+        )
     }
 }
