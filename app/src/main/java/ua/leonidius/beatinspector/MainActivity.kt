@@ -54,6 +54,16 @@ class MainActivity : ComponentActivity() {
             startActivity(intent)
         }
 
+        val openPlaylistInAppOrAppStore = { playlistUri: String ->
+            val uri = if (app.isSpotifyInstalled)
+                playlistUri
+            else
+                "market://details?id=com.spotify.music"
+
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+            startActivity(intent)
+        }
+
 
         setContent {
             BeatInspectorTheme {
@@ -159,7 +169,8 @@ class MainActivity : ComponentActivity() {
                                 goToSavedTracks = { goTo("saved_tracks") },
                                 goToRecentlyPlayed = { goTo("recently_played") },
                                 goToPlaylist = { goTo("playlist/${it}") },
-                                goToTopTracks = { goTo("top_tracks") }
+                                goToTopTracks = { goTo("top_tracks") },
+                                openPlaylistInApp = openPlaylistInAppOrAppStore,
                             )
                         }
                         composable("recently_played") {

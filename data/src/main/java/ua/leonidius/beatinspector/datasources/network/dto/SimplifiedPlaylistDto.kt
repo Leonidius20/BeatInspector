@@ -7,6 +7,7 @@ data class SimplifiedPlaylistDto(
     val id: String,
     val name: String,
     val images: List<ImageDto>,
+    val uri: String,
 ): Mapper<PlaylistSearchResult> {
 
     private val smallestImageOrNull: ImageDto?
@@ -16,7 +17,8 @@ data class SimplifiedPlaylistDto(
         return PlaylistSearchResult(
             id = id,
             name = name,
-            smallImageUrl = smallestImageOrNull?.url
+            smallImageUrl = smallestImageOrNull?.url,
+            uri = uri,
         )
     }
 

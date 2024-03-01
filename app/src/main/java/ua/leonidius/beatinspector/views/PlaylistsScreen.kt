@@ -2,6 +2,7 @@ package ua.leonidius.beatinspector.views
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -13,6 +14,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
@@ -32,6 +35,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import ua.leonidius.beatinspector.Dimens
+import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.entities.PlaylistSearchResult
 import ua.leonidius.beatinspector.viewmodels.PfpState
 import ua.leonidius.beatinspector.viewmodels.PlaylistsViewModel
@@ -46,6 +50,7 @@ fun PlaylistsScreen(
     goToRecentlyPlayed: () -> Unit,
     goToTopTracks: () -> Unit,
     goToPlaylist: (String) -> Unit,
+    openPlaylistInApp: (String) -> Unit,
 ) {
     val viewModel: PlaylistsViewModel = viewModel(factory = PlaylistsViewModel.Factory)
 
@@ -66,6 +71,7 @@ fun PlaylistsScreen(
         goToPlaylist,
         searchBarActive,
         setSearchBarActive = { searchBarActive = it },
+        openPlaylistInApp,
     )
 }
 
@@ -83,6 +89,7 @@ fun PlaylistsScreen(
     goToPlaylist: (String) -> Unit,
     searchBarActive: Boolean,
     setSearchBarActive: (Boolean) -> Unit,
+    openPlaylistInApp: (String) -> Unit,
 ) {
     SearchBoxScreenWithAttribution(
         query = query,
@@ -99,6 +106,7 @@ fun PlaylistsScreen(
             goToRecentlyPlayed = goToRecentlyPlayed,
             goToTopTracks = goToTopTracks,
             goToPlaylist = goToPlaylist,
+            openInApp = openPlaylistInApp,
         )
     }
 }
@@ -111,6 +119,7 @@ fun PlaylistsList(
     goToRecentlyPlayed: () -> Unit,
     goToTopTracks: () -> Unit,
     goToPlaylist: (String) -> Unit,
+    openInApp: (String) -> Unit,
 ) {
     LazyColumn(modifier) {
 
@@ -143,7 +152,7 @@ fun PlaylistsList(
         item {
             PlaylistsListItem(
                 onClick = goToTopTracks,
-                title = "Top Tracks",
+                title = "Your Top Tracks",
                 leadingContent = {
                     Icon(
                         Icons.Filled.Favorite,
@@ -176,6 +185,7 @@ fun PlaylistsList(
                 title = playlist.name,
                 imageUrl = playlist.smallImageUrl,
                 onClick = { goToPlaylist(playlist.id) },
+                onOpenInApp = { openInApp(playlist.uri) },
             )
 
         }
@@ -200,6 +210,7 @@ fun PlaylistsListItem(
     title: String,
     onClick: () -> Unit,
     leadingContent: @Composable () -> Unit,
+    trailingContent: @Composable (() -> Unit)? = null,
 ) {
     ListItem(
         modifier = modifier.clickable(onClick = onClick),
@@ -207,6 +218,7 @@ fun PlaylistsListItem(
             Text(title)
         },
         leadingContent = leadingContent,
+        trailingContent = trailingContent,
     )
 }
 
@@ -216,6 +228,7 @@ fun PlaylistWithImageListItem(
     title: String,
     onClick: () -> Unit,
     imageUrl: String?,
+    onOpenInApp: () -> Unit,
 ) {
     PlaylistsListItem(
         modifier = modifier,
@@ -230,5 +243,17 @@ fun PlaylistWithImageListItem(
                 placeholder = rememberVectorPainter(Icons.Filled.AccountCircle),
             )
         },
+        trailingContent = {
+            IconButton(
+                onClick = onOpenInApp,
+                modifier = Modifier.offset(x = (-3.75).dp),
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.spotify_icon_black),
+                    contentDescription = "Open playlist on Spotify",
+                    modifier = Modifier.size(36.dp)
+                )
+            }
+        }
     )
 }
