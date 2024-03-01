@@ -12,6 +12,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
@@ -72,13 +73,15 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController = navController, startDestination = startDestination) {
                         composable("login") {
                             if (viewModel.uiState is AuthStatusViewModel.UiState.SuccessfulLogin) {
-                                // todo: performance optimization?
-                                // LaunchedEffect(key1 = null, {})
-                                navController.navigate("search") {
-                                    popUpTo("login") {
-                                        inclusive = true
+
+                                LaunchedEffect(key1 = null) {
+                                    navController.navigate("playlists") {
+                                        popUpTo("login") {
+                                            inclusive = true
+                                        }
                                     }
                                 }
+
                             } else {
                                 LoginScreen(viewModel = viewModel, onLoginButtonPressed = {
                                     // for some reason, UI is only recomposed when we use the viewmodel from the argument
