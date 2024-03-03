@@ -21,7 +21,7 @@ import ua.leonidius.beatinspector.data.R
 import ua.leonidius.beatinspector.repos.search.SearchRepository
 import ua.leonidius.beatinspector.repos.search.SearchRepositoryImpl
 import ua.leonidius.beatinspector.repos.account.AccountDataCache
-import ua.leonidius.beatinspector.repos.account.AccountDataSharedPrefCache
+import ua.leonidius.beatinspector.datasources.cache.AccountDataSharedPrefCache
 import ua.leonidius.beatinspector.repos.account.AccountRepository
 import ua.leonidius.beatinspector.repos.account.AccountRepositoryImpl
 import ua.leonidius.beatinspector.auth.AuthInterceptor
@@ -158,7 +158,11 @@ class BeatInspectorApp: Application() {
 
         val spotifyAccountService = retrofit.create(SpotifyAccountService::class.java)
 
-        accountDataCache = AccountDataSharedPrefCache(getSharedPreferences(getString(ua.leonidius.beatinspector.R.string.preferences_account_data_file_name), MODE_PRIVATE))
+        accountDataCache = AccountDataSharedPrefCache(
+            getSharedPreferences(getString(ua.leonidius.beatinspector.R.string.preferences_account_data_file_name), MODE_PRIVATE),
+            // todo: find a better system for this - some kind of message passing or event bus or flows
+            subscribeToLogouts = { callback -> authenticator.addLogoutObserver(callback) }
+        )
 
 
         accountRepository = AccountRepositoryImpl(AccountNetworkDataSource(spotifyAccountService), accountDataCache, Dispatchers.IO)

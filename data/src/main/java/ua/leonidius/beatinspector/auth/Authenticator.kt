@@ -14,6 +14,7 @@ import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
+import ua.leonidius.beatinspector.repos.account.AccountDataCache
 import java.util.concurrent.CountDownLatch
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -25,6 +26,12 @@ class Authenticator(
    // private val authStateFlowingStorage: AuthStateFlowingStorage,
     private val authService: AuthorizationService,
 ) {
+
+    private val logoutObservers = mutableListOf<() -> Unit>()
+
+    fun addLogoutObserver(observer: () -> Unit) {
+        logoutObservers.add(observer)
+    }
 
     private val authServiceConfig: AuthorizationServiceConfiguration = // todo: replace by "fetchfromissuer" async
         AuthorizationServiceConfiguration(
@@ -200,6 +207,7 @@ class Authenticator(
     fun logout() {
         authState = AuthState(authServiceConfig)
         authStateStorage.clear()
+        logoutObservers.forEach { it() }
     }
 
 }

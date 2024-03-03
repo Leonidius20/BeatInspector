@@ -1,10 +1,12 @@
-package ua.leonidius.beatinspector.repos.account
+package ua.leonidius.beatinspector.datasources.cache
 
 import android.content.SharedPreferences
 import ua.leonidius.beatinspector.entities.AccountDetails
+import ua.leonidius.beatinspector.repos.account.AccountDataCache
 
 class AccountDataSharedPrefCache(
-    private val prefs: SharedPreferences
+    private val prefs: SharedPreferences,
+    subscribeToLogouts: (() -> Unit) -> Unit,
 ): AccountDataCache {
 
     override val cache: MutableMap<Unit, AccountDetails> = mutableMapOf() // todo: remove this
@@ -13,6 +15,12 @@ class AccountDataSharedPrefCache(
     private val prefIdKey = "id"
     private val prefSmallImageUrl = "imageUrl"
     private val prefBigImageUrl = "bigImageUrl"
+
+    init {
+        subscribeToLogouts {
+            clear()
+        }
+    }
 
     // todo: it may be a good idea have the data as livedata or stateflow, so that any viewmodel can observe it and update ui accordingly
 
