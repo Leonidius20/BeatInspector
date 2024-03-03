@@ -9,10 +9,12 @@ import ua.leonidius.beatinspector.repos.BaseTrackPagingDataSource
  * Contents of a playlist
  */
 class PlaylistPagingDataSource(
-    private val api: PlaylistApi,
+    api: PlaylistApi,
     searchCache: SearchCacheDataSource,
-    private val playlistId: String,
+    playlistId: String,
+    hideExplicit: () -> Boolean,
 ): BaseTrackPagingDataSource<PlaylistResponse>(
     { limit, offset -> api.getTracks(playlistId, limit, offset) },
-    searchCache
+    searchCache,
+    hideExplicit,
 )

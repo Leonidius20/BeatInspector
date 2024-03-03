@@ -105,6 +105,7 @@ class BeatInspectorApp: Application() {
         )
 
         settingsStore = SettingsStore(getSharedPreferences(getString(ua.leonidius.beatinspector.R.string.preferences_settings_file_name), MODE_PRIVATE))
+        val hideExplicit = { settingsStore.hideExplicit }
 
         authenticator = Authenticator(
             BuildConfig.SPOTIFY_CLIENT_ID,
@@ -170,23 +171,25 @@ class BeatInspectorApp: Application() {
 
         val savedTracksService = retrofit.create(SavedTracksService::class.java)
 
-        savedTracksNetworkPagingSource = SavedTracksNetworkPagingSource(savedTracksService, searchCacheDataSource)
+        savedTracksNetworkPagingSource = SavedTracksNetworkPagingSource(
+            savedTracksService, searchCacheDataSource, hideExplicit)
 
         val myPlaylistService = retrofit.create(MyPlaylistsService::class.java)
         myPlaylistsPagingDataSource = MyPlaylistsPagingDataSource(myPlaylistService)
 
         val recentlyPlayedApi = retrofit.create(RecentlyPlayedApi::class.java)
-        recentlyPlayedDataSource = RecentlyPlayedDataSource(recentlyPlayedApi, searchCacheDataSource)
+        recentlyPlayedDataSource = RecentlyPlayedDataSource(
+            recentlyPlayedApi, searchCacheDataSource, hideExplicit)
 
         val playlistApi = retrofit.create(PlaylistApi::class.java)
         playlistDataSourceFactory = { playlistId ->
-            PlaylistPagingDataSource(playlistApi, searchCacheDataSource, playlistId)
+            PlaylistPagingDataSource(
+                playlistApi, searchCacheDataSource, playlistId, hideExplicit)
         }
 
         val topTracksApi = retrofit.create(TopTracksApi::class.java)
-        topTracksDataSource = TopTracksPagingDataSource(topTracksApi, searchCacheDataSource)
-
-
+        topTracksDataSource = TopTracksPagingDataSource(
+            topTracksApi, searchCacheDataSource, hideExplicit)
     }
 
     private fun isPackageInstalled(packageName: String): Boolean {

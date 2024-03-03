@@ -18,6 +18,7 @@ import ua.leonidius.beatinspector.toUIException
 class RecentlyPlayedDataSource(
     private val service: RecentlyPlayedApi,
     private val searchCache: SearchCacheDataSource,
+    private val hideExplicit: () -> Boolean,
 ): PagingSource<String, SongSearchResult>(), PagingDataSource<SongSearchResult> {
 
     private val itemsPerPage = 50
@@ -36,7 +37,11 @@ class RecentlyPlayedDataSource(
             is NetworkResponse.Success -> {
 
                 val dto = resp.body
-                val trackList = dto.toDomainObject()
+                var trackList = dto.toDomainObject()
+
+                if (hideExplicit()) {
+                    trackList = trackList.filter { !it.isExplicit }
+                }
 
                 searchCache.updateCache("", trackList)
                 return LoadResult.Page(

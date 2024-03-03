@@ -19,6 +19,7 @@ import ua.leonidius.beatinspector.toUIException
 abstract class BaseTrackPagingDataSource<D: ListMapper<SongSearchResult>>(
     private val service: suspend (limit: Int, offset: Int) -> NetworkResponse<D, ErrorResponse>,
     private val searchCache: SearchCacheDataSource,
+    private val hideExplicit: () -> Boolean,
 ): PagingSource<Int, SongSearchResult>(), PagingDataSource<SongSearchResult> {
 
     private val itemsPerPage = 50
@@ -38,7 +39,12 @@ abstract class BaseTrackPagingDataSource<D: ListMapper<SongSearchResult>>(
         when (val resp = service(itemsPerPage, offset)) {
             is NetworkResponse.Success -> {
 
-                val trackList = resp.body.toDomainObject()
+                var trackList = resp.body.toDomainObject()
+
+                if (hideExplicit()) {
+                    trackList = trackList.filter { !it.isExplicit }
+                }
+
                 searchCache.updateCache("", trackList)
                 return LoadResult.Page(
                     data = trackList,

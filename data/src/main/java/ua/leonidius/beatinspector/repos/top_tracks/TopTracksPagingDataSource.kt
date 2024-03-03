@@ -8,7 +8,9 @@ import ua.leonidius.beatinspector.repos.BaseTrackPagingDataSource
 class TopTracksPagingDataSource(
     topTracksApi: TopTracksApi,
     cache: SearchCacheDataSource,
+    hideExplicit: () -> Boolean,
 ): BaseTrackPagingDataSource<TopTracksResponse>(
     topTracksApi::getTopTracks,
-    cache
+    cache,
+    hideExplicit,
 )

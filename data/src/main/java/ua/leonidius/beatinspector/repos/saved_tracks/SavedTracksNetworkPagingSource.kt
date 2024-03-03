@@ -8,7 +8,9 @@ import ua.leonidius.beatinspector.repos.BaseTrackPagingDataSource
 class SavedTracksNetworkPagingSource(
     service: SavedTracksService,
     searchCache: SearchCacheDataSource,
+    hideExplicit: () -> Boolean,
 ): BaseTrackPagingDataSource<SavedTracksResponse>(
     service::getSavedTracks,
     searchCache,
+    hideExplicit,
 )
