@@ -42,6 +42,7 @@ import ua.leonidius.beatinspector.datasources.network.services.TrackAudioAnalysi
 import ua.leonidius.beatinspector.entities.PlaylistSearchResult
 import ua.leonidius.beatinspector.entities.SongSearchResult
 import ua.leonidius.beatinspector.repos.playlists.MyPlaylistsPagingDataSource
+import ua.leonidius.beatinspector.repos.playlists.PlaylistInfoRepository
 import ua.leonidius.beatinspector.repos.playlists.PlaylistPagingDataSource
 import ua.leonidius.beatinspector.repos.recently_played.RecentlyPlayedDataSource
 import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksNetworkPagingSource
@@ -87,6 +88,8 @@ class BeatInspectorApp: Application() {
     lateinit var topTracksDataSource: PagingDataSource<SongSearchResult>
 
     lateinit var settingsStore: SettingsStore
+
+    lateinit var playlistInfoRepository: PlaylistInfoRepository
 
     override fun onCreate() {
         super.onCreate()
@@ -193,6 +196,8 @@ class BeatInspectorApp: Application() {
         val topTracksApi = retrofit.create(TopTracksApi::class.java)
         topTracksDataSource = TopTracksPagingDataSource(
             topTracksApi, searchCacheDataSource, hideExplicit)
+
+        playlistInfoRepository = PlaylistInfoRepository(playlistTitleCache)
     }
 
     private fun isPackageInstalled(packageName: String): Boolean {

@@ -9,11 +9,16 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.browser.customtabs.CustomTabsIntent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -21,9 +26,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import ua.leonidius.beatinspector.ui.theme.BeatInspectorTheme
+import ua.leonidius.beatinspector.viewmodels.PlaylistContentViewModel
 import ua.leonidius.beatinspector.viewmodels.TrackListViewModel
 import ua.leonidius.beatinspector.views.LoginScreen
 import ua.leonidius.beatinspector.views.LongTextScreen
+import ua.leonidius.beatinspector.views.OpenInSpotifyButton
 import ua.leonidius.beatinspector.views.PlaylistsScreen
 import ua.leonidius.beatinspector.views.SearchScreen
 import ua.leonidius.beatinspector.views.SettingsScreen
@@ -183,16 +190,38 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("playlist/{playlistId}") {
+                            val model: PlaylistContentViewModel = viewModel(factory = PlaylistContentViewModel.Factory)
                             TrackListScreen(
-                                viewModel(factory = TrackListViewModel.PlaylistFactory),
+                                model,
                                 onOpenSongInSpotify = openTrackOnSpotifyOrAppStore,
                                 onNavigateToSongDetails = {
                                     navController.navigate("song/${it}")
                                 },
-                                openCategoryInApp = {
-                                    // todo
-                                },
-                                isAppInstalled = app.isSpotifyInstalled,
+                                headerContent = {
+                                    // todo: remove this shit from here
+
+                                    when (val state = model.uiState) {
+                                        is PlaylistContentViewModel.UiState.Loading -> {
+                                            // nothing
+                                        }
+                                        is PlaylistContentViewModel.UiState.Loaded -> {
+                                            Box(Modifier.fillMaxWidth()) {
+                                                OpenInSpotifyButton(
+                                                    modifier = Modifier
+                                                        .padding(Dimens.paddingNormal)
+                                                        .align(Alignment.Center),
+                                                    onClick = { openPlaylistInAppOrAppStore(state.uri) },
+                                                    isSpotifyInstalled = app.isSpotifyInstalled,
+                                                    colors = ButtonDefaults.buttonColors().copy(
+                                                        containerColor = MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.5f),
+                                                        contentColor = MaterialTheme.colorScheme.onSurface,
+                                                    ) //todo  temorary until can extract color from playlist img
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                }
                             )
                         }
                         composable("top_tracks") {
@@ -201,7 +230,7 @@ class MainActivity : ComponentActivity() {
                                 onOpenSongInSpotify = openTrackOnSpotifyOrAppStore,
                                 onNavigateToSongDetails = {
                                     navController.navigate("song/${it}")
-                                }
+                                },
                             )
                         }
                     }

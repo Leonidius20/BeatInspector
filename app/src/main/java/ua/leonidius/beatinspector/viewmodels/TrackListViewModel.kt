@@ -2,14 +2,13 @@ package ua.leonidius.beatinspector.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.PagingDataSource
 import ua.leonidius.beatinspector.entities.SongSearchResult
 
-class TrackListViewModel(
+open class TrackListViewModel(
     pagingSource: PagingDataSource<SongSearchResult>, // todo: remove
 ): ViewModel() {
 
@@ -38,20 +37,7 @@ class TrackListViewModel(
 
         val TopTracksFactory = getFactoryForSource { it.topTracksDataSource }
 
-        val PlaylistFactory = object : ViewModelProvider.Factory {
 
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-                val app = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]) as BeatInspectorApp
-
-                val savedStateHandle = extras.createSavedStateHandle()
-
-                return TrackListViewModel(
-                    app.playlistDataSourceFactory(savedStateHandle.get<String>("playlistId")!!),
-                ) as T
-            }
-
-        }
     }
 
 }

@@ -41,27 +41,22 @@ fun TrackListScreen(
     viewModel: TrackListViewModel,
     onOpenSongInSpotify: (String) -> Unit,
     onNavigateToSongDetails: (String) -> Unit,
-    openCategoryInApp: (() -> Unit)? = null,
-    isAppInstalled: Boolean? = null,
+    headerContent: @Composable () -> Unit = {},
 ) {
     TrackListScreen(
-        //uiState = viewModel.uiState,
         pagingFlow = viewModel.flow,
         onOpenSongInSpotify = onOpenSongInSpotify,
         onNavigateToSongDetails = onNavigateToSongDetails,
-        openCategoryInApp = openCategoryInApp,
-        isAppInstalled = isAppInstalled,
+        headerContent = headerContent,
     )
 }
 
 @Composable
 private fun TrackListScreen(
-    //uiState: SavedTracksViewModel.UiState,
     pagingFlow: Flow<PagingData<SongSearchResult>>,
     onOpenSongInSpotify: (String) -> Unit,
     onNavigateToSongDetails: (String) -> Unit,
-    openCategoryInApp: (() -> Unit)?,
-    isAppInstalled: Boolean? = null,
+    headerContent: @Composable () -> Unit,
 ) {
     // todo: landscape grid
 
@@ -77,24 +72,8 @@ private fun TrackListScreen(
         LoadingScreen()
     } else {
         LazyColumn {
-
-            if (openCategoryInApp != null) {
-                item {
-                    Box(Modifier.fillMaxWidth()) {
-                        OpenInSpotifyButton(
-                            modifier = Modifier
-                                .padding(Dimens.paddingNormal)
-                                .align(Alignment.Center),
-                            onClick = openCategoryInApp,
-                            isSpotifyInstalled = isAppInstalled!!,
-                            colors = ButtonDefaults.buttonColors().copy(
-                                containerColor = MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.5f),
-                                contentColor = MaterialTheme.colorScheme.onSurface,
-                            ) //todo  temorary until can extract color from playlist img
-                        )
-                    }
-
-                }
+            item {
+                headerContent()
             }
 
             items(count = lazyItems.itemCount) { index ->

@@ -13,11 +13,15 @@ data class SimplifiedPlaylistDto(
     private val smallestImageOrNull: ImageDto?
         get() = images.lastOrNull() // according to the API, the smallest image is the last one
 
+    private val biggestImageOrNull: ImageDto?
+        get() = images.firstOrNull() // according to the API, images returned in descending order
+
     override fun toDomainObject(): PlaylistSearchResult {
         return PlaylistSearchResult(
             id = id,
             name = name,
             smallImageUrl = smallestImageOrNull?.url,
+            bigImageUrl = biggestImageOrNull?.url,
             uri = uri,
         )
     }
