@@ -3,17 +3,16 @@ package ua.leonidius.beatinspector.repos.search
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ua.leonidius.beatinspector.datasources.cache.SearchCacheDataSource
+import ua.leonidius.beatinspector.datasources.cache.SongTitlesInMemCache
 import ua.leonidius.beatinspector.datasources.network.SearchNetworkDataSource
 import ua.leonidius.beatinspector.entities.SongSearchResult
-import ua.leonidius.beatinspector.repos.BasicRepository
 
 class SearchRepositoryImpl(
 
     private val ioDispatcher: CoroutineDispatcher,
 
     private val properNetworkDataSource: SearchNetworkDataSource,
-    private val searchCacheDataSource: SearchCacheDataSource,
+    private val searchCacheDataSource: SongTitlesInMemCache,
     private val isHideExplicit: () -> Boolean
 ) : SearchRepository {
 
@@ -27,13 +26,13 @@ class SearchRepositoryImpl(
         }
 
         launch {
-            searchCacheDataSource.updateCache(q, results)
+            searchCacheDataSource.batchAdd(results.associateBy { it.id })
         }
         results
     }
 
     override fun getById(id: String): SongSearchResult {
-        return searchCacheDataSource.getTitleInfo(id)
+        return searchCacheDataSource[id]
             ?: throw Error("no base info found in cache for song id $id")
         // todo maybe add network call here if not found in cache
     }

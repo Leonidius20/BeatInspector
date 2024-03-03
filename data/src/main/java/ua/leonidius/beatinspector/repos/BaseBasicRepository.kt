@@ -3,7 +3,7 @@ package ua.leonidius.beatinspector.repos
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import ua.leonidius.beatinspector.datasources.cache.Cache
+import ua.leonidius.beatinspector.datasources.cache.InMemCache
 import ua.leonidius.beatinspector.datasources.network.NetworkDataSource
 import ua.leonidius.beatinspector.datasources.network.mappers.Mapper
 
@@ -13,20 +13,20 @@ import ua.leonidius.beatinspector.datasources.network.mappers.Mapper
  * @param I - type of the ID of the data, can be Unit if there's only 1 object, like account details
  */
 abstract class BaseBasicRepository<I, D: Mapper<T>, T>(
-    private val cache: Cache<I, T>,
+    private val cache: InMemCache<I, T>,
     private val networkDataSource: NetworkDataSource<I, D, T>,
     private val ioDispatcher: CoroutineDispatcher,
 ): BasicRepository<I, T> {
 
     override suspend fun get(id: I): T = withContext(ioDispatcher) {
         if (cache.has(id)) {
-            return@withContext cache.retrieve(id)
+            return@withContext cache[id]
         }
 
         val data = networkDataSource.load(id)
 
         launch {
-            cache.store(id, data)
+            cache[id] = data
         }
 
         return@withContext data

@@ -1,6 +1,6 @@
 package ua.leonidius.beatinspector.repos.playlists
 
-import ua.leonidius.beatinspector.datasources.cache.SearchCacheDataSource
+import ua.leonidius.beatinspector.datasources.cache.SongTitlesInMemCache
 import ua.leonidius.beatinspector.datasources.network.dto.responses.PlaylistResponse
 import ua.leonidius.beatinspector.datasources.network.services.PlaylistApi
 import ua.leonidius.beatinspector.repos.BaseTrackPagingDataSource
@@ -10,7 +10,7 @@ import ua.leonidius.beatinspector.repos.BaseTrackPagingDataSource
  */
 class PlaylistPagingDataSource(
     api: PlaylistApi,
-    searchCache: SearchCacheDataSource,
+    searchCache: SongTitlesInMemCache,
     playlistId: String,
     hideExplicit: () -> Boolean,
 ): BaseTrackPagingDataSource<PlaylistResponse>(

@@ -26,7 +26,8 @@ import ua.leonidius.beatinspector.repos.account.AccountRepository
 import ua.leonidius.beatinspector.repos.account.AccountRepositoryImpl
 import ua.leonidius.beatinspector.auth.AuthInterceptor
 import ua.leonidius.beatinspector.datasources.cache.FullTrackDetailsCacheDataSource
-import ua.leonidius.beatinspector.datasources.cache.SearchCacheDataSource
+import ua.leonidius.beatinspector.datasources.cache.PlaylistTitlesInMemCache
+import ua.leonidius.beatinspector.datasources.cache.SongTitlesInMemCache
 import ua.leonidius.beatinspector.datasources.network.AccountNetworkDataSource
 import ua.leonidius.beatinspector.datasources.network.SearchNetworkDataSource
 import ua.leonidius.beatinspector.datasources.network.services.ArtistsService
@@ -138,7 +139,7 @@ class BeatInspectorApp: Application() {
         val artistsService = retrofit.create(ArtistsService::class.java)
 
         val searchNetworkDataSource = SearchNetworkDataSource(searchService)
-        val searchCacheDataSource = SearchCacheDataSource()
+        val searchCacheDataSource = SongTitlesInMemCache()
 
         searchRepository = SearchRepositoryImpl(Dispatchers.IO, searchNetworkDataSource, searchCacheDataSource, settingsStore::hideExplicit)
 
@@ -175,7 +176,9 @@ class BeatInspectorApp: Application() {
             savedTracksService, searchCacheDataSource, hideExplicit)
 
         val myPlaylistService = retrofit.create(MyPlaylistsService::class.java)
-        myPlaylistsPagingDataSource = MyPlaylistsPagingDataSource(myPlaylistService)
+        val playlistTitleCache = PlaylistTitlesInMemCache()
+        myPlaylistsPagingDataSource = MyPlaylistsPagingDataSource(
+            myPlaylistService, playlistTitleCache)
 
         val recentlyPlayedApi = retrofit.create(RecentlyPlayedApi::class.java)
         recentlyPlayedDataSource = RecentlyPlayedDataSource(

@@ -1,12 +1,13 @@
 package ua.leonidius.beatinspector.repos.account
 
 import android.content.SharedPreferences
-import ua.leonidius.beatinspector.datasources.cache.Cache
 import ua.leonidius.beatinspector.entities.AccountDetails
 
 class AccountDataSharedPrefCache(
     private val prefs: SharedPreferences
 ): AccountDataCache {
+
+    override val cache: MutableMap<Unit, AccountDetails> = mutableMapOf() // todo: remove this
 
     private val prefUsernameKey = "username"
     private val prefIdKey = "id"
@@ -15,7 +16,7 @@ class AccountDataSharedPrefCache(
 
     // todo: it may be a good idea have the data as livedata or stateflow, so that any viewmodel can observe it and update ui accordingly
 
-    override fun retrieve(id: Unit): AccountDetails {
+    override operator fun get(id: Unit): AccountDetails {
         val username = prefs.getString(prefUsernameKey, null)!! // should throw exception if null, should check isDataAvailable first
         val id = prefs.getString(prefIdKey, null)!!
         val smallImageUrl = prefs.getString(prefSmallImageUrl, null)
@@ -24,7 +25,7 @@ class AccountDataSharedPrefCache(
         return AccountDetails(id, username, smallImageUrl, bigImageUrl)
     }
 
-    override fun store(id: Unit, details: AccountDetails) {
+    override operator fun set(id: Unit, details: AccountDetails) {
         with(prefs.edit()) {
             putString(prefUsernameKey, details.username)
             putString(prefIdKey, details.id)

@@ -10,14 +10,14 @@ import com.haroldadmin.cnradapter.NetworkResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import ua.leonidius.beatinspector.PagingDataSource
-import ua.leonidius.beatinspector.datasources.cache.SearchCacheDataSource
+import ua.leonidius.beatinspector.datasources.cache.SongTitlesInMemCache
 import ua.leonidius.beatinspector.datasources.network.services.RecentlyPlayedApi
 import ua.leonidius.beatinspector.entities.SongSearchResult
 import ua.leonidius.beatinspector.toUIException
 
 class RecentlyPlayedDataSource(
     private val service: RecentlyPlayedApi,
-    private val searchCache: SearchCacheDataSource,
+    private val searchCache: SongTitlesInMemCache,
     private val hideExplicit: () -> Boolean,
 ): PagingSource<String, SongSearchResult>(), PagingDataSource<SongSearchResult> {
 
@@ -43,7 +43,7 @@ class RecentlyPlayedDataSource(
                     trackList = trackList.filter { !it.isExplicit }
                 }
 
-                searchCache.updateCache("", trackList)
+                searchCache.batchAdd(trackList.associateBy { it.id })
                 return LoadResult.Page(
                     data = trackList,
                     prevKey = /*dto.cursors?.before*/ null, // todo fix paging
