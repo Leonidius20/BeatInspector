@@ -2,6 +2,9 @@ package ua.leonidius.beatinspector
 
 import android.app.Application
 import android.content.pm.PackageManager
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
@@ -10,6 +13,9 @@ import com.mikepenz.aboutlibraries.entity.Library
 import com.mikepenz.aboutlibraries.entity.License
 import com.mikepenz.aboutlibraries.util.withContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.flowOf
 import net.openid.appauth.AuthorizationService
 import okhttp3.Cache
 import okhttp3.OkHttpClient
@@ -49,7 +55,8 @@ import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksNetworkPagingSou
 import ua.leonidius.beatinspector.repos.top_tracks.TopTracksPagingDataSource
 import ua.leonidius.beatinspector.repos.track_details.TrackDetailsRepository
 import ua.leonidius.beatinspector.repos.track_details.TrackDetailsRepositoryImpl
-import ua.leonidius.beatinspector.settings.SettingsStore
+import ua.leonidius.beatinspector.settings.data.SettingsStore
+import ua.leonidius.beatinspector.shared.eventbus.Event
 import java.text.DecimalFormat
 
 
@@ -91,6 +98,12 @@ class BeatInspectorApp: Application() {
 
     lateinit var playlistInfoRepository: PlaylistInfoRepository
 
+    private val settingsDs: DataStore<Preferences> by preferencesDataStore(
+        name = "settings"
+    )
+
+    lateinit var eventBus: MutableSharedFlow<Event>
+
     override fun onCreate() {
         super.onCreate()
 
@@ -108,8 +121,18 @@ class BeatInspectorApp: Application() {
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
 
-        settingsStore = SettingsStore(getSharedPreferences(getString(ua.leonidius.beatinspector.R.string.preferences_settings_file_name), MODE_PRIVATE))
-        val hideExplicit = { settingsStore.hideExplicit }
+        eventBus = MutableSharedFlow()
+        val collectEventsScope = MainScope()
+
+
+        settingsStore = SettingsStore(
+            settingsDs,
+            eventBus,
+            collectEventsScope,
+        )
+
+        val hideExplicit = settingsStore.hideExplicitFlow
+         //val hideExplicit = flowOf(false)
 
         authenticator = Authenticator(
             BuildConfig.SPOTIFY_CLIENT_ID,
@@ -144,7 +167,7 @@ class BeatInspectorApp: Application() {
         val searchNetworkDataSource = SearchNetworkDataSource(searchService)
         val searchCacheDataSource = SongTitlesInMemCache()
 
-        searchRepository = SearchRepositoryImpl(Dispatchers.IO, searchNetworkDataSource, searchCacheDataSource, settingsStore::hideExplicit)
+        searchRepository = SearchRepositoryImpl(Dispatchers.IO, searchNetworkDataSource, searchCacheDataSource, hideExplicit)
 
         val trackDetailsCacheDataSource = FullTrackDetailsCacheDataSource()
 

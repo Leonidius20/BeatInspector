@@ -1,7 +1,6 @@
-package ua.leonidius.beatinspector
+package ua.leonidius.beatinspector.auth.viewmodels
 
 import android.content.Intent
-import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,13 +9,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.auth.Authenticator
-import ua.leonidius.beatinspector.settings.SettingsStore
+import ua.leonidius.beatinspector.shared.eventbus.Event
+import ua.leonidius.beatinspector.shared.eventbus.UserHideExplicitSettingChangeEvent
 
 class AuthStatusViewModel(
     private val authenticator: Authenticator,
-    private val settingsStore: SettingsStore,
+    private val eventBus: MutableSharedFlow<Event>,
 ): ViewModel() {
 
     sealed class UiState {
@@ -58,7 +60,10 @@ class AuthStatusViewModel(
     fun launchLoginSequence(launchLoginActivityWithIntent: (Intent) -> Unit) {
         uiState = UiState.LoginInProgress
 
-        settingsStore.hideExplicit = iAmAMinorOptionSelected
+        viewModelScope.launch {
+            eventBus.emit(
+                UserHideExplicitSettingChangeEvent(iAmAMinorOptionSelected))
+        }
 
         val intent = authenticator.prepareStepOneIntent()
         launchLoginActivityWithIntent(intent)
@@ -129,7 +134,7 @@ class AuthStatusViewModel(
 
                 return AuthStatusViewModel(
                     app.authenticator,
-                    app.settingsStore,
+                    app.eventBus,
                 ) as T
             }
 

@@ -1,6 +1,8 @@
 package ua.leonidius.beatinspector.repos.search
 
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.datasources.cache.SongTitlesInMemCache
@@ -13,7 +15,7 @@ class SearchRepositoryImpl(
 
     private val properNetworkDataSource: SearchNetworkDataSource,
     private val searchCacheDataSource: SongTitlesInMemCache,
-    private val isHideExplicit: () -> Boolean
+    private val hideExplicit: Flow<Boolean>,
 ) : SearchRepository {
 
     // we don't save query results in cache, because they are cached by okhttp
@@ -21,7 +23,7 @@ class SearchRepositoryImpl(
     override suspend fun get(q: String): List<SongSearchResult> = withContext(ioDispatcher) {
         var results = properNetworkDataSource.load(q)
 
-        if (isHideExplicit()) {
+        if (hideExplicit.first()) {
             results = results.filter { !it.isExplicit }
         }
 

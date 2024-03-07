@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.views
+package ua.leonidius.beatinspector.settings.ui
 
 import android.content.res.Configuration
 import androidx.annotation.StringRes
@@ -29,6 +29,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -49,7 +50,7 @@ import coil.compose.AsyncImage
 import ua.leonidius.beatinspector.BuildConfig
 import ua.leonidius.beatinspector.Dimens
 import ua.leonidius.beatinspector.R
-import ua.leonidius.beatinspector.viewmodels.SettingsViewModel
+import ua.leonidius.beatinspector.settings.viewmodels.SettingsViewModel
 
 @Composable
 fun SettingsScreen(
@@ -69,7 +70,7 @@ fun SettingsScreen(
         onLogOutClicked = onLogOutClicked,
         onLinkClicked = onLinkClicked,
         onLicenseClicked = onLicenseClicked,
-        explicitHidden = viewModel.hideExplicit,
+        explicitHidden = viewModel.hideExplicit.collectAsState(initial = false).value,
         onExplicitHiddenChanged = { viewModel.toggleHideExplicit(it) },
     )
 }

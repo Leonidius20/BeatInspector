@@ -28,12 +28,13 @@ import androidx.navigation.compose.rememberNavController
 import ua.leonidius.beatinspector.ui.theme.BeatInspectorTheme
 import ua.leonidius.beatinspector.viewmodels.PlaylistContentViewModel
 import ua.leonidius.beatinspector.viewmodels.TrackListViewModel
-import ua.leonidius.beatinspector.views.LoginScreen
+import ua.leonidius.beatinspector.auth.ui.LoginScreen
+import ua.leonidius.beatinspector.auth.viewmodels.AuthStatusViewModel
 import ua.leonidius.beatinspector.views.LongTextScreen
 import ua.leonidius.beatinspector.views.OpenInSpotifyButton
 import ua.leonidius.beatinspector.views.PlaylistsScreen
 import ua.leonidius.beatinspector.views.SearchScreen
-import ua.leonidius.beatinspector.views.SettingsScreen
+import ua.leonidius.beatinspector.settings.ui.SettingsScreen
 import ua.leonidius.beatinspector.views.SongDetailsScreen
 import ua.leonidius.beatinspector.views.TrackListScreen
 

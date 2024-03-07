@@ -72,7 +72,9 @@ fun BeatInspectorTheme(
     MaterialTheme(
             colorScheme = colorScheme,
             typography = Typography,
-            content = content
+            content = content,
+       // isLandscape = //todo pass with compositionLocal
+        //    view.context.resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
     )
 }
 

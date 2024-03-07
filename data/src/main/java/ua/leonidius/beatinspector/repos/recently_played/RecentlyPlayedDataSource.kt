@@ -9,6 +9,7 @@ import androidx.paging.cachedIn
 import com.haroldadmin.cnradapter.NetworkResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import ua.leonidius.beatinspector.PagingDataSource
 import ua.leonidius.beatinspector.datasources.cache.SongTitlesInMemCache
 import ua.leonidius.beatinspector.datasources.network.services.RecentlyPlayedApi
@@ -18,7 +19,7 @@ import ua.leonidius.beatinspector.toUIException
 class RecentlyPlayedDataSource(
     private val service: RecentlyPlayedApi,
     private val searchCache: SongTitlesInMemCache,
-    private val hideExplicit: () -> Boolean,
+    private val hideExplicit: Flow<Boolean>,
 ): PagingSource<String, SongSearchResult>(), PagingDataSource<SongSearchResult> {
 
     private val itemsPerPage = 50
@@ -39,7 +40,8 @@ class RecentlyPlayedDataSource(
                 val dto = resp.body
                 var trackList = dto.toDomainObject()
 
-                if (hideExplicit()) {
+
+                if (hideExplicit.first()) {
                     trackList = trackList.filter { !it.isExplicit }
                 }
 

@@ -24,7 +24,7 @@ abstract class BasePagingDataSourceWithTitleCache<T: SearchResult, D: ListMapper
     private val service: suspend (limit: Int, offset: Int) -> NetworkResponse<D, ErrorResponse>,
     private val cache: InMemCache<String, T>,
     // private val hideExplicit: () -> Boolean,
-    private val filter: ((T) -> Boolean)? = null,
+    private val filter: (suspend (T) -> Boolean)? = null,
 ): PagingSource<Int, T>(), PagingDataSource<T> {
 
     private val itemsPerPage = 50
@@ -46,8 +46,8 @@ abstract class BasePagingDataSourceWithTitleCache<T: SearchResult, D: ListMapper
 
                 var trackList = resp.body.toDomainObject()
 
-                if (filter != null) {
-                    trackList = trackList.filter(filter)
+                filter?.let { filter ->
+                    trackList = trackList.filter { filter(it) }
                 }
 
                 cache.batchAdd(trackList.associateBy { it.id })

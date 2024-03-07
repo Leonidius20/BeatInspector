@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.viewmodels
+package ua.leonidius.beatinspector.settings.viewmodels
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -8,16 +8,20 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.mikepenz.aboutlibraries.entity.Library
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.entities.AccountDetails
 import ua.leonidius.beatinspector.repos.BasicRepository
-import ua.leonidius.beatinspector.settings.SettingsStore
+import ua.leonidius.beatinspector.settings.data.SettingsStore
+import ua.leonidius.beatinspector.shared.eventbus.Event
+import ua.leonidius.beatinspector.shared.eventbus.UserHideExplicitSettingChangeEvent
 
 class SettingsViewModel(
     private val accountRepository: BasicRepository<Unit, AccountDetails>,
     private val libraries: List<Library>,
     private val settingsStore: SettingsStore,
+    private val eventBus: MutableSharedFlow<Event>,
 ): ViewModel() {
 
     sealed class AccountDetailsState {
@@ -40,8 +44,7 @@ class SettingsViewModel(
         Pair(it.name, it.licenses.firstOrNull()?.hash)
     }.toTypedArray()
 
-    var hideExplicit by mutableStateOf(settingsStore.hideExplicit)
-        private set // todo replace with datastore and flow
+    val hideExplicit = settingsStore.hideExplicitFlow
 
     init {
         loadAccountDetails()
@@ -65,8 +68,10 @@ class SettingsViewModel(
     }
 
     fun toggleHideExplicit(value: Boolean) {
-        settingsStore.hideExplicit = value
-        hideExplicit = value
+        viewModelScope.launch {
+            // todo: replace with factory to remove dependency on event constructor
+            eventBus.emit(UserHideExplicitSettingChangeEvent(value))
+        }
     }
 
 
@@ -82,6 +87,7 @@ class SettingsViewModel(
                     app.accountRepository,
                     app.libraries,
                     app.settingsStore,
+                    app.eventBus,
                 ) as T
             }
 
