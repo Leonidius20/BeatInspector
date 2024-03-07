@@ -1,8 +1,13 @@
-package ua.leonidius.beatinspector.auth
+package ua.leonidius.beatinspector.auth.data
 
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.launch
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
@@ -14,18 +19,45 @@ import java.util.concurrent.CountDownLatch
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import ua.leonidius.beatinspector.auth.AuthStateStorage
+import ua.leonidius.beatinspector.shared.eventbus.Event
+import ua.leonidius.beatinspector.shared.eventbus.UserLogoutRequestEvent
 
 class Authenticator(
     private val clientId: String,
     private val authStateStorage: AuthStateStorage,
    // private val authStateFlowingStorage: AuthStateFlowingStorage,
     private val authService: AuthorizationService,
+    private val eventBus: Flow<Event>,
+    private val eventCollectScope: CoroutineScope = MainScope(),
 ) {
 
-    private val logoutObservers = mutableListOf<() -> Unit>()
+    //private val logoutObservers = mutableListOf<() -> Unit>() // todo: replace with event bus
 
-    fun addLogoutObserver(observer: () -> Unit) {
-        logoutObservers.add(observer)
+    //fun addLogoutObserver(observer: () -> Unit) {
+   //     logoutObservers.add(observer)
+    //}
+
+
+    init {
+        eventCollectScope.launch {
+            eventBus
+                .filterIsInstance<UserLogoutRequestEvent>()
+                .collect {
+                    logout()
+                }
+        }
+    }
+
+    // todo
+    init {
+        // eventBus.filterIsInstance<UserLogoutEvent>()
+    //
+    // .collectLatest { event ->
+        //     if (event is UserLogoutEvent) {
+        //         logout()
+        //     }
+        // }
     }
 
     private val authServiceConfig: AuthorizationServiceConfiguration = // todo: replace by "fetchfromissuer" async
@@ -199,10 +231,10 @@ class Authenticator(
         }
     }
 
-    fun logout() {
+    private fun logout() {
         authState = AuthState(authServiceConfig)
         authStateStorage.clear()
-        logoutObservers.forEach { it() }
+        // logoutObservers.forEach { it() }
     }
 
 }

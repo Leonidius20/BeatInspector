@@ -1,12 +1,21 @@
-package ua.leonidius.beatinspector.datasources.cache
+package ua.leonidius.beatinspector.account.data
 
 import android.content.SharedPreferences
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.entities.AccountDetails
 import ua.leonidius.beatinspector.repos.account.AccountDataCache
+import ua.leonidius.beatinspector.shared.eventbus.Event
+import ua.leonidius.beatinspector.shared.eventbus.UserLogoutRequestEvent
 
 class AccountDataSharedPrefCache(
     private val prefs: SharedPreferences,
-    subscribeToLogouts: (() -> Unit) -> Unit,
+    eventBus: Flow<Event>,
+    scope: CoroutineScope = MainScope(),
 ): AccountDataCache {
 
     override val cache: MutableMap<Unit, AccountDetails> = mutableMapOf() // todo: remove this
@@ -17,12 +26,16 @@ class AccountDataSharedPrefCache(
     private val prefBigImageUrl = "bigImageUrl"
 
     init {
-        subscribeToLogouts {
-            clear()
+        scope.launch {
+            eventBus
+                .filterIsInstance<UserLogoutRequestEvent>()
+                .collect {
+                    clear()
+                }
         }
     }
 
-    // todo: it may be a good idea have the data as livedata or stateflow, so that any viewmodel can observe it and update ui accordingly
+    // todo: it may be a good idea have the data as datastore flow, so that any viewmodel can observe it and update ui accordingly
 
     override operator fun get(id: Unit): AccountDetails {
         val username = prefs.getString(prefUsernameKey, null)!! // should throw exception if null, should check isDataAvailable first

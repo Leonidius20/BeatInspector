@@ -11,6 +11,10 @@ class AuthStateDataStoreStorage(
     private val dataStore: DataStore<Preferences>
 ): AuthStateFlowingStorage {
 
+    // todo make this the ssot for auth state, but avoid unnecessary deserialization
+    // i guess we need to create a flow which will start with the deserialized value,
+    // but the subsequent values will
+
     private val authStatePrefKey = stringPreferencesKey("auth_state")
 
     override val jsonAuthStateFlow: Flow<String?> = dataStore.data.map { preferences  ->

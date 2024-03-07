@@ -15,22 +15,21 @@ import com.mikepenz.aboutlibraries.util.withContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.flowOf
 import net.openid.appauth.AuthorizationService
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ua.leonidius.beatinspector.auth.AuthStateSharedPrefStorage
-import ua.leonidius.beatinspector.auth.Authenticator
+import ua.leonidius.beatinspector.auth.data.Authenticator
 import ua.leonidius.beatinspector.data.R
 import ua.leonidius.beatinspector.repos.search.SearchRepository
 import ua.leonidius.beatinspector.repos.search.SearchRepositoryImpl
 import ua.leonidius.beatinspector.repos.account.AccountDataCache
-import ua.leonidius.beatinspector.datasources.cache.AccountDataSharedPrefCache
+import ua.leonidius.beatinspector.account.data.AccountDataSharedPrefCache
 import ua.leonidius.beatinspector.repos.account.AccountRepository
 import ua.leonidius.beatinspector.repos.account.AccountRepositoryImpl
-import ua.leonidius.beatinspector.auth.AuthInterceptor
+import ua.leonidius.beatinspector.auth.data.AuthInterceptor
 import ua.leonidius.beatinspector.datasources.cache.FullTrackDetailsCacheDataSource
 import ua.leonidius.beatinspector.datasources.cache.PlaylistTitlesInMemCache
 import ua.leonidius.beatinspector.datasources.cache.SongTitlesInMemCache
@@ -136,7 +135,8 @@ class BeatInspectorApp: Application() {
 
         authenticator = Authenticator(
             BuildConfig.SPOTIFY_CLIENT_ID,
-            AuthStateSharedPrefStorage(sharedPreferences), authService
+            AuthStateSharedPrefStorage(sharedPreferences), authService,
+            eventBus,
         )
 
         val authInterceptor = AuthInterceptor(authenticator)
@@ -183,8 +183,7 @@ class BeatInspectorApp: Application() {
 
         accountDataCache = AccountDataSharedPrefCache(
             getSharedPreferences(getString(ua.leonidius.beatinspector.R.string.preferences_account_data_file_name), MODE_PRIVATE),
-            // todo: find a better system for this - some kind of message passing or event bus or flows
-            subscribeToLogouts = { callback -> authenticator.addLogoutObserver(callback) }
+            eventBus,
         )
 
 

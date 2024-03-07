@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.auth
+package ua.leonidius.beatinspector.auth.data
 
 import android.util.Log
 import net.openid.appauth.AuthorizationException
@@ -8,9 +8,12 @@ import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody
 import ua.leonidius.beatinspector.SongDataIOException
-import ua.leonidius.beatinspector.auth.Authenticator
 
-class AuthInterceptor(private val authenticator: Authenticator): Interceptor {
+class AuthInterceptor(
+
+    private val authenticator: Authenticator): Interceptor {
+
+        // todo: find a place where this class should belong
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()

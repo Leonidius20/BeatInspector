@@ -11,10 +11,12 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.BeatInspectorApp
-import ua.leonidius.beatinspector.auth.Authenticator
+import ua.leonidius.beatinspector.auth.data.Authenticator
 import ua.leonidius.beatinspector.shared.eventbus.Event
 import ua.leonidius.beatinspector.shared.eventbus.UserHideExplicitSettingChangeEvent
+import ua.leonidius.beatinspector.shared.eventbus.UserLogoutRequestEvent
 
 class AuthStatusViewModel(
     private val authenticator: Authenticator,
@@ -119,7 +121,10 @@ class AuthStatusViewModel(
     // show either the auth screen or whatever else
 
     fun logout() {
-        authenticator.logout()
+        viewModelScope.launch {
+            eventBus.emit(UserLogoutRequestEvent)
+        }
+
         uiState = UiState.LoginOffered
     }
 
