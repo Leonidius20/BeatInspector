@@ -11,7 +11,6 @@ import ua.leonidius.beatinspector.toUIException
  * @param I - type of the ID of the data to be retrieved
  * @param D - type of the DTO that can be converted to the domain object
  * @param T - type of the domain object to be returned
- * @param E - type of the error response
  */
 open class BaseNetworkDataSource<I, D: Mapper<T>, T>(
     private val service: suspend (I) -> NetworkResponse<D, ErrorResponse>,

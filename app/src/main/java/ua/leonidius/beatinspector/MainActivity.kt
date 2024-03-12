@@ -28,7 +28,7 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ua.leonidius.beatinspector.features.login.ui.LoginScreen
 import ua.leonidius.beatinspector.features.login.viewmodels.LoginViewModel
-import ua.leonidius.beatinspector.data.auth.LoginState
+import ua.leonidius.beatinspector.data.auth.logic.LoginState
 import ua.leonidius.beatinspector.features.settings.ui.SettingsScreen
 import ua.leonidius.beatinspector.ui.theme.BeatInspectorTheme
 import ua.leonidius.beatinspector.features.tracklist.viewmodels.PlaylistContentViewModel

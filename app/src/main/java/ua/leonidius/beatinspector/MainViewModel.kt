@@ -2,7 +2,7 @@ package ua.leonidius.beatinspector
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ua.leonidius.beatinspector.data.auth.IAuthenticator
+import ua.leonidius.beatinspector.data.auth.logic.IAuthenticator
 import javax.inject.Inject
 
 /**

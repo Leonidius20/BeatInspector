@@ -10,9 +10,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
-import ua.leonidius.beatinspector.PagingDataSource
-import ua.leonidius.beatinspector.entities.SongSearchResult
-import ua.leonidius.beatinspector.repos.playlists.PlaylistInfoRepository
+import ua.leonidius.beatinspector.data.shared.PagingDataSource
+import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
+import ua.leonidius.beatinspector.data.playlists.PlaylistInfoRepository
 
 class PlaylistContentViewModel(
     private val playlistInfoRepository: PlaylistInfoRepository,

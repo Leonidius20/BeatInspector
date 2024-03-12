@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ua.leonidius.beatinspector.data.auth.Authenticator
+import ua.leonidius.beatinspector.data.auth.logic.Authenticator
 import ua.leonidius.beatinspector.shared.eventbus.EventBus
 import ua.leonidius.beatinspector.shared.eventbus.UserHideExplicitSettingChangeEvent
 import ua.leonidius.beatinspector.shared.eventbus.UserLogoutRequestEvent

@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import ua.leonidius.beatinspector.repos.account.AccountRepository
+import ua.leonidius.beatinspector.data.account.repository.AccountRepository
 
 interface AccountImageViewModel {
     fun loadAccountImage(scope: CoroutineScope)

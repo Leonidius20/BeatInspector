@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import ua.leonidius.beatinspector.BeatInspectorApp
-import ua.leonidius.beatinspector.PagingDataSource
-import ua.leonidius.beatinspector.entities.PlaylistSearchResult
-import ua.leonidius.beatinspector.repos.account.AccountRepository
+import ua.leonidius.beatinspector.data.shared.PagingDataSource
+import ua.leonidius.beatinspector.data.playlists.domain.PlaylistSearchResult
+import ua.leonidius.beatinspector.data.account.repository.AccountRepository
 import ua.leonidius.beatinspector.shared.viewmodels.AccountImageViewModel
 import ua.leonidius.beatinspector.shared.viewmodels.AccountImageViewModelImpl
 

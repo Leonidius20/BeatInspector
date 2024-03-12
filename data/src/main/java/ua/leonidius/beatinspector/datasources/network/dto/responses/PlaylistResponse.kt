@@ -5,11 +5,11 @@ import ua.leonidius.beatinspector.datasources.network.dto.ArtistDto
 import ua.leonidius.beatinspector.datasources.network.dto.TrackDto
 import ua.leonidius.beatinspector.datasources.network.mappers.ListMapper
 import ua.leonidius.beatinspector.datasources.network.mappers.toDomainObject
-import ua.leonidius.beatinspector.entities.SongSearchResult
+import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 
 data class PlaylistResponse(
     val items: List<PlaylistTrackDto>
-): ListMapper<SongSearchResult> {
+): ListMapper<ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult> {
 
     data class PlaylistTrackDto(
         val track: PlaylistTrackOrPodcastEpDto
@@ -40,7 +40,7 @@ data class PlaylistResponse(
         )
     }
 
-    override fun toDomainObject(): List<SongSearchResult> {
+    override fun toDomainObject(): List<ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult> {
         return onlyTracks().map {
             it.toDomainObject()
         }

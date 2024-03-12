@@ -1,17 +1,14 @@
 package ua.leonidius.beatinspector.datasources.network.mappers
 
-import ua.leonidius.beatinspector.datasources.network.dto.ArtistDto
-import ua.leonidius.beatinspector.datasources.network.dto.FullArtistDto
 import ua.leonidius.beatinspector.datasources.network.dto.SearchResultsResponse
 import ua.leonidius.beatinspector.datasources.network.dto.TrackAudioAnalysisDto
 import ua.leonidius.beatinspector.datasources.network.dto.TrackDto
-import ua.leonidius.beatinspector.entities.Artist
-import ua.leonidius.beatinspector.entities.Song
-import ua.leonidius.beatinspector.entities.SongSearchResult
+import ua.leonidius.beatinspector.data.tracks.details.domain.Song
+import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 
-fun TrackDto.toDomainObject(): SongSearchResult {
+fun TrackDto.toDomainObject(): ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult {
     val name = if (this.explicit) "$name \uD83C\uDD74" else name // "E" emoji
-    return SongSearchResult(
+    return ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult(
         id = id,
         name = name,
         artists = artists.map { it.toDomainObject() },
@@ -21,17 +18,17 @@ fun TrackDto.toDomainObject(): SongSearchResult {
     )
 }
 
-fun SearchResultsResponse.toListOfDomainObjects(): List<SongSearchResult> {
+fun SearchResultsResponse.toListOfDomainObjects(): List<ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult> {
     return tracks.items.map { it.toDomainObject() }
 }
 
 fun assembleTrackDomainObject(
-    baseInfo: SongSearchResult,
+    baseInfo: ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult,
     details: TrackAudioAnalysisDto,
     genres: List<String>,
-): Song {
+): ua.leonidius.beatinspector.data.tracks.details.domain.Song {
 
-    return Song(
+    return ua.leonidius.beatinspector.data.tracks.details.domain.Song(
         id = baseInfo.id,
         name = baseInfo.name,
         artist = baseInfo.artists.joinToString(", ") { it.name }, // todo: don't, just return as is and let ui layer handle it

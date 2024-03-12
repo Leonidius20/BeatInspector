@@ -11,8 +11,8 @@ import com.mikepenz.aboutlibraries.entity.Library
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
-import ua.leonidius.beatinspector.entities.AccountDetails
-import ua.leonidius.beatinspector.repos.BasicRepository
+import ua.leonidius.beatinspector.data.account.domain.AccountDetails
+import ua.leonidius.beatinspector.data.shared.repository.BasicRepository
 import ua.leonidius.beatinspector.data.settings.SettingsStore
 import ua.leonidius.beatinspector.shared.eventbus.Event
 import ua.leonidius.beatinspector.shared.eventbus.UserHideExplicitSettingChangeEvent

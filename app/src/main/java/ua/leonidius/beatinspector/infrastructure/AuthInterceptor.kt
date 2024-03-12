@@ -6,8 +6,8 @@ import net.openid.appauth.AuthorizationException
 import okhttp3.Interceptor
 import okhttp3.Response
 import ua.leonidius.beatinspector.SongDataIOException
-import ua.leonidius.beatinspector.data.auth.IAuthenticator
-import ua.leonidius.beatinspector.data.auth.LoginState
+import ua.leonidius.beatinspector.data.auth.logic.IAuthenticator
+import ua.leonidius.beatinspector.data.auth.logic.LoginState
 import javax.inject.Inject
 
 class AuthInterceptor @Inject constructor(

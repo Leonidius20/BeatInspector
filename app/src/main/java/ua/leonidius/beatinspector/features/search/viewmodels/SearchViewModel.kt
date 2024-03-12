@@ -15,10 +15,10 @@ import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.SongDataIOException
-import ua.leonidius.beatinspector.entities.SongSearchResult
-import ua.leonidius.beatinspector.repos.account.AccountRepository
-import ua.leonidius.beatinspector.repos.search.SearchRepository
-import ua.leonidius.beatinspector.repos.search.SearchRepositoryImpl
+import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
+import ua.leonidius.beatinspector.data.account.repository.AccountRepository
+import ua.leonidius.beatinspector.data.tracks.search.repository.SearchRepository
+import ua.leonidius.beatinspector.data.tracks.search.repository.SearchRepositoryImpl
 import ua.leonidius.beatinspector.shared.viewmodels.AccountImageViewModel
 import ua.leonidius.beatinspector.shared.viewmodels.AccountImageViewModelImpl
 import ua.leonidius.beatinspector.shared.uimapping.toUiMessage

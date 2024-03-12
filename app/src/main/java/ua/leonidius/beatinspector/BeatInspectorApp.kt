@@ -5,9 +5,6 @@ import android.content.pm.PackageManager
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
-import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.entity.Library
 import com.mikepenz.aboutlibraries.entity.License
@@ -16,46 +13,35 @@ import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableSharedFlow
-import net.openid.appauth.AuthorizationService
-import okhttp3.Cache
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import ua.leonidius.beatinspector.auth.AuthStateSharedPrefStorage
-import ua.leonidius.beatinspector.data.auth.Authenticator
-import ua.leonidius.beatinspector.data.R
-import ua.leonidius.beatinspector.repos.search.SearchRepository
-import ua.leonidius.beatinspector.repos.search.SearchRepositoryImpl
-import ua.leonidius.beatinspector.repos.account.AccountDataCache
-import ua.leonidius.beatinspector.data.account.AccountDataSharedPrefCache
-import ua.leonidius.beatinspector.repos.account.AccountRepository
-import ua.leonidius.beatinspector.repos.account.AccountRepositoryImpl
-import ua.leonidius.beatinspector.infrastructure.AuthInterceptor
-import ua.leonidius.beatinspector.datasources.cache.FullTrackDetailsCacheDataSource
-import ua.leonidius.beatinspector.datasources.cache.PlaylistTitlesInMemCache
-import ua.leonidius.beatinspector.datasources.cache.SongTitlesInMemCache
+import ua.leonidius.beatinspector.data.tracks.search.repository.SearchRepository
+import ua.leonidius.beatinspector.data.tracks.search.repository.SearchRepositoryImpl
+import ua.leonidius.beatinspector.data.account.cache.AccountDataCache
+import ua.leonidius.beatinspector.data.account.cache.AccountDataSharedPrefCache
+import ua.leonidius.beatinspector.data.account.repository.AccountRepository
+import ua.leonidius.beatinspector.data.account.repository.AccountRepositoryImpl
+import ua.leonidius.beatinspector.data.tracks.details.cache.FullTrackDetailsCacheDataSource
+import ua.leonidius.beatinspector.data.playlists.PlaylistTitlesInMemCache
+import ua.leonidius.beatinspector.data.tracks.shared.cache.SongTitlesInMemCache
 import ua.leonidius.beatinspector.datasources.network.AccountNetworkDataSource
-import ua.leonidius.beatinspector.datasources.network.SearchNetworkDataSource
-import ua.leonidius.beatinspector.datasources.network.services.ArtistsService
+import ua.leonidius.beatinspector.data.tracks.search.network.SearchNetworkDataSource
 import ua.leonidius.beatinspector.datasources.network.services.MyPlaylistsService
 import ua.leonidius.beatinspector.datasources.network.services.PlaylistApi
 import ua.leonidius.beatinspector.datasources.network.services.RecentlyPlayedApi
 import ua.leonidius.beatinspector.datasources.network.services.SavedTracksService
-import ua.leonidius.beatinspector.datasources.network.services.SearchService
 import ua.leonidius.beatinspector.datasources.network.services.SpotifyAccountService
 import ua.leonidius.beatinspector.datasources.network.services.TopTracksApi
-import ua.leonidius.beatinspector.datasources.network.services.TrackAudioAnalysisService
-import ua.leonidius.beatinspector.entities.PlaylistSearchResult
-import ua.leonidius.beatinspector.entities.SongSearchResult
-import ua.leonidius.beatinspector.repos.playlists.MyPlaylistsPagingDataSource
-import ua.leonidius.beatinspector.repos.playlists.PlaylistInfoRepository
-import ua.leonidius.beatinspector.repos.playlists.PlaylistPagingDataSource
-import ua.leonidius.beatinspector.repos.recently_played.RecentlyPlayedDataSource
-import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksNetworkPagingSource
-import ua.leonidius.beatinspector.repos.top_tracks.TopTracksPagingDataSource
-import ua.leonidius.beatinspector.repos.track_details.TrackDetailsRepository
-import ua.leonidius.beatinspector.repos.track_details.TrackDetailsRepositoryImpl
+import ua.leonidius.beatinspector.data.playlists.domain.PlaylistSearchResult
+import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
+import ua.leonidius.beatinspector.data.playlists.MyPlaylistsPagingDataSource
+import ua.leonidius.beatinspector.data.playlists.PlaylistInfoRepository
+import ua.leonidius.beatinspector.data.tracks.lists.playlist.PlaylistPagingDataSource
+import ua.leonidius.beatinspector.data.tracks.lists.recent.RecentlyPlayedDataSource
+import ua.leonidius.beatinspector.data.tracks.lists.liked.SavedTracksNetworkPagingSource
+import ua.leonidius.beatinspector.data.tracks.lists.top.TopTracksPagingDataSource
+import ua.leonidius.beatinspector.data.tracks.details.repository.TrackDetailsRepository
+import ua.leonidius.beatinspector.data.tracks.details.repository.TrackDetailsRepositoryImpl
 import ua.leonidius.beatinspector.data.settings.SettingsStore
+import ua.leonidius.beatinspector.data.shared.PagingDataSource
 import ua.leonidius.beatinspector.shared.eventbus.Event
 import ua.leonidius.beatinspector.shared.eventbus.EventBus
 import ua.leonidius.beatinspector.shared.eventbus.EventBusImpl
@@ -188,7 +174,7 @@ class BeatInspectorApp: Application() {
         val spotifyAccountService = retrofit.create(SpotifyAccountService::class.java)
 
         accountDataCache = AccountDataSharedPrefCache(
-            getSharedPreferences(getString(ua.leonidius.beatinspector.R.string.preferences_account_data_file_name), MODE_PRIVATE),
+            getSharedPreferences(getString(R.string.preferences_account_data_file_name), MODE_PRIVATE),
             eventBusO,
         )
 

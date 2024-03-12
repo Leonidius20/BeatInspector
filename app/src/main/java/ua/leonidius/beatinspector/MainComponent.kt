@@ -14,10 +14,10 @@ import okhttp3.Cache
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ua.leonidius.beatinspector.auth.AuthStateSharedPrefStorage
+import ua.leonidius.beatinspector.data.auth.storage.AuthStateSharedPrefStorage
 import ua.leonidius.beatinspector.data.R
-import ua.leonidius.beatinspector.data.auth.Authenticator
-import ua.leonidius.beatinspector.data.auth.IAuthenticator
+import ua.leonidius.beatinspector.data.auth.logic.Authenticator
+import ua.leonidius.beatinspector.data.auth.logic.IAuthenticator
 import ua.leonidius.beatinspector.datasources.network.services.ArtistsService
 import ua.leonidius.beatinspector.datasources.network.services.MyPlaylistsService
 import ua.leonidius.beatinspector.datasources.network.services.PlaylistApi

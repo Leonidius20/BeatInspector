@@ -2,7 +2,7 @@ package ua.leonidius.beatinspector.datasources.network.dto
 
 import com.google.gson.annotations.SerializedName
 import ua.leonidius.beatinspector.datasources.network.mappers.Mapper
-import ua.leonidius.beatinspector.entities.AccountDetails
+import ua.leonidius.beatinspector.data.account.domain.AccountDetails
 
 data class AccountInfoResponse(
     val id: String,
@@ -11,7 +11,7 @@ data class AccountInfoResponse(
     val displayName: String,
 
     val images: List<ImageDto>
-): Mapper<AccountDetails> {
+): Mapper<ua.leonidius.beatinspector.data.account.domain.AccountDetails> {
 
     val smallestImage: ImageDto?
         get() = images.minByOrNull { it.height * it.width }
@@ -19,10 +19,11 @@ data class AccountInfoResponse(
     val biggestImage : ImageDto?
         get() = images.maxByOrNull { it.height * it.width }
 
-    override fun toDomainObject(): AccountDetails {
-        return AccountDetails(
+    override fun toDomainObject(): ua.leonidius.beatinspector.data.account.domain.AccountDetails {
+        return ua.leonidius.beatinspector.data.account.domain.AccountDetails(
             id, displayName,
-            smallestImage?.url, biggestImage?.url)
+            smallestImage?.url, biggestImage?.url
+        )
     }
 
 }

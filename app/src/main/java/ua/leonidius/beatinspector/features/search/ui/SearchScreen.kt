@@ -35,8 +35,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ua.leonidius.beatinspector.R
-import ua.leonidius.beatinspector.entities.Artist
-import ua.leonidius.beatinspector.entities.SongSearchResult
+import ua.leonidius.beatinspector.data.tracks.shared.domain.Artist
+import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.ui.theme.ChangeStatusBarColor
 import ua.leonidius.beatinspector.shared.viewmodels.PfpState
 import ua.leonidius.beatinspector.features.search.viewmodels.SearchViewModel

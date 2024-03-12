@@ -36,7 +36,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import ua.leonidius.beatinspector.Dimens
 import ua.leonidius.beatinspector.R
-import ua.leonidius.beatinspector.entities.PlaylistSearchResult
+import ua.leonidius.beatinspector.data.playlists.domain.PlaylistSearchResult
 import ua.leonidius.beatinspector.shared.viewmodels.PfpState
 import ua.leonidius.beatinspector.features.home.viewmodels.HomeScreenViewModel
 import ua.leonidius.beatinspector.shared.ui.LoadingScreen
