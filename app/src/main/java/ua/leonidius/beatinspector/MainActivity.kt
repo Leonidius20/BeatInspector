@@ -25,29 +25,33 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import dagger.hilt.android.AndroidEntryPoint
+import ua.leonidius.beatinspector.features.login.ui.LoginScreen
+import ua.leonidius.beatinspector.features.login.viewmodels.LoginViewModel
+import ua.leonidius.beatinspector.data.auth.LoginState
+import ua.leonidius.beatinspector.features.settings.ui.SettingsScreen
 import ua.leonidius.beatinspector.ui.theme.BeatInspectorTheme
-import ua.leonidius.beatinspector.viewmodels.PlaylistContentViewModel
-import ua.leonidius.beatinspector.viewmodels.TrackListViewModel
-import ua.leonidius.beatinspector.auth.ui.LoginScreen
-import ua.leonidius.beatinspector.auth.viewmodels.AuthStatusViewModel
-import ua.leonidius.beatinspector.views.LongTextScreen
-import ua.leonidius.beatinspector.views.OpenInSpotifyButton
-import ua.leonidius.beatinspector.views.PlaylistsScreen
-import ua.leonidius.beatinspector.views.SearchScreen
-import ua.leonidius.beatinspector.settings.ui.SettingsScreen
-import ua.leonidius.beatinspector.views.SongDetailsScreen
-import ua.leonidius.beatinspector.views.TrackListScreen
+import ua.leonidius.beatinspector.features.tracklist.viewmodels.PlaylistContentViewModel
+import ua.leonidius.beatinspector.features.tracklist.viewmodels.TrackListViewModel
+import ua.leonidius.beatinspector.features.legal.ui.LongTextScreen
+import ua.leonidius.beatinspector.features.details.ui.OpenInSpotifyButton
+import ua.leonidius.beatinspector.features.home.ui.HomeScreen
+import ua.leonidius.beatinspector.features.search.ui.SearchScreen
+import ua.leonidius.beatinspector.features.details.ui.SongDetailsScreen
+import ua.leonidius.beatinspector.features.tracklist.ui.TrackListScreen
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val viewModel: AuthStatusViewModel by viewModels(factoryProducer = { AuthStatusViewModel.Factory })
+        val mainViewModel: MainViewModel by viewModels()
+
+        val loginViewModel: LoginViewModel by viewModels()
 
         val loginActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            viewModel.onLoginActivityResult(result.resultCode == Activity.RESULT_OK, result.data)
+            loginViewModel.onLoginActivityResult(result.resultCode == Activity.RESULT_OK, result.data)
         }
 
         val app = application as BeatInspectorApp // todo: remove?
@@ -73,6 +77,13 @@ class MainActivity : ComponentActivity() {
         }
 
 
+
+        val startDestination =
+            if (mainViewModel.authState.value is LoginState.LoggedIn)
+                "playlists"
+            else "login"
+
+
         setContent {
             BeatInspectorTheme {
 
@@ -84,13 +95,13 @@ class MainActivity : ComponentActivity() {
                         { route: String -> navController.navigate(route) }
                     }
 
-                    val startDestination = remember {
+                    /*val startDestination = remember {
                         if (viewModel.uiState !is AuthStatusViewModel.UiState.SuccessfulLogin) "login" else "playlists"
-                    }
+                    }*/
 
                     NavHost(navController = navController, startDestination = startDestination) {
                         composable("login") {
-                            if (viewModel.uiState is AuthStatusViewModel.UiState.SuccessfulLogin) {
+                            if (loginViewModel.uiState is LoginViewModel.UiState.SuccessfulLogin) {
 
                                 LaunchedEffect(key1 = null) {
                                     navController.navigate("playlists") {
@@ -101,10 +112,10 @@ class MainActivity : ComponentActivity() {
                                 }
 
                             } else {
-                                LoginScreen(viewModel = viewModel, onLoginButtonPressed = {
+                                LoginScreen(viewModel = loginViewModel, onLoginButtonPressed = {
                                     // for some reason, UI is only recomposed when we use the viewmodel from the argument
 
-                                    viewModel.launchLoginSequence { loginActivityLauncher.launch(it) }
+                                    loginViewModel.launchLoginSequence { loginActivityLauncher.launch(it) }
                                 }, onNavigateToLegalText = { textResId ->
                                     navController.navigate("text/${textResId}")
                                 })
@@ -139,7 +150,7 @@ class MainActivity : ComponentActivity() {
                             SettingsScreen(onLegalDocClicked = {
                                 navController.navigate("text/${it}")
                             }, onLogOutClicked = {
-                                viewModel.logout()
+                                loginViewModel.logout()
 
                                 // open the Spotify Manage Apps page
                                 // todo: is it possible to only redirect to login if the tab is closed?
@@ -171,7 +182,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable(Screen.Playlists.routeTemplate) {
-                            PlaylistsScreen(
+                            HomeScreen(
                                 onSearch = { goTo(Screen.Search.route(it)) },
                                 goToSettings = { goTo(Screen.Settings.route()) },
                                 goToSavedTracks = { goTo("saved_tracks") },

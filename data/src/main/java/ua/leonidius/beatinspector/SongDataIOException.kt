@@ -79,4 +79,9 @@ sealed class SongDataIOException(
 
     }
 
+    object NotLoggedIn: SongDataIOException() {
+
+        override fun toTextDescription() = "User is not logged in. Please relaunch the app to trigger the login sequence. If that doesn't work, clear app data and try again."
+    }
+
 }

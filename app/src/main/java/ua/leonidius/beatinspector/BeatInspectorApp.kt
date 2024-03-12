@@ -12,6 +12,7 @@ import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.entity.Library
 import com.mikepenz.aboutlibraries.entity.License
 import com.mikepenz.aboutlibraries.util.withContext
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,15 +22,15 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ua.leonidius.beatinspector.auth.AuthStateSharedPrefStorage
-import ua.leonidius.beatinspector.auth.data.Authenticator
+import ua.leonidius.beatinspector.data.auth.Authenticator
 import ua.leonidius.beatinspector.data.R
 import ua.leonidius.beatinspector.repos.search.SearchRepository
 import ua.leonidius.beatinspector.repos.search.SearchRepositoryImpl
 import ua.leonidius.beatinspector.repos.account.AccountDataCache
-import ua.leonidius.beatinspector.account.data.AccountDataSharedPrefCache
+import ua.leonidius.beatinspector.data.account.AccountDataSharedPrefCache
 import ua.leonidius.beatinspector.repos.account.AccountRepository
 import ua.leonidius.beatinspector.repos.account.AccountRepositoryImpl
-import ua.leonidius.beatinspector.auth.data.AuthInterceptor
+import ua.leonidius.beatinspector.infrastructure.AuthInterceptor
 import ua.leonidius.beatinspector.datasources.cache.FullTrackDetailsCacheDataSource
 import ua.leonidius.beatinspector.datasources.cache.PlaylistTitlesInMemCache
 import ua.leonidius.beatinspector.datasources.cache.SongTitlesInMemCache
@@ -54,14 +55,16 @@ import ua.leonidius.beatinspector.repos.saved_tracks.SavedTracksNetworkPagingSou
 import ua.leonidius.beatinspector.repos.top_tracks.TopTracksPagingDataSource
 import ua.leonidius.beatinspector.repos.track_details.TrackDetailsRepository
 import ua.leonidius.beatinspector.repos.track_details.TrackDetailsRepositoryImpl
-import ua.leonidius.beatinspector.settings.data.SettingsStore
+import ua.leonidius.beatinspector.data.settings.SettingsStore
 import ua.leonidius.beatinspector.shared.eventbus.Event
+import ua.leonidius.beatinspector.shared.eventbus.EventBus
+import ua.leonidius.beatinspector.shared.eventbus.EventBusImpl
 import java.text.DecimalFormat
 
-
+@HiltAndroidApp
 class BeatInspectorApp: Application() {
 
-    lateinit var authenticator: Authenticator
+    //lateinit var authenticator: Authenticator
 
     lateinit var searchRepository: SearchRepository
 
@@ -70,8 +73,6 @@ class BeatInspectorApp: Application() {
     val decimalFormat = DecimalFormat("0.##") // for bpm and loudness
 
     var isSpotifyInstalled = false
-
-    private lateinit var authService: AuthorizationService
 
     lateinit var accountDataCache: AccountDataCache
 
@@ -101,14 +102,14 @@ class BeatInspectorApp: Application() {
         name = "settings"
     )
 
-    lateinit var eventBus: MutableSharedFlow<Event>
+    lateinit var eventBusO: MutableSharedFlow<Event>
+
+    lateinit var eventBus: EventBus
 
     override fun onCreate() {
         super.onCreate()
 
-        authService = AuthorizationService(this) // todo: research GC for this (dispose() method?)
-
-        val masterKey = MasterKey.Builder(this)
+        /*val masterKey = MasterKey.Builder(this)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
 
@@ -118,30 +119,35 @@ class BeatInspectorApp: Application() {
             masterKey,
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
+        )*/
 
-        eventBus = MutableSharedFlow()
+        eventBusO = MutableSharedFlow()
         val collectEventsScope = MainScope()
+
+        eventBus = EventBusImpl
 
 
         settingsStore = SettingsStore(
             settingsDs,
-            eventBus,
+            eventBusO,
             collectEventsScope,
         )
 
         val hideExplicit = settingsStore.hideExplicitFlow
          //val hideExplicit = flowOf(false)
 
-        authenticator = Authenticator(
+        /*authenticator = Authenticator(
             BuildConfig.SPOTIFY_CLIENT_ID,
-            AuthStateSharedPrefStorage(sharedPreferences), authService,
-            eventBus,
-        )
+            AuthStateSharedPrefStorage(sharedPreferences),
+            AuthorizationService(this), // todo: research GC for this (dispose() method?)
+            eventBusO,
+        )*/
 
-        val authInterceptor = AuthInterceptor(authenticator)
 
-        val okHttpCache = Cache(
+
+        //val authInterceptor = AuthInterceptor(authenticator)
+
+        /*val okHttpCache = Cache(
             applicationContext.cacheDir,
             50 * 1024 * 1024 // 50 MB
         )
@@ -157,12 +163,12 @@ class BeatInspectorApp: Application() {
                     level = HttpLoggingInterceptor.Level.HEADERS
                 })*/
                 .build())
-            .build()
+            .build()*/
 
 
-        val searchService = retrofit.create(SearchService::class.java)
+       /* val searchService = retrofit.create(SearchService::class.java)
         val audioAnalysisService = retrofit.create(TrackAudioAnalysisService::class.java)
-        val artistsService = retrofit.create(ArtistsService::class.java)
+        val artistsService = retrofit.create(ArtistsService::class.java)*/
 
         val searchNetworkDataSource = SearchNetworkDataSource(searchService)
         val searchCacheDataSource = SongTitlesInMemCache()
@@ -183,7 +189,7 @@ class BeatInspectorApp: Application() {
 
         accountDataCache = AccountDataSharedPrefCache(
             getSharedPreferences(getString(ua.leonidius.beatinspector.R.string.preferences_account_data_file_name), MODE_PRIVATE),
-            eventBus,
+            eventBusO,
         )
 
 

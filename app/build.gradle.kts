@@ -1,11 +1,14 @@
 import java.util.Properties
 
 plugins {
+    // kotlin("kapt")
+    id("kotlin-kapt")
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("com.github.alexfu.androidautoversion")
     id("com.mikepenz.aboutlibraries.plugin")
+    id("com.google.dagger.hilt.android") // todo: maybe should change that dagger.hilt.android.plugin
 }
 
 android {
@@ -161,6 +164,13 @@ dependencies {
     // optional - Jetpack Compose integration
     implementation("androidx.paging:paging-compose:3.3.0-alpha03")
 
+    // hilt
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
+
     implementation(project(":data"))
 
     testImplementation("junit:junit:4.13.2")
@@ -170,4 +180,8 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+}
+
+kapt {
+    correctErrorTypes = true
 }
