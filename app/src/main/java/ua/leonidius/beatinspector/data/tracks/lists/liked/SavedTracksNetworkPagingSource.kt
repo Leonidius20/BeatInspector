@@ -1,16 +1,16 @@
 package ua.leonidius.beatinspector.data.tracks.lists.liked
 
 import kotlinx.coroutines.flow.Flow
-import ua.leonidius.beatinspector.datasources.network.dto.SavedTracksResponse
-import ua.leonidius.beatinspector.datasources.network.services.SavedTracksService
+import ua.leonidius.beatinspector.data.tracks.lists.liked.network.dto.LikedTracksResponse
+import ua.leonidius.beatinspector.data.tracks.lists.liked.network.api.LikedTracksApi
 import ua.leonidius.beatinspector.data.tracks.lists.BaseTrackPagingDataSource
 import ua.leonidius.beatinspector.data.tracks.shared.cache.SongTitlesInMemCache
 
 class SavedTracksNetworkPagingSource(
-    service: SavedTracksService,
+    service: LikedTracksApi,
     searchCache: SongTitlesInMemCache,
     hideExplicit: Flow<Boolean>,
-): BaseTrackPagingDataSource<SavedTracksResponse>(
+): BaseTrackPagingDataSource<LikedTracksResponse>(
     service::getSavedTracks,
     searchCache,
     hideExplicit,

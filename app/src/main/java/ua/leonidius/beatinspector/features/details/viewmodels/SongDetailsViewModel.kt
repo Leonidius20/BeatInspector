@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.R
-import ua.leonidius.beatinspector.SongDataIOException
+import ua.leonidius.beatinspector.data.shared.exception.SongDataIOException
 import ua.leonidius.beatinspector.data.tracks.details.repository.TrackDetailsRepository
 import ua.leonidius.beatinspector.shared.uimapping.toUiMessage
 import java.text.DecimalFormat

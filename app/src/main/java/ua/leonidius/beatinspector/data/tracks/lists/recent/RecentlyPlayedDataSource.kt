@@ -12,9 +12,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import ua.leonidius.beatinspector.data.shared.PagingDataSource
 import ua.leonidius.beatinspector.data.tracks.shared.cache.SongTitlesInMemCache
-import ua.leonidius.beatinspector.datasources.network.services.RecentlyPlayedApi
+import ua.leonidius.beatinspector.data.tracks.lists.recent.network.api.RecentlyPlayedApi
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
-import ua.leonidius.beatinspector.toUIException
+import ua.leonidius.beatinspector.data.shared.network.toUIException
 
 class RecentlyPlayedDataSource(
     private val service: RecentlyPlayedApi,

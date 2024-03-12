@@ -39,6 +39,7 @@ import ua.leonidius.beatinspector.features.home.ui.HomeScreen
 import ua.leonidius.beatinspector.features.search.ui.SearchScreen
 import ua.leonidius.beatinspector.features.details.ui.SongDetailsScreen
 import ua.leonidius.beatinspector.features.tracklist.ui.TrackListScreen
+import ua.leonidius.beatinspector.ui.theme.Dimens
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

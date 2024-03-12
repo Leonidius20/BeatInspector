@@ -10,10 +10,9 @@ import com.haroldadmin.cnradapter.NetworkResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import ua.leonidius.beatinspector.data.shared.cache.InMemCache
-import ua.leonidius.beatinspector.datasources.network.dto.ErrorResponse
-import ua.leonidius.beatinspector.datasources.network.mappers.ListMapper
+import ua.leonidius.beatinspector.data.shared.network.dto.ErrorResponse
 import ua.leonidius.beatinspector.data.shared.domain.SearchResult
-import ua.leonidius.beatinspector.toUIException
+import ua.leonidius.beatinspector.data.shared.network.toUIException
 
 /**
  * @param T - title type (SongSearchResult, PlaylistSearchResult, etc)

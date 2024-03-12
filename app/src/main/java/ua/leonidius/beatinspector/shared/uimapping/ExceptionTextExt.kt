@@ -1,6 +1,6 @@
 package ua.leonidius.beatinspector.shared.uimapping
 
-import ua.leonidius.beatinspector.SongDataIOException
+import ua.leonidius.beatinspector.data.shared.exception.SongDataIOException
 import ua.leonidius.beatinspector.R
 
 fun SongDataIOException.toUiMessage(): Int {

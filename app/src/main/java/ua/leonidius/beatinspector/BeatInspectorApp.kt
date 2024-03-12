@@ -22,14 +22,14 @@ import ua.leonidius.beatinspector.data.account.repository.AccountRepositoryImpl
 import ua.leonidius.beatinspector.data.tracks.details.cache.FullTrackDetailsCacheDataSource
 import ua.leonidius.beatinspector.data.playlists.PlaylistTitlesInMemCache
 import ua.leonidius.beatinspector.data.tracks.shared.cache.SongTitlesInMemCache
-import ua.leonidius.beatinspector.datasources.network.AccountNetworkDataSource
+import ua.leonidius.beatinspector.data.account.network.AccountNetworkDataSource
 import ua.leonidius.beatinspector.data.tracks.search.network.SearchNetworkDataSource
-import ua.leonidius.beatinspector.datasources.network.services.MyPlaylistsService
-import ua.leonidius.beatinspector.datasources.network.services.PlaylistApi
-import ua.leonidius.beatinspector.datasources.network.services.RecentlyPlayedApi
-import ua.leonidius.beatinspector.datasources.network.services.SavedTracksService
-import ua.leonidius.beatinspector.datasources.network.services.SpotifyAccountService
-import ua.leonidius.beatinspector.datasources.network.services.TopTracksApi
+import ua.leonidius.beatinspector.data.playlists.network.api.MyPlaylistsService
+import ua.leonidius.beatinspector.data.tracks.lists.playlist.network.api.PlaylistApi
+import ua.leonidius.beatinspector.data.tracks.lists.recent.network.api.RecentlyPlayedApi
+import ua.leonidius.beatinspector.data.tracks.lists.liked.network.api.LikedTracksApi
+import ua.leonidius.beatinspector.data.account.network.api.AccountApi
+import ua.leonidius.beatinspector.data.tracks.lists.top.network.api.TopTracksApi
 import ua.leonidius.beatinspector.data.playlists.domain.PlaylistSearchResult
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.data.playlists.MyPlaylistsPagingDataSource
@@ -171,7 +171,7 @@ class BeatInspectorApp: Application() {
             Dispatchers.IO
         )
 
-        val spotifyAccountService = retrofit.create(SpotifyAccountService::class.java)
+        val spotifyAccountService = retrofit.create(AccountApi::class.java)
 
         accountDataCache = AccountDataSharedPrefCache(
             getSharedPreferences(getString(R.string.preferences_account_data_file_name), MODE_PRIVATE),
@@ -191,7 +191,7 @@ class BeatInspectorApp: Application() {
         libraries = libs.libraries
         licenses = libs.licenses
 
-        val savedTracksService = retrofit.create(SavedTracksService::class.java)
+        val savedTracksService = retrofit.create(LikedTracksApi::class.java)
 
         savedTracksNetworkPagingSource = SavedTracksNetworkPagingSource(
             savedTracksService, searchCacheDataSource, hideExplicit)

@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import ua.leonidius.beatinspector.BuildConfig
-import ua.leonidius.beatinspector.Dimens
+import ua.leonidius.beatinspector.ui.theme.Dimens
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.features.settings.viewmodels.SettingsViewModel
 

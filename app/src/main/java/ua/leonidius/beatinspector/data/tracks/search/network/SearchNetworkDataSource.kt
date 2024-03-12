@@ -1,12 +1,12 @@
 package ua.leonidius.beatinspector.data.tracks.search.network
 
-import ua.leonidius.beatinspector.datasources.network.BaseNetworkDataSource
-import ua.leonidius.beatinspector.datasources.network.dto.SearchResultsResponse
-import ua.leonidius.beatinspector.datasources.network.services.SearchService
+import ua.leonidius.beatinspector.data.shared.network.BaseNetworkDataSource
+import ua.leonidius.beatinspector.data.tracks.search.network.dto.SearchResultsResponse
+import ua.leonidius.beatinspector.data.tracks.search.network.api.SearchApi
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 
 class SearchNetworkDataSource(
-    private val searchService: SearchService
+    private val searchService: SearchApi
 ): BaseNetworkDataSource<String, SearchResultsResponse, List<SongSearchResult>>(
 
     service = { query -> searchService.search(query) }

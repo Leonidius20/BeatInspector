@@ -4,8 +4,8 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.data.shared.cache.InMemCache
-import ua.leonidius.beatinspector.datasources.network.NetworkDataSource
-import ua.leonidius.beatinspector.datasources.network.mappers.Mapper
+import ua.leonidius.beatinspector.data.shared.network.NetworkDataSource
+import ua.leonidius.beatinspector.data.shared.Mapper
 
 /**
  * @param T - type of the data to be returned (a single object, not a list, i think)

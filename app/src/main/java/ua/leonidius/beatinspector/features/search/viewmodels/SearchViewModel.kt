@@ -14,7 +14,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.R
-import ua.leonidius.beatinspector.SongDataIOException
+import ua.leonidius.beatinspector.data.shared.exception.SongDataIOException
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.data.account.repository.AccountRepository
 import ua.leonidius.beatinspector.data.tracks.search.repository.SearchRepository

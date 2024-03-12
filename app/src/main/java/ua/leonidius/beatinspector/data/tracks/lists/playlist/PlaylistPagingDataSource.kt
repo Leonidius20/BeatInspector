@@ -2,8 +2,8 @@ package ua.leonidius.beatinspector.data.tracks.lists.playlist
 
 import kotlinx.coroutines.flow.Flow
 import ua.leonidius.beatinspector.data.tracks.shared.cache.SongTitlesInMemCache
-import ua.leonidius.beatinspector.datasources.network.dto.responses.PlaylistResponse
-import ua.leonidius.beatinspector.datasources.network.services.PlaylistApi
+import ua.leonidius.beatinspector.data.tracks.lists.playlist.network.dto.PlaylistResponse
+import ua.leonidius.beatinspector.data.tracks.lists.playlist.network.api.PlaylistApi
 import ua.leonidius.beatinspector.data.tracks.lists.BaseTrackPagingDataSource
 
 /**

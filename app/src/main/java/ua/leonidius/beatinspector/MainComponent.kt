@@ -18,15 +18,15 @@ import ua.leonidius.beatinspector.data.auth.storage.AuthStateSharedPrefStorage
 import ua.leonidius.beatinspector.data.R
 import ua.leonidius.beatinspector.data.auth.logic.Authenticator
 import ua.leonidius.beatinspector.data.auth.logic.IAuthenticator
-import ua.leonidius.beatinspector.datasources.network.services.ArtistsService
-import ua.leonidius.beatinspector.datasources.network.services.MyPlaylistsService
-import ua.leonidius.beatinspector.datasources.network.services.PlaylistApi
-import ua.leonidius.beatinspector.datasources.network.services.RecentlyPlayedApi
-import ua.leonidius.beatinspector.datasources.network.services.SavedTracksService
-import ua.leonidius.beatinspector.datasources.network.services.SearchService
-import ua.leonidius.beatinspector.datasources.network.services.SpotifyAccountService
-import ua.leonidius.beatinspector.datasources.network.services.TopTracksApi
-import ua.leonidius.beatinspector.datasources.network.services.TrackAudioAnalysisService
+import ua.leonidius.beatinspector.data.tracks.details.network.api.ArtistsApi
+import ua.leonidius.beatinspector.data.playlists.network.api.MyPlaylistsService
+import ua.leonidius.beatinspector.data.tracks.lists.playlist.network.api.PlaylistApi
+import ua.leonidius.beatinspector.data.tracks.lists.recent.network.api.RecentlyPlayedApi
+import ua.leonidius.beatinspector.data.tracks.lists.liked.network.api.LikedTracksApi
+import ua.leonidius.beatinspector.data.tracks.search.network.api.SearchApi
+import ua.leonidius.beatinspector.data.account.network.api.AccountApi
+import ua.leonidius.beatinspector.data.tracks.lists.top.network.api.TopTracksApi
+import ua.leonidius.beatinspector.data.tracks.details.network.api.TrackAudioAnalysisApi
 import ua.leonidius.beatinspector.infrastructure.AuthInterceptor
 import ua.leonidius.beatinspector.shared.eventbus.EventBus
 import ua.leonidius.beatinspector.shared.eventbus.EventBusImpl
@@ -105,32 +105,32 @@ object MainComponent {
 
     @Provides
     @Singleton
-    fun provideSearchService(retrofit: Retrofit): SearchService {
-        return retrofit.create(SearchService::class.java)
+    fun provideSearchService(retrofit: Retrofit): SearchApi {
+        return retrofit.create(SearchApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideAudioAnalysisService(retrofit: Retrofit): TrackAudioAnalysisService {
-        return retrofit.create(TrackAudioAnalysisService::class.java)
+    fun provideAudioAnalysisService(retrofit: Retrofit): TrackAudioAnalysisApi {
+        return retrofit.create(TrackAudioAnalysisApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideArtistsService(retrofit: Retrofit): ArtistsService {
-        return retrofit.create(ArtistsService::class.java)
+    fun provideArtistsService(retrofit: Retrofit): ArtistsApi {
+        return retrofit.create(ArtistsApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideSpotifyAccountService(retrofit: Retrofit): SpotifyAccountService {
-        return retrofit.create(SpotifyAccountService::class.java)
+    fun provideSpotifyAccountService(retrofit: Retrofit): AccountApi {
+        return retrofit.create(AccountApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideSavedTracksService(retrofit: Retrofit): SavedTracksService {
-        return retrofit.create(SavedTracksService::class.java)
+    fun provideSavedTracksService(retrofit: Retrofit): LikedTracksApi {
+        return retrofit.create(LikedTracksApi::class.java)
     }
 
     @Provides
