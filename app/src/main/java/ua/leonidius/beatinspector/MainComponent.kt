@@ -9,27 +9,30 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import net.openid.appauth.AuthorizationService
 import okhttp3.Cache
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import ua.leonidius.beatinspector.data.auth.storage.AuthStateSharedPrefStorage
-import ua.leonidius.beatinspector.data.R
+import ua.leonidius.beatinspector.data.account.network.api.AccountApi
 import ua.leonidius.beatinspector.data.auth.logic.Authenticator
 import ua.leonidius.beatinspector.data.auth.logic.IAuthenticator
-import ua.leonidius.beatinspector.data.tracks.details.network.api.ArtistsApi
+import ua.leonidius.beatinspector.data.auth.storage.AuthStateSharedPrefStorage
 import ua.leonidius.beatinspector.data.playlists.network.api.MyPlaylistsService
+import ua.leonidius.beatinspector.data.settings.SettingsStore
+import ua.leonidius.beatinspector.data.tracks.details.network.api.ArtistsApi
+import ua.leonidius.beatinspector.data.tracks.details.network.api.TrackAudioAnalysisApi
+import ua.leonidius.beatinspector.data.tracks.lists.liked.network.api.LikedTracksApi
 import ua.leonidius.beatinspector.data.tracks.lists.playlist.network.api.PlaylistApi
 import ua.leonidius.beatinspector.data.tracks.lists.recent.network.api.RecentlyPlayedApi
-import ua.leonidius.beatinspector.data.tracks.lists.liked.network.api.LikedTracksApi
-import ua.leonidius.beatinspector.data.tracks.search.network.api.SearchApi
-import ua.leonidius.beatinspector.data.account.network.api.AccountApi
 import ua.leonidius.beatinspector.data.tracks.lists.top.network.api.TopTracksApi
-import ua.leonidius.beatinspector.data.tracks.details.network.api.TrackAudioAnalysisApi
+import ua.leonidius.beatinspector.data.tracks.search.network.api.SearchApi
 import ua.leonidius.beatinspector.infrastructure.AuthInterceptor
-import ua.leonidius.beatinspector.shared.eventbus.EventBus
-import ua.leonidius.beatinspector.shared.eventbus.EventBusImpl
+import ua.leonidius.beatinspector.shared.logic.eventbus.EventBus
+import ua.leonidius.beatinspector.shared.logic.eventbus.EventBusImpl
+import ua.leonidius.beatinspector.shared.logic.settings.SettingsState
 import javax.inject.Singleton
 
 @Module
@@ -155,5 +158,17 @@ object MainComponent {
     @Singleton
     fun provideTopTracksApi(retrofit: Retrofit): TopTracksApi {
         return retrofit.create(TopTracksApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCoroutineIODispatcher() = Dispatchers.IO
+
+    @Provides
+    @Singleton
+    fun settingsFlow(
+        settingsStore: SettingsStore
+    ): Flow<SettingsState> {
+        return settingsStore.settingsFlow
     }
 }

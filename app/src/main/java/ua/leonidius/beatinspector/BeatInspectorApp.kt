@@ -10,6 +10,7 @@ import com.mikepenz.aboutlibraries.entity.Library
 import com.mikepenz.aboutlibraries.entity.License
 import com.mikepenz.aboutlibraries.util.withContext
 import dagger.hilt.android.HiltAndroidApp
+import dagger.internal.DaggerGenerated
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -42,9 +43,9 @@ import ua.leonidius.beatinspector.data.tracks.details.repository.TrackDetailsRep
 import ua.leonidius.beatinspector.data.tracks.details.repository.TrackDetailsRepositoryImpl
 import ua.leonidius.beatinspector.data.settings.SettingsStore
 import ua.leonidius.beatinspector.data.shared.PagingDataSource
-import ua.leonidius.beatinspector.shared.eventbus.Event
-import ua.leonidius.beatinspector.shared.eventbus.EventBus
-import ua.leonidius.beatinspector.shared.eventbus.EventBusImpl
+import ua.leonidius.beatinspector.shared.logic.eventbus.Event
+import ua.leonidius.beatinspector.shared.logic.eventbus.EventBus
+import ua.leonidius.beatinspector.shared.logic.eventbus.EventBusImpl
 import java.text.DecimalFormat
 
 @HiltAndroidApp
@@ -156,7 +157,7 @@ class BeatInspectorApp: Application() {
         val audioAnalysisService = retrofit.create(TrackAudioAnalysisService::class.java)
         val artistsService = retrofit.create(ArtistsService::class.java)*/
 
-        val searchNetworkDataSource = SearchNetworkDataSource(searchService)
+        //val searchNetworkDataSource = SearchNetworkDataSource(searchService)
         val searchCacheDataSource = SongTitlesInMemCache()
 
         searchRepository = SearchRepositoryImpl(Dispatchers.IO, searchNetworkDataSource, searchCacheDataSource, hideExplicit)

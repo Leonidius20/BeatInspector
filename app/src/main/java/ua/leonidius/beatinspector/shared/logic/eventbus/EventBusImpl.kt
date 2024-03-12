@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.shared.eventbus
+package ua.leonidius.beatinspector.shared.logic.eventbus
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,10 +16,10 @@ object EventBusImpl: EventBus {
         }
     }
 
-    override fun subscribe(
-        eventClass: KClass<out Event>,
+    override fun <E : Event> subscribe(
+        eventClass: KClass<E>,
         scope: CoroutineScope,
-        subscriber: (Event) -> Unit
+        subscriber: suspend (E) -> Unit
     ) {
         scope.launch {
             flow

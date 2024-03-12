@@ -14,8 +14,8 @@ import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.data.account.domain.AccountDetails
 import ua.leonidius.beatinspector.data.shared.repository.BasicRepository
 import ua.leonidius.beatinspector.data.settings.SettingsStore
-import ua.leonidius.beatinspector.shared.eventbus.Event
-import ua.leonidius.beatinspector.shared.eventbus.UserHideExplicitSettingChangeEvent
+import ua.leonidius.beatinspector.shared.logic.eventbus.Event
+import ua.leonidius.beatinspector.shared.logic.eventbus.UserHideExplicitSettingChangeEvent
 
 class SettingsViewModel(
     private val accountRepository: BasicRepository<Unit, AccountDetails>,

@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.shared.eventbus
+package ua.leonidius.beatinspector.shared.logic.eventbus
 
 /**
  * Fired when the user changes a setting, or a user's action

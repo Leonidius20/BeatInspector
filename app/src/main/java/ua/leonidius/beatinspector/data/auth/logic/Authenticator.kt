@@ -14,8 +14,8 @@ import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
 import ua.leonidius.beatinspector.data.auth.storage.AuthStateStorage
-import ua.leonidius.beatinspector.shared.eventbus.EventBus
-import ua.leonidius.beatinspector.shared.eventbus.UserLogoutRequestEvent
+import ua.leonidius.beatinspector.shared.logic.eventbus.EventBus
+import ua.leonidius.beatinspector.shared.logic.eventbus.UserLogoutRequestEvent
 import java.util.concurrent.CountDownLatch
 import javax.inject.Singleton
 import kotlin.coroutines.resume

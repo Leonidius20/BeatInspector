@@ -8,14 +8,17 @@ import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.data.tracks.search.network.SearchNetworkDataSource
 import ua.leonidius.beatinspector.data.tracks.shared.cache.SongTitlesInMemCache
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
+import ua.leonidius.beatinspector.shared.logic.settings.SettingsState
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class SearchRepositoryImpl(
+@Singleton // todo: do i need this?
+class SearchRepositoryImpl @Inject constructor(
 
     private val ioDispatcher: CoroutineDispatcher,
-
     private val properNetworkDataSource: SearchNetworkDataSource,
     private val searchCacheDataSource: SongTitlesInMemCache,
-    private val hideExplicit: Flow<Boolean>,
+    private val settingsFlow: Flow<SettingsState>,
 ) : SearchRepository {
 
     // we don't save query results in cache, because they are cached by okhttp
@@ -23,7 +26,7 @@ class SearchRepositoryImpl(
     override suspend fun get(q: String): List<SongSearchResult> = withContext(ioDispatcher) {
         var results = properNetworkDataSource.load(q)
 
-        if (hideExplicit.first()) {
+        if (settingsFlow.first().hideExplicit) {
             results = results.filter { !it.isExplicit }
         }
 

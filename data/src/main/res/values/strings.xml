@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="preferences_tokens_file_name" translatable="false">ua.leonidius.beatinspector.TOKENS</string>
-    <string name="preferences_access_token">access_token</string>
-    <string name="preferences_refresh_token">refresh_token</string>
+
 </resources>

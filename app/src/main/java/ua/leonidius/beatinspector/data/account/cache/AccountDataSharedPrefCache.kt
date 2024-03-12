@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.data.account.domain.AccountDetails
-import ua.leonidius.beatinspector.shared.eventbus.Event
-import ua.leonidius.beatinspector.shared.eventbus.UserLogoutRequestEvent
+import ua.leonidius.beatinspector.shared.logic.eventbus.Event
+import ua.leonidius.beatinspector.shared.logic.eventbus.UserLogoutRequestEvent
 
 class AccountDataSharedPrefCache(
     private val prefs: SharedPreferences,

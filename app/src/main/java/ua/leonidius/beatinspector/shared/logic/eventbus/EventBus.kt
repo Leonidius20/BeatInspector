@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.shared.eventbus
+package ua.leonidius.beatinspector.shared.logic.eventbus
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -8,8 +8,8 @@ interface EventBus {
 
     fun post(event: Event, scope: CoroutineScope = MainScope())
 
-    fun subscribe(eventClass: KClass<out Event>,
+    fun <E: Event> subscribe(eventClass: KClass<E>,
                   scope: CoroutineScope = MainScope(),
-                  subscriber: (Event) -> Unit)
+                  subscriber: suspend (E) -> Unit)
 
 }
