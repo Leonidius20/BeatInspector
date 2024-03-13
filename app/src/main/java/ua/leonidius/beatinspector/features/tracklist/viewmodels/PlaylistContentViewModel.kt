@@ -3,22 +3,29 @@ package ua.leonidius.beatinspector.features.tracklist.viewmodels
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.data.shared.PagingDataSource
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.data.playlists.PlaylistInfoRepository
+import javax.inject.Inject
+import javax.inject.Named
 
-class PlaylistContentViewModel(
+@HiltViewModel
+class PlaylistContentViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val playlistInfoRepository: PlaylistInfoRepository,
-    private val playlistId: String,
-    pagingSource: PagingDataSource<SongSearchResult>
+    @Named("playlist_content") pagingSource: PagingDataSource<SongSearchResult>
 ): TrackListViewModel(pagingSource) {
+
+    private val playlistId = savedStateHandle.get<String>("playlistId")!!
 
     var uiState by mutableStateOf<UiState>(UiState.Loading)
         private set
@@ -43,7 +50,7 @@ class PlaylistContentViewModel(
         ) : UiState()
     }
 
-    companion object {
+    /*companion object {
 
         val Factory = object : ViewModelProvider.Factory {
 
@@ -61,6 +68,6 @@ class PlaylistContentViewModel(
             }
 
         }
-    }
+    }*/
 
 }

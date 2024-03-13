@@ -33,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.data.tracks.shared.domain.Artist
@@ -48,7 +49,7 @@ typealias SongId = String
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
-    searchViewModel: SearchViewModel = viewModel(factory = SearchViewModel.Factory),
+    searchViewModel: SearchViewModel = hiltViewModel(),
     onNavigateToSongDetails: (SongId) -> Unit = {},
     onNavigateToSettings: () -> Unit,
     onOpenSongInSpotify: (SongId) -> Unit,

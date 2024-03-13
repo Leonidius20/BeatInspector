@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ua.leonidius.beatinspector.features.login.viewmodels.LoginViewModel
 
@@ -17,7 +18,7 @@ import ua.leonidius.beatinspector.features.login.viewmodels.LoginViewModel
 fun LoginScreen(
     onLoginButtonPressed: () -> Unit,
     onNavigateToLegalText: (Int) -> Unit,
-    viewModel: LoginViewModel = viewModel(factory = LoginViewModel.Factory),
+    viewModel: LoginViewModel = hiltViewModel(),
 ) {
     LoginComposable(
         onLoginButtonPressed = onLoginButtonPressed,

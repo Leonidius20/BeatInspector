@@ -1,6 +1,7 @@
 package ua.leonidius.beatinspector
 
 import android.app.Application
+import android.content.Context
 import android.content.pm.PackageManager
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -44,9 +45,9 @@ class BeatInspectorApp: Application() {
 
     //lateinit var playlistInfoRepository: PlaylistInfoRepository
 
-    val settingsDs: DataStore<Preferences> by preferencesDataStore(
+    /*val settingsDs: DataStore<Preferences> by preferencesDataStore(
         name = "settings"
-    )
+    )*/
 
     //lateinit var eventBusO: MutableSharedFlow<Event>
 
@@ -178,13 +179,16 @@ class BeatInspectorApp: Application() {
         playlistInfoRepository = PlaylistInfoRepository(playlistTitleCache)*/
     }
 
-    fun isPackageInstalled(packageName: String): Boolean {
-        return try {
-            packageManager.getPackageInfo(packageName, 0)
-            true
-        } catch (e: PackageManager.NameNotFoundException) {
-            false
-        }
-    }
+    // todo: maybe have it return flow if there's a lib for that?
 
+
+}
+
+fun Context.isPackageInstalled(packageName: String): Boolean {
+    return try {
+        packageManager.getPackageInfo(packageName, 0)
+        true
+    } catch (e: PackageManager.NameNotFoundException) {
+        false
+    }
 }

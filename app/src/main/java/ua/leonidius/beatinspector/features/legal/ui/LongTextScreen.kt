@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ireward.htmlcompose.HtmlText
 import ua.leonidius.beatinspector.shared.ui.CenteredScrollableTextScreen
@@ -15,7 +16,7 @@ import ua.leonidius.beatinspector.features.legal.viewmodels.LongTextViewModel
 @Composable
 fun LongTextScreen(
     modifier: Modifier = Modifier,
-    viewModel: LongTextViewModel = viewModel(factory = LongTextViewModel.Factory),
+    viewModel: LongTextViewModel = hiltViewModel(),
 ) {
     LongTextScreen(
         modifier = modifier,

@@ -47,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.palette.graphics.Palette
 import coil.compose.rememberAsyncImagePainter
@@ -59,7 +60,7 @@ import ua.leonidius.beatinspector.shared.ui.LoadingScreen
 @Composable
 fun SongDetailsScreen(
     modifier: Modifier = Modifier,
-    detailsViewModel: SongDetailsViewModel = viewModel(factory = SongDetailsViewModel.Factory),
+    detailsViewModel: SongDetailsViewModel = hiltViewModel(),
     onOpenInSpotifyButtonClick: (String) -> Unit,
 ) {
     // todo: why do smart casts work in the other composable, but not inside of this one?

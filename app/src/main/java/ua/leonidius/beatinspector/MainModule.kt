@@ -1,14 +1,18 @@
 package ua.leonidius.beatinspector
 
 import android.app.Application
+import android.content.Context
 import android.content.SharedPreferences
 import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
 import com.mikepenz.aboutlibraries.Libs
 import com.mikepenz.aboutlibraries.entity.Library
+import com.mikepenz.aboutlibraries.entity.License
 import com.mikepenz.aboutlibraries.util.withContext
 import dagger.Binds
 import dagger.Module
@@ -18,6 +22,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOf
 import net.openid.appauth.AuthorizationService
 import okhttp3.Cache
 import okhttp3.OkHttpClient
@@ -43,6 +50,7 @@ import ua.leonidius.beatinspector.data.tracks.details.repository.TrackDetailsRep
 import ua.leonidius.beatinspector.data.tracks.details.repository.TrackDetailsRepositoryImpl
 import ua.leonidius.beatinspector.data.tracks.lists.liked.SavedTracksNetworkPagingSource
 import ua.leonidius.beatinspector.data.tracks.lists.liked.network.api.LikedTracksApi
+import ua.leonidius.beatinspector.data.tracks.lists.playlist.PlaylistPagingDataSource
 import ua.leonidius.beatinspector.data.tracks.lists.playlist.network.api.PlaylistApi
 import ua.leonidius.beatinspector.data.tracks.lists.recent.RecentlyPlayedDataSource
 import ua.leonidius.beatinspector.data.tracks.lists.recent.network.api.RecentlyPlayedApi
@@ -75,7 +83,7 @@ object MainModule {
     @Provides
     @Singleton
     fun provideAuthService(
-        @ApplicationContext appContext: BeatInspectorApp
+        @ApplicationContext appContext: Context
     ): AuthorizationService {
         return AuthorizationService(appContext)
     }
@@ -92,7 +100,7 @@ object MainModule {
     @Singleton
     fun provideRetrofit(
         authInterceptor: AuthInterceptor,
-        @ApplicationContext applicationContext: BeatInspectorApp // todo
+        @ApplicationContext applicationContext: Context
     ): Retrofit {
 
         val okHttpCache = Cache(
@@ -186,16 +194,20 @@ object MainModule {
     @Singleton
     @Named("general")
     fun provideSettingsDataStore(
-        @ApplicationContext app: BeatInspectorApp
+        @ApplicationContext app: Context
     ) : DataStore<Preferences> {
-        return app.settingsDs // todo: redo
+        return PreferenceDataStoreFactory.create(
+            produceFile = {
+                app.preferencesDataStoreFile("settings")
+            }
+        )
     }
 
     @Provides
     @Singleton
     @Named("account_cache")
     fun provideAccountCachePreferences(
-        @ApplicationContext app: BeatInspectorApp
+        @ApplicationContext app: Context
     ): SharedPreferences {
         return app.getSharedPreferences(app.getString(R.string.preferences_account_data_file_name),
             Application.MODE_PRIVATE
@@ -206,7 +218,7 @@ object MainModule {
     @Singleton
     @Named("tokens_cache")
     fun provideTokensCachePreferences(
-        @ApplicationContext appContext: BeatInspectorApp
+        @ApplicationContext appContext: Context
     ): SharedPreferences {
         val masterKey = MasterKey.Builder(appContext)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
@@ -231,8 +243,16 @@ object MainModule {
 
     @Provides
     @Singleton
+    fun provideLicensesSet(
+        libs: Libs
+    ): Set<License> {
+        return libs.licenses
+    }
+
+    @Provides
+    @Singleton
     fun provideLibs(
-        @ApplicationContext app: BeatInspectorApp
+        @ApplicationContext app: Context
     ): Libs {
         return Libs.Builder()
             .withContext(app)
@@ -249,9 +269,18 @@ object MainModule {
     @Singleton
     @Named("spotify_installed")
     fun provideIsSpotifyInstalled(
-        @ApplicationContext app: BeatInspectorApp
+        @ApplicationContext app: Context
     ): Boolean {
         return app.isPackageInstalled("com.spotify.music")
+    }
+
+    @Provides
+    @Singleton
+    @Named("spotify_installed_flow")
+    fun provideIsSpotifyInstalledFlow(
+        @Named("spotify_installed") isIt: Boolean
+    ): StateFlow<Boolean> {
+        return MutableStateFlow(isIt)
     }
 }
 

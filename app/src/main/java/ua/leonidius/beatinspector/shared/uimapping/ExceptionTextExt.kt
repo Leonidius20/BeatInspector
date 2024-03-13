@@ -9,5 +9,6 @@ fun SongDataIOException.toUiMessage(): Int {
         is SongDataIOException.Server -> R.string.server_error
         is SongDataIOException.Unknown -> R.string.unknown_error
         is SongDataIOException.TokenRefresh -> R.string.token_refresh_error
+        is SongDataIOException.NotLoggedIn -> R.string.not_logged_in_error
     }
 }

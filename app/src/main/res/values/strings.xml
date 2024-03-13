@@ -255,5 +255,6 @@
     <string name="preferences_tokens_file_name" translatable="false">ua.leonidius.beatinspector.TOKENS</string>
     <string name="preferences_access_token">access_token</string>
     <string name="preferences_refresh_token">refresh_token</string>
+    <string name="not_logged_in_error">You are not logged into your Spotify account. Please relaunch the app to trigger the login sequence. If that doesn\'t work, clear app data and try again.</string>
 
 </resources>

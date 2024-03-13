@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -52,7 +53,7 @@ fun HomeScreen(
     goToPlaylist: (String) -> Unit,
     openPlaylistInApp: (String) -> Unit,
 ) {
-    val viewModel: HomeScreenViewModel = viewModel(factory = HomeScreenViewModel.Factory)
+    val viewModel: HomeScreenViewModel = hiltViewModel()
 
     var searchBarActive by rememberSaveable { mutableStateOf(false) }
 

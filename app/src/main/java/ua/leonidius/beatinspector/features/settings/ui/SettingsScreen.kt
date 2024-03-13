@@ -45,6 +45,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import ua.leonidius.beatinspector.BuildConfig
@@ -55,7 +56,7 @@ import ua.leonidius.beatinspector.features.settings.viewmodels.SettingsViewModel
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
-    viewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.Factory),
+    viewModel: SettingsViewModel = hiltViewModel(),
     // if DataLoading, show placeholder image and empty text (or wiped out text)
     onLegalDocClicked: (Int) -> Unit,
     onLogOutClicked: () -> Unit,
