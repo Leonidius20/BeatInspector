@@ -1,14 +1,17 @@
 package ua.leonidius.beatinspector.features.tracklist.playlist.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.Flow
 import ua.leonidius.beatinspector.features.details.ui.OpenInSpotifyButton
@@ -39,22 +42,49 @@ fun PlaylistContentScreen(
                     // nothing
                 }
                 is PlaylistContentViewModel.UiState.Loaded -> {
-                    Box(Modifier.fillMaxWidth()) {
-                        OpenInSpotifyButton(
-                            modifier = Modifier
-                                .padding(Dimens.paddingNormal)
-                                .align(Alignment.Center),
-                            onClick = { actions.openSongInSpotify(state.uri) },
-                            isSpotifyInstalled = isSpotifyInstalledFlow.collectAsState(false).value,
-                            colors = ButtonDefaults.buttonColors().copy(
-                                containerColor = MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.5f),
-                                contentColor = MaterialTheme.colorScheme.onSurface,
-                            ) //todo  temorary until can extract color from playlist img
-                        )
-                    }
+                    PlaylistHeaderPortrait(
+                        actions = actions,
+                        isSpotifyInstalledFlow = isSpotifyInstalledFlow,
+                        uiState = state,
+                    )
+
                 }
             }
 
         }
     )
+}
+
+@Composable
+private fun PlaylistHeaderPortrait(
+    actions: PlaylistContentActions,
+    isSpotifyInstalledFlow: Flow<Boolean>,
+    uiState: PlaylistContentViewModel.UiState.Loaded,
+) {
+    Column {
+        // title
+        // todo: extract it into a universal title component (for all track lists, incl. liked, top tracks, etc.)
+        Text(
+            modifier = Modifier
+                .padding(start = 10.dp, end = 10.dp, top = 25.dp, bottom = 10.dp),
+            text = uiState.playlistName,
+            style = MaterialTheme.typography.headlineLarge,
+        )
+
+        // centered open in spotify button
+        Box(Modifier.fillMaxWidth()) {
+            OpenInSpotifyButton(
+                modifier = Modifier
+                    .padding(Dimens.paddingNormal)
+                    .align(Alignment.Center),
+                onClick = { actions.openPlaylistInSpotify(uiState.uri) },
+                isSpotifyInstalled = isSpotifyInstalledFlow.collectAsState(false).value,
+                colors = ButtonDefaults.buttonColors().copy(
+                    containerColor = MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.5f),
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                ) //todo  temorary until can extract color from playlist img
+            )
+        }
+    }
+
 }

@@ -61,6 +61,7 @@ import ua.leonidius.beatinspector.data.tracks.search.repository.SearchRepository
 import ua.leonidius.beatinspector.data.tracks.search.repository.SearchRepositoryImpl
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.infrastructure.AuthInterceptor
+import ua.leonidius.beatinspector.infrastructure.isPackageInstalled
 import ua.leonidius.beatinspector.shared.logic.eventbus.EventBus
 import ua.leonidius.beatinspector.shared.logic.eventbus.EventBusImpl
 import ua.leonidius.beatinspector.shared.logic.settings.SettingsState
