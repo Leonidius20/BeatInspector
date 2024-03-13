@@ -9,7 +9,6 @@ import ua.leonidius.beatinspector.data.shared.PagingDataSource
 import ua.leonidius.beatinspector.data.tracks.lists.playlist.PlaylistPagingDataSource
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import javax.inject.Named
-import javax.inject.Singleton
 
 @Module
 @InstallIn(ViewModelComponent::class)

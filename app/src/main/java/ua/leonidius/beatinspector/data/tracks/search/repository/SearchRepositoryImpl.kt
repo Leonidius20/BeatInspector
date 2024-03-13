@@ -13,7 +13,7 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
 
-@Singleton // todo: do i need this?
+@Singleton
 class SearchRepositoryImpl @Inject constructor(
 
     @Named("io") private val ioDispatcher: CoroutineDispatcher,

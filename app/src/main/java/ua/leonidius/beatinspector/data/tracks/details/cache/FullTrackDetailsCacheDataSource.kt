@@ -2,7 +2,9 @@ package ua.leonidius.beatinspector.data.tracks.details.cache
 
 import ua.leonidius.beatinspector.data.tracks.details.domain.Song
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class FullTrackDetailsCacheDataSource @Inject constructor() {
 
     // todo: proper disk cache
