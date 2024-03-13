@@ -4,8 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
@@ -16,13 +14,14 @@ import net.openid.appauth.ResponseTypeValues
 import ua.leonidius.beatinspector.data.auth.storage.AuthStateSharedPrefStorage
 import ua.leonidius.beatinspector.shared.logic.eventbus.EventBus
 import ua.leonidius.beatinspector.shared.logic.eventbus.UserLogoutRequestEvent
-import java.util.concurrent.CountDownLatch
 import javax.inject.Inject
 import javax.inject.Named
+import javax.inject.Singleton
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
+@Singleton
 class Authenticator @Inject constructor(
     @Named("client_id") private val clientId: String,
     private val authStateStorage: AuthStateSharedPrefStorage,
@@ -43,7 +42,7 @@ class Authenticator @Inject constructor(
             Uri.parse("https://accounts.spotify.com/api/token")
         )
 
-    var authState: AuthState = if (!authStateStorage.isAuthStateStored()) {
+    private var authState: AuthState = if (!authStateStorage.isAuthStateStored()) {
         AuthState(authServiceConfig)
     } else {
         try {
@@ -168,35 +167,22 @@ class Authenticator @Inject constructor(
 
     private fun storeAuthState() {
         authStateStorage.storeJson(authState.jsonSerializeString())
-        if (authState.isAuthorized) {
+        /*if (authState.isAuthorized) {
             _loginState.value = LoginState.LoggedIn
         } else {
             _loginState.value = LoginState.NotLoggedIn
-        }
+        }*/
     }
 
-    fun isAuthorized() = authState.isAuthorized
+    override fun isAuthorized() = authState.isAuthorized
 
-    override suspend fun refreshTokens() {
-        // todo: prevent it from locking, instead suspend until the refresh is done
-
-        // this also includes refresh token rotation
-        /*
-         * we can't just use the performWithFreshTokens method because
-         * it doesn't allow us to get the new refresh token
-         * under the "refresh token rotation" scheme
-         */
-       // if (!authState.needsTokenRefresh) return true
-
-        // todo: use CallbackFlow here? or countDownLatch?
-
-        // val promise = CompletableFuture<Boolean>()
-
-        val latch = CountDownLatch(1)
-
-        var exception: AuthorizationException? = null
-
-
+    /**
+     * Refresh and store new tokens. This includes refresh token rotation.
+     * We can't just use the performWithFreshTokens() method because
+     * it doesn't allow us to rotate refresh tokens themselves too.
+     * So instead, we use this method when refresh is needed.
+     */
+    override suspend fun refreshTokens() = suspendCoroutine {
         authService.performTokenRequest(
             authState.createTokenRefreshRequest()
         ) { tokenResp, authException ->
@@ -204,23 +190,13 @@ class Authenticator @Inject constructor(
 
             if (authException != null || tokenResp == null) {
                 // fail
-                exception = authException
                 Log.e("Authenticator", "refreshTokensBlocking: token refresh failed", authException)
-
-                latch.countDown()
-                // promise.complete(false)
+                it.resumeWithException(authException!!)
             } else {
                 // success
-                // promise.complete(true)
                 storeAuthState()
-                latch.countDown()
+                it.resume(Unit)
             }
-        }
-
-        latch.await()
-
-        if (exception != null) {
-            throw exception!!
         }
     }
 
@@ -238,7 +214,7 @@ class Authenticator @Inject constructor(
         else LoginState.NotLoggedIn
     )
 
-    override val loginState: StateFlow<LoginState>
-        get() = _loginState.asStateFlow()
+    /*override val loginState: StateFlow<LoginState>
+        get() = _loginState.asStateFlow()*/
 
 }

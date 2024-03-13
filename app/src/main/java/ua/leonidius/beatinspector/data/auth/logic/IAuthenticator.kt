@@ -4,13 +4,15 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface IAuthenticator {
 
-    val loginState: StateFlow<LoginState>
+    // val loginState: StateFlow<LoginState>
 
     fun isTokenRefreshNeeded(): Boolean
 
     suspend fun refreshTokens()
 
     fun getAccessToken(): String
+
+    fun isAuthorized(): Boolean
 }
 
 sealed class LoginState {

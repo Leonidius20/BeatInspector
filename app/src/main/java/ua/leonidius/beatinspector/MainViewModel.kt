@@ -15,9 +15,11 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    authenticator: IAuthenticator
+    private val authenticator: IAuthenticator
 ): ViewModel() {
 
-    val authState = authenticator.loginState
+    fun isLoggedIn(): Boolean {
+        return authenticator.isAuthorized()
+    }
 
 }

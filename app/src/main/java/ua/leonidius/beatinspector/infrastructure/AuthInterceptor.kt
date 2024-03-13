@@ -9,7 +9,9 @@ import ua.leonidius.beatinspector.data.shared.exception.SongDataIOException
 import ua.leonidius.beatinspector.data.auth.logic.IAuthenticator
 import ua.leonidius.beatinspector.data.auth.logic.LoginState
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AuthInterceptor @Inject constructor(
     private val authenticator: IAuthenticator
 ): Interceptor {
@@ -17,7 +19,7 @@ class AuthInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
 
-        val authed = authenticator.loginState.value is LoginState.LoggedIn
+        val authed = authenticator.isAuthorized()
 
         if (!authed) {
             throw SongDataIOException.NotLoggedIn

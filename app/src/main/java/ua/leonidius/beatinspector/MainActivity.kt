@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
 
 
         val startDestination =
-            if (mainViewModel.authState.value is LoginState.LoggedIn)
+            if (mainViewModel.isLoggedIn())
                 "playlists"
             else "login"
 

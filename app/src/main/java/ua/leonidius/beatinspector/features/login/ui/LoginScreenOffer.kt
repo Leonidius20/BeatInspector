@@ -1,5 +1,7 @@
 package ua.leonidius.beatinspector.features.login.ui
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -121,6 +123,12 @@ fun LabelledCheckbox(
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = label,
+            modifier = Modifier.clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+            ) {
+                onCheckedChange(!checked)
+            }
         )
     }
 }
