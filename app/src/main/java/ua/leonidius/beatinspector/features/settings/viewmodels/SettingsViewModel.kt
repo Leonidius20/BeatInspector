@@ -4,24 +4,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
 import com.mikepenz.aboutlibraries.entity.Library
-import kotlinx.coroutines.flow.MutableSharedFlow
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import ua.leonidius.beatinspector.BeatInspectorApp
-import ua.leonidius.beatinspector.data.account.domain.AccountDetails
-import ua.leonidius.beatinspector.data.shared.repository.BasicRepository
-import ua.leonidius.beatinspector.data.settings.SettingsStore
-import ua.leonidius.beatinspector.shared.logic.eventbus.Event
+import ua.leonidius.beatinspector.data.account.repository.AccountRepository
+import ua.leonidius.beatinspector.data.settings.SettingsRepository
+import ua.leonidius.beatinspector.shared.logic.eventbus.EventBus
 import ua.leonidius.beatinspector.shared.logic.eventbus.UserHideExplicitSettingChangeEvent
+import javax.inject.Inject
 
-class SettingsViewModel(
-    private val accountRepository: BasicRepository<Unit, AccountDetails>,
+@HiltViewModel
+class SettingsViewModel @Inject constructor(
+    private val accountRepository: AccountRepository,
     private val libraries: List<Library>,
-    private val settingsStore: SettingsStore,
-    private val eventBus: MutableSharedFlow<Event>,
+    private val settingsStore: SettingsRepository,
+    private val eventBus: EventBus,
 ): ViewModel() {
 
     sealed class AccountDetailsState {
@@ -44,7 +43,7 @@ class SettingsViewModel(
         Pair(it.name, it.licenses.firstOrNull()?.hash)
     }.toTypedArray()
 
-    val hideExplicit = settingsStore.hideExplicitFlow
+    val hideExplicit = settingsStore.settingsFlow.map { it.hideExplicit }
 
     init {
         loadAccountDetails()
@@ -68,14 +67,12 @@ class SettingsViewModel(
     }
 
     fun toggleHideExplicit(value: Boolean) {
-        viewModelScope.launch {
-            // todo: replace with factory to remove dependency on event constructor
-            eventBus.emit(UserHideExplicitSettingChangeEvent(value))
-        }
+        // todo: replace with factory to remove dependency on event constructor
+        eventBus.post(UserHideExplicitSettingChangeEvent(value), viewModelScope)
     }
 
 
-    companion object {
+    /*companion object {
 
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
 
@@ -93,7 +90,7 @@ class SettingsViewModel(
 
         }
 
-    }
+    }*/
 
 
 }

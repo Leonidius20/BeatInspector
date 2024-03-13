@@ -6,24 +6,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.R
-import ua.leonidius.beatinspector.data.shared.exception.SongDataIOException
-import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.data.account.repository.AccountRepository
+import ua.leonidius.beatinspector.data.shared.exception.SongDataIOException
 import ua.leonidius.beatinspector.data.tracks.search.repository.SearchRepository
 import ua.leonidius.beatinspector.data.tracks.search.repository.SearchRepositoryImpl
+import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
+import ua.leonidius.beatinspector.shared.uimapping.toUiMessage
 import ua.leonidius.beatinspector.shared.viewmodels.AccountImageViewModel
 import ua.leonidius.beatinspector.shared.viewmodels.AccountImageViewModelImpl
-import ua.leonidius.beatinspector.shared.uimapping.toUiMessage
+import javax.inject.Inject
 
-class SearchViewModel(
+@HiltViewModel
+class SearchViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val searchRepository: SearchRepository,
     accountRepository: AccountRepository,
@@ -108,7 +106,7 @@ class SearchViewModel(
         uiState = UiState.Uninitialized
     }
 
-    companion object {
+    /*companion object {
 
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
 
@@ -125,7 +123,7 @@ class SearchViewModel(
 
         }
 
-    }
+    }*/
 
 
 }

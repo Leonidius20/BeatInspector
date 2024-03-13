@@ -10,12 +10,13 @@ import ua.leonidius.beatinspector.data.tracks.shared.cache.SongTitlesInMemCache
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.shared.logic.settings.SettingsState
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton // todo: do i need this?
 class SearchRepositoryImpl @Inject constructor(
 
-    private val ioDispatcher: CoroutineDispatcher,
+    @Named("io") private val ioDispatcher: CoroutineDispatcher,
     private val properNetworkDataSource: SearchNetworkDataSource,
     private val searchCacheDataSource: SongTitlesInMemCache,
     private val settingsFlow: Flow<SettingsState>,

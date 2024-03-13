@@ -13,19 +13,19 @@ import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
-import ua.leonidius.beatinspector.data.auth.storage.AuthStateStorage
+import ua.leonidius.beatinspector.data.auth.storage.AuthStateSharedPrefStorage
 import ua.leonidius.beatinspector.shared.logic.eventbus.EventBus
 import ua.leonidius.beatinspector.shared.logic.eventbus.UserLogoutRequestEvent
 import java.util.concurrent.CountDownLatch
-import javax.inject.Singleton
+import javax.inject.Inject
+import javax.inject.Named
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-@Singleton
-class Authenticator(
-    private val clientId: String,
-    private val authStateStorage: AuthStateStorage,
+class Authenticator @Inject constructor(
+    @Named("client_id") private val clientId: String,
+    private val authStateStorage: AuthStateSharedPrefStorage,
    // private val authStateFlowingStorage: AuthStateFlowingStorage,
     private val authService: AuthorizationService,
     eventBus: EventBus,

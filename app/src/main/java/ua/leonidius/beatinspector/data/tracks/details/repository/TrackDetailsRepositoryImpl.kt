@@ -10,13 +10,15 @@ import ua.leonidius.beatinspector.data.tracks.details.network.api.ArtistsApi
 import ua.leonidius.beatinspector.data.tracks.details.network.api.TrackAudioAnalysisApi
 import ua.leonidius.beatinspector.data.tracks.search.repository.SearchRepository
 import ua.leonidius.beatinspector.data.shared.network.toUIException
+import javax.inject.Inject
+import javax.inject.Named
 
-class TrackDetailsRepositoryImpl(
+class TrackDetailsRepositoryImpl @Inject constructor(
     private val trackDetailsCacheDataSource: FullTrackDetailsCacheDataSource,
     private val searchRepository: SearchRepository, // for title and artists
     private val artistsApi: ArtistsApi,
     private val audioAnalysisService: TrackAudioAnalysisApi,
-    private val ioDispatcher: CoroutineDispatcher,
+    @Named("io") private val ioDispatcher: CoroutineDispatcher,
 ): TrackDetailsRepository {
 
     override suspend fun getFullDetails(id: String): Song = withContext(ioDispatcher) {

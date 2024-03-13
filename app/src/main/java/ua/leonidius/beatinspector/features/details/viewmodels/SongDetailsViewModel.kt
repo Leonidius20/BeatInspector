@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -19,13 +20,16 @@ import ua.leonidius.beatinspector.data.shared.exception.SongDataIOException
 import ua.leonidius.beatinspector.data.tracks.details.repository.TrackDetailsRepository
 import ua.leonidius.beatinspector.shared.uimapping.toUiMessage
 import java.text.DecimalFormat
+import javax.inject.Inject
+import javax.inject.Named
 
-class SongDetailsViewModel(
+@HiltViewModel
+class SongDetailsViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     //private val songsRepository: SongsRepository,
     private val trackDetailsRepository: TrackDetailsRepository,
     private val decimalFormat: DecimalFormat,
-    private val isSpotifyInstalled: Boolean,
+    @Named("spotify_installed") private val isSpotifyInstalled: Boolean,
 ): ViewModel() {
 
     private val songId = savedStateHandle.get<String>("songId")!!
@@ -97,7 +101,7 @@ class SongDetailsViewModel(
         }
     }
 
-    companion object {
+    /*companion object {
 
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
 
@@ -117,7 +121,7 @@ class SongDetailsViewModel(
 
         }
 
-    }
+    }*/
 
 
 }

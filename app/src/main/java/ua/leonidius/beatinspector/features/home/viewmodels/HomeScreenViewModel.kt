@@ -4,17 +4,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import dagger.hilt.android.lifecycle.HiltViewModel
 import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.data.shared.PagingDataSource
 import ua.leonidius.beatinspector.data.playlists.domain.PlaylistSearchResult
 import ua.leonidius.beatinspector.data.account.repository.AccountRepository
 import ua.leonidius.beatinspector.shared.viewmodels.AccountImageViewModel
 import ua.leonidius.beatinspector.shared.viewmodels.AccountImageViewModelImpl
+import javax.inject.Inject
 
 /**
  * ViewModel for the main screen, the one with user's playlists.
  */
-class HomeScreenViewModel(
+@HiltViewModel
+class HomeScreenViewModel @Inject constructor(
     accountRepository: AccountRepository,
     myPlaylistsPagingDataSource: PagingDataSource<PlaylistSearchResult>,
 ): ViewModel(), AccountImageViewModel by AccountImageViewModelImpl(accountRepository) {
@@ -25,7 +28,7 @@ class HomeScreenViewModel(
         loadAccountImage(viewModelScope)
     }
 
-    companion object {
+    /*companion object {
 
         val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
 
@@ -41,6 +44,6 @@ class HomeScreenViewModel(
 
         }
 
-    }
+    }*/
 
 }

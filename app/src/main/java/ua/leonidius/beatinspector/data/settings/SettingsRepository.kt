@@ -8,9 +8,11 @@ import kotlinx.coroutines.flow.map
 import ua.leonidius.beatinspector.shared.logic.eventbus.EventBus
 import ua.leonidius.beatinspector.shared.logic.eventbus.UserHideExplicitSettingChangeEvent
 import ua.leonidius.beatinspector.shared.logic.settings.SettingsState
+import javax.inject.Inject
+import javax.inject.Named
 
-class SettingsStore(
-    prefs: DataStore<Preferences>,
+class SettingsRepository @Inject constructor(
+    @Named("general") prefs: DataStore<Preferences>,
     eventBus: EventBus,
 ) {
 

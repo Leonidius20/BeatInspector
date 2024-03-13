@@ -15,11 +15,13 @@ import ua.leonidius.beatinspector.data.tracks.shared.cache.SongTitlesInMemCache
 import ua.leonidius.beatinspector.data.tracks.lists.recent.network.api.RecentlyPlayedApi
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.data.shared.network.toUIException
+import ua.leonidius.beatinspector.shared.logic.settings.SettingsState
+import javax.inject.Inject
 
-class RecentlyPlayedDataSource(
+class RecentlyPlayedDataSource @Inject constructor(
     private val service: RecentlyPlayedApi,
     private val searchCache: SongTitlesInMemCache,
-    private val hideExplicit: Flow<Boolean>,
+    private val settingsFlow: Flow<SettingsState>,
 ): PagingSource<String, SongSearchResult>(), PagingDataSource<SongSearchResult> {
 
     private val itemsPerPage = 50
@@ -41,7 +43,7 @@ class RecentlyPlayedDataSource(
                 var trackList = dto.toDomainObject()
 
 
-                if (hideExplicit.first()) {
+                if (settingsFlow.first().hideExplicit) {
                     trackList = trackList.filter { !it.isExplicit }
                 }
 

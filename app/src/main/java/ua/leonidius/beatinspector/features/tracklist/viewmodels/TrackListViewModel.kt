@@ -1,20 +1,20 @@
 package ua.leonidius.beatinspector.features.tracklist.viewmodels
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
-import ua.leonidius.beatinspector.BeatInspectorApp
+import dagger.hilt.android.lifecycle.HiltViewModel
 import ua.leonidius.beatinspector.data.shared.PagingDataSource
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
+import javax.inject.Inject
+import javax.inject.Named
 
-open class TrackListViewModel(
-    pagingSource: PagingDataSource<SongSearchResult>, // todo: remove
+abstract class TrackListViewModel(
+    pagingSource: PagingDataSource<SongSearchResult>,
 ): ViewModel() {
 
     val flow = pagingSource.getFlow(viewModelScope)
 
-    companion object {
+    /*companion object {
 
         private fun getFactoryForSource(getDataSource: (BeatInspectorApp) -> PagingDataSource<SongSearchResult>): ViewModelProvider.Factory {
             return object : ViewModelProvider.Factory {
@@ -38,6 +38,21 @@ open class TrackListViewModel(
         val TopTracksFactory = getFactoryForSource { it.topTracksDataSource }
 
 
-    }
+    }*/
 
 }
+
+@HiltViewModel
+class LikedTracksViewModel @Inject constructor(
+    @Named("liked") pagingSource: PagingDataSource<SongSearchResult>,
+): TrackListViewModel(pagingSource)
+
+@HiltViewModel
+class RecentlyPlayedViewModel @Inject constructor(
+    @Named("recent") pagingSource: PagingDataSource<SongSearchResult>,
+): TrackListViewModel(pagingSource)
+
+@HiltViewModel
+class TopTracksViewModel @Inject constructor(
+    @Named("top") pagingSource: PagingDataSource<SongSearchResult>,
+): TrackListViewModel(pagingSource)
