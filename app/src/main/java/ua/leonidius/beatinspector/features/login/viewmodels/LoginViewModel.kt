@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ua.leonidius.beatinspector.data.auth.logic.Authenticator
+import ua.leonidius.beatinspector.data.auth.logic.IAuthenticator
 import ua.leonidius.beatinspector.shared.logic.eventbus.EventBus
 import ua.leonidius.beatinspector.shared.logic.eventbus.UserHideExplicitSettingChangeEvent
 import ua.leonidius.beatinspector.shared.logic.eventbus.UserLogoutRequestEvent
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authenticator: Authenticator,
+    private val authenticator: IAuthenticator,
     private val eventBus: EventBus,
 ): ViewModel() {
 
@@ -111,36 +111,10 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    // this is supposed to be a viewmodel for the MainActivity. it should control
-    // auth and redirect user to auth page if they are not authed.
-
-
-    // based on the state in this viewmodel (authed = true or authed = false) we
-    // show either the auth screen or whatever else
-
     fun logout() {
         eventBus.post(UserLogoutRequestEvent, viewModelScope)
 
         uiState = UiState.LoginOffered
     }
-
-
-    /*companion object {
-
-        val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-                val app = checkNotNull(extras[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]) as BeatInspectorApp
-
-                return LoginViewModel(
-                    app.authenticator,
-                    app.eventBus,
-                ) as T
-            }
-
-        }
-
-    }*/
 
 }

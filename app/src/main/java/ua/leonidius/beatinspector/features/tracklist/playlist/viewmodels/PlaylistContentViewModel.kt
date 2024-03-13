@@ -1,20 +1,16 @@
-package ua.leonidius.beatinspector.features.tracklist.viewmodels
+package ua.leonidius.beatinspector.features.tracklist.playlist.viewmodels
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import ua.leonidius.beatinspector.BeatInspectorApp
 import ua.leonidius.beatinspector.data.shared.PagingDataSource
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.data.playlists.PlaylistInfoRepository
+import ua.leonidius.beatinspector.features.tracklist.shared.viewmodels.TrackListViewModel
 import javax.inject.Inject
 import javax.inject.Named
 

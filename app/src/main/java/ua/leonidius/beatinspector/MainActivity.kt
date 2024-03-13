@@ -9,30 +9,20 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.mikepenz.aboutlibraries.entity.License
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import ua.leonidius.beatinspector.data.auth.logic.LoginState
-import ua.leonidius.beatinspector.features.details.ui.OpenInSpotifyButton
 import ua.leonidius.beatinspector.features.details.ui.SongDetailsScreen
 import ua.leonidius.beatinspector.features.home.ui.HomeScreen
 import ua.leonidius.beatinspector.features.legal.ui.LongTextScreen
@@ -40,13 +30,14 @@ import ua.leonidius.beatinspector.features.login.ui.LoginScreen
 import ua.leonidius.beatinspector.features.login.viewmodels.LoginViewModel
 import ua.leonidius.beatinspector.features.search.ui.SearchScreen
 import ua.leonidius.beatinspector.features.settings.ui.SettingsScreen
-import ua.leonidius.beatinspector.features.tracklist.ui.TrackListScreen
-import ua.leonidius.beatinspector.features.tracklist.viewmodels.LikedTracksViewModel
-import ua.leonidius.beatinspector.features.tracklist.viewmodels.PlaylistContentViewModel
-import ua.leonidius.beatinspector.features.tracklist.viewmodels.RecentlyPlayedViewModel
-import ua.leonidius.beatinspector.features.tracklist.viewmodels.TopTracksViewModel
+import ua.leonidius.beatinspector.features.tracklist.liked.viewmodels.LikedTracksViewModel
+import ua.leonidius.beatinspector.features.tracklist.playlist.ui.PlaylistContentActions
+import ua.leonidius.beatinspector.features.tracklist.playlist.ui.PlaylistContentScreen
+import ua.leonidius.beatinspector.features.tracklist.recent.viewmodels.RecentlyPlayedViewModel
+import ua.leonidius.beatinspector.features.tracklist.shared.ui.TrackListActionsImpl
+import ua.leonidius.beatinspector.features.tracklist.shared.ui.TrackListScreen
+import ua.leonidius.beatinspector.features.tracklist.top.viewmodels.TopTracksViewModel
 import ua.leonidius.beatinspector.ui.theme.BeatInspectorTheme
-import ua.leonidius.beatinspector.ui.theme.Dimens
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -72,7 +63,6 @@ class MainActivity : ComponentActivity() {
             loginViewModel.onLoginActivityResult(result.resultCode == Activity.RESULT_OK, result.data)
         }
 
-       // val app = application as BeatInspectorApp // todo: remove?
 
         val openTrackOnSpotifyOrAppStore = { songId: String ->
             val uri = if (isSpotifyInstalledFlow.value)
@@ -190,13 +180,16 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate("license/${licenseHash}")
                             })
                         }
+
+                        val trackListActions = TrackListActionsImpl(
+                            openSongInSpotify = openTrackOnSpotifyOrAppStore,
+                            goToSongDetails = { navController.navigate("song/${it}") }
+                        )
+
                         composable("saved_tracks") {
                             TrackListScreen(
                                 hiltViewModel<LikedTracksViewModel>(),
-                                onOpenSongInSpotify = openTrackOnSpotifyOrAppStore,
-                                onNavigateToSongDetails = {
-                                    navController.navigate("song/${it}")
-                                }
+                                trackListActions,
                             )
                         }
                         composable(Screen.Playlists.routeTemplate) {
@@ -213,54 +206,26 @@ class MainActivity : ComponentActivity() {
                         composable("recently_played") {
                             TrackListScreen(
                                 hiltViewModel<RecentlyPlayedViewModel>(),
-                                onOpenSongInSpotify = openTrackOnSpotifyOrAppStore,
-                                onNavigateToSongDetails = {
-                                    navController.navigate("song/${it}")
-                                }
+                                trackListActions,
                             )
                         }
+
                         composable("playlist/{playlistId}") {
-                            val model = hiltViewModel<PlaylistContentViewModel>()
-                            TrackListScreen(
-                                model,
-                                onOpenSongInSpotify = openTrackOnSpotifyOrAppStore,
-                                onNavigateToSongDetails = {
-                                    navController.navigate("song/${it}")
-                                },
-                                headerContent = {
-                                    // todo: remove this shit from here
+                            val playlistContentActions = PlaylistContentActions(
+                                openSongInSpotify = trackListActions.openSongInSpotify,
+                                goToSongDetails = trackListActions.goToSongDetails,
+                                openPlaylistInSpotify = openPlaylistInAppOrAppStore
+                            )
 
-                                    when (val state = model.uiState) {
-                                        is PlaylistContentViewModel.UiState.Loading -> {
-                                            // nothing
-                                        }
-                                        is PlaylistContentViewModel.UiState.Loaded -> {
-                                            Box(Modifier.fillMaxWidth()) {
-                                                OpenInSpotifyButton(
-                                                    modifier = Modifier
-                                                        .padding(Dimens.paddingNormal)
-                                                        .align(Alignment.Center),
-                                                    onClick = { openPlaylistInAppOrAppStore(state.uri) },
-                                                    isSpotifyInstalled = isSpotifyInstalledFlow.collectAsState().value,
-                                                    colors = ButtonDefaults.buttonColors().copy(
-                                                        containerColor = MaterialTheme.colorScheme.surfaceTint.copy(alpha = 0.5f),
-                                                        contentColor = MaterialTheme.colorScheme.onSurface,
-                                                    ) //todo  temorary until can extract color from playlist img
-                                                )
-                                            }
-                                        }
-                                    }
-
-                                }
+                            PlaylistContentScreen(
+                                playlistContentActions,
+                                isSpotifyInstalledFlow,
                             )
                         }
                         composable("top_tracks") {
                             TrackListScreen(
                                 hiltViewModel<TopTracksViewModel>(),
-                                onOpenSongInSpotify = openTrackOnSpotifyOrAppStore,
-                                onNavigateToSongDetails = {
-                                    navController.navigate("song/${it}")
-                                },
+                                trackListActions,
                             )
                         }
                     }

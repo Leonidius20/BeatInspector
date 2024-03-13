@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.features.tracklist.di
+package ua.leonidius.beatinspector.features.tracklist.playlist.di
 
 import dagger.Binds
 import dagger.Module

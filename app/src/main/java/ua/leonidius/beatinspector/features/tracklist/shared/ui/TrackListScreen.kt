@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.features.tracklist.ui
+package ua.leonidius.beatinspector.features.tracklist.shared.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.aspectRatio
@@ -26,23 +26,29 @@ import kotlinx.coroutines.flow.Flow
 import ua.leonidius.beatinspector.ui.theme.Dimens
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
-import ua.leonidius.beatinspector.features.tracklist.viewmodels.TrackListViewModel
+import ua.leonidius.beatinspector.features.tracklist.shared.viewmodels.TrackListViewModel
 import ua.leonidius.beatinspector.shared.ui.LoadingScreen
 
+interface TrackListActions {
+    val goToSongDetails: (String) -> Unit
+    val openSongInSpotify: (String) -> Unit
+}
 
-// todo: make this into a universal playlist screen
-// todo: mayb add a button to open the playlist in spotify
+data class TrackListActionsImpl(
+    override val goToSongDetails: (String) -> Unit,
+    override val openSongInSpotify: (String) -> Unit,
+): TrackListActions
+
 @Composable
 fun TrackListScreen(
     viewModel: TrackListViewModel,
-    onOpenSongInSpotify: (String) -> Unit,
-    onNavigateToSongDetails: (String) -> Unit,
+    actions: TrackListActions,
     headerContent: @Composable () -> Unit = {},
 ) {
     TrackListScreen(
         pagingFlow = viewModel.flow,
-        onOpenSongInSpotify = onOpenSongInSpotify,
-        onNavigateToSongDetails = onNavigateToSongDetails,
+        onOpenSongInSpotify = actions.openSongInSpotify,
+        onNavigateToSongDetails = actions.goToSongDetails,
         headerContent = headerContent,
     )
 }

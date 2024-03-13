@@ -80,7 +80,7 @@ class Authenticator @Inject constructor(
             .catch { e -> Log.e("Authenticator", "authStateFlow error", e) }*/
     }
 
-    fun prepareStepOneIntent(): Intent {
+    override fun prepareStepOneIntent(): Intent {
         val authRequest = AuthorizationRequest.Builder(
             authServiceConfig,
             clientId,
@@ -141,7 +141,7 @@ class Authenticator @Inject constructor(
         }
     }*/
 
-    suspend fun exchangeCodeForTokens(prevStepIntent: Intent?) = suspendCoroutine {
+    override suspend fun exchangeCodeForTokens(prevStepIntent: Intent?) = suspendCoroutine {
         val resp = AuthorizationResponse.fromIntent(prevStepIntent!!)
         val ex = AuthorizationException.fromIntent(prevStepIntent)
 
