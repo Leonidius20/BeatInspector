@@ -15,7 +15,7 @@ import ua.leonidius.beatinspector.data.tracks.shared.cache.SongTitlesInMemCache
 import ua.leonidius.beatinspector.data.tracks.lists.recent.network.api.RecentlyPlayedApi
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.data.shared.network.toUIException
-import ua.leonidius.beatinspector.shared.logic.settings.SettingsState
+import ua.leonidius.beatinspector.shared.domain.SettingsState
 import javax.inject.Inject
 
 class RecentlyPlayedDataSource @Inject constructor(

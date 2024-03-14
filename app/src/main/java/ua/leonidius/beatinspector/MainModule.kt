@@ -24,7 +24,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flowOf
 import net.openid.appauth.AuthorizationService
 import okhttp3.Cache
 import okhttp3.OkHttpClient
@@ -36,8 +35,8 @@ import ua.leonidius.beatinspector.data.account.network.api.AccountApi
 import ua.leonidius.beatinspector.data.account.repository.AccountRepository
 import ua.leonidius.beatinspector.data.account.repository.AccountRepositoryImpl
 import ua.leonidius.beatinspector.data.auth.logic.Authenticator
-import ua.leonidius.beatinspector.data.auth.logic.IAuthenticator
-import ua.leonidius.beatinspector.data.auth.storage.AuthStateSharedPrefStorage
+import ua.leonidius.beatinspector.data.auth.logic.AuthTokenProvider
+import ua.leonidius.beatinspector.data.auth.logic.PKCEAuthenticationInitiator
 import ua.leonidius.beatinspector.data.playlists.MyPlaylistsPagingDataSource
 import ua.leonidius.beatinspector.data.playlists.domain.PlaylistSearchResult
 import ua.leonidius.beatinspector.data.playlists.network.api.MyPlaylistsService
@@ -50,7 +49,6 @@ import ua.leonidius.beatinspector.data.tracks.details.repository.TrackDetailsRep
 import ua.leonidius.beatinspector.data.tracks.details.repository.TrackDetailsRepositoryImpl
 import ua.leonidius.beatinspector.data.tracks.lists.liked.SavedTracksNetworkPagingSource
 import ua.leonidius.beatinspector.data.tracks.lists.liked.network.api.LikedTracksApi
-import ua.leonidius.beatinspector.data.tracks.lists.playlist.PlaylistPagingDataSource
 import ua.leonidius.beatinspector.data.tracks.lists.playlist.network.api.PlaylistApi
 import ua.leonidius.beatinspector.data.tracks.lists.recent.RecentlyPlayedDataSource
 import ua.leonidius.beatinspector.data.tracks.lists.recent.network.api.RecentlyPlayedApi
@@ -64,7 +62,7 @@ import ua.leonidius.beatinspector.infrastructure.AuthInterceptor
 import ua.leonidius.beatinspector.infrastructure.isPackageInstalled
 import ua.leonidius.beatinspector.shared.logic.eventbus.EventBus
 import ua.leonidius.beatinspector.shared.logic.eventbus.EventBusImpl
-import ua.leonidius.beatinspector.shared.logic.settings.SettingsState
+import ua.leonidius.beatinspector.shared.domain.SettingsState
 import java.text.DecimalFormat
 import javax.inject.Named
 import javax.inject.Singleton
@@ -93,7 +91,7 @@ object MainModule {
 
     @Provides
     @Singleton
-    fun provideAuthInterceptor(authenticator: IAuthenticator): AuthInterceptor {
+    fun provideAuthInterceptor(authenticator: AuthTokenProvider): AuthInterceptor {
         return AuthInterceptor(authenticator)
     }
 
@@ -325,9 +323,16 @@ abstract class EventBusModule {
 
     @Binds
     @Singleton // only 1 such object is ever created
-    abstract fun bindAuthenticator(
+    abstract fun bindAuthTokenProvider(
         authenticator: Authenticator
-    ): IAuthenticator
+    ): AuthTokenProvider
+
+    @Binds
+    @Singleton
+    abstract fun bindPKCEInitiator(
+        authenticator: Authenticator
+    ): PKCEAuthenticationInitiator
+
 
     @Binds
     @Singleton

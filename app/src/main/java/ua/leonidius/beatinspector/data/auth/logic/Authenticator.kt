@@ -28,7 +28,7 @@ class Authenticator @Inject constructor(
    // private val authStateFlowingStorage: AuthStateFlowingStorage,
     private val authService: AuthorizationService,
     eventBus: EventBus,
-): IAuthenticator {
+): AuthTokenProvider, PKCEAuthenticationInitiator {
 
     init {
         eventBus.subscribe(UserLogoutRequestEvent::class) {
@@ -52,11 +52,14 @@ class Authenticator @Inject constructor(
         }
     }
 
-    override fun isTokenRefreshNeeded(): Boolean {
+    private fun isTokenRefreshNeeded(): Boolean {
         return authState.needsTokenRefresh
     }
 
-    override fun getAccessToken(): String {
+    override suspend fun getAccessToken(): String {
+        if (isTokenRefreshNeeded()) {
+            refreshTokens()
+        }
         return authState.accessToken!!
     }
 
@@ -155,10 +158,12 @@ class Authenticator @Inject constructor(
         authService.performTokenRequest(
             resp.createTokenExchangeRequest(),
         ) { tokenResp, authException ->
+            authState.update(tokenResp, authException)
+
             if (tokenResp == null) {
                 it.resumeWithException(authException ?: Error("Authenticator: Unknown error when exchanging code for tokens"))
             } else {
-                authState.update(tokenResp, authException)
+
                 storeAuthState()
                 it.resume(Unit)
             }
@@ -182,7 +187,7 @@ class Authenticator @Inject constructor(
      * it doesn't allow us to rotate refresh tokens themselves too.
      * So instead, we use this method when refresh is needed.
      */
-    override suspend fun refreshTokens() = suspendCoroutine {
+    private suspend fun refreshTokens() = suspendCoroutine {
         authService.performTokenRequest(
             authState.createTokenRefreshRequest()
         ) { tokenResp, authException ->
@@ -191,7 +196,7 @@ class Authenticator @Inject constructor(
             if (authException != null || tokenResp == null) {
                 // fail
                 Log.e("Authenticator", "refreshTokensBlocking: token refresh failed", authException)
-                it.resumeWithException(authException!!)
+                it.resumeWithException(authException!!.toDataLayerException())
             } else {
                 // success
                 storeAuthState()
@@ -218,3 +223,10 @@ class Authenticator @Inject constructor(
         get() = _loginState.asStateFlow()*/
 
 }
+
+private fun AuthorizationException.toDataLayerException() =
+    TokenRefreshException(
+        error ?: "No error provided",
+        errorDescription ?: "No description provided",
+        this
+    )

@@ -8,7 +8,7 @@ import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.data.tracks.search.network.SearchNetworkDataSource
 import ua.leonidius.beatinspector.data.tracks.shared.cache.SongTitlesInMemCache
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
-import ua.leonidius.beatinspector.shared.logic.settings.SettingsState
+import ua.leonidius.beatinspector.shared.domain.SettingsState
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton

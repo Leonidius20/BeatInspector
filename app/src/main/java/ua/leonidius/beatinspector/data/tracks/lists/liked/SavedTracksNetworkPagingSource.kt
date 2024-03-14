@@ -6,7 +6,7 @@ import ua.leonidius.beatinspector.data.tracks.lists.liked.network.dto.LikedTrack
 import ua.leonidius.beatinspector.data.tracks.lists.liked.network.api.LikedTracksApi
 import ua.leonidius.beatinspector.data.tracks.lists.BaseTrackPagingDataSource
 import ua.leonidius.beatinspector.data.tracks.shared.cache.SongTitlesInMemCache
-import ua.leonidius.beatinspector.shared.logic.settings.SettingsState
+import ua.leonidius.beatinspector.shared.domain.SettingsState
 import javax.inject.Inject
 
 class SavedTracksNetworkPagingSource @Inject constructor(

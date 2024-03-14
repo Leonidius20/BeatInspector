@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.shared.logic.settings
+package ua.leonidius.beatinspector.shared.domain
 
 data class SettingsState(
     val hideExplicit: Boolean,

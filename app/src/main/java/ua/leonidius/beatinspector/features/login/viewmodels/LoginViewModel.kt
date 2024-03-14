@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import ua.leonidius.beatinspector.data.auth.logic.IAuthenticator
+import ua.leonidius.beatinspector.data.auth.logic.PKCEAuthenticationInitiator
 import ua.leonidius.beatinspector.shared.logic.eventbus.EventBus
 import ua.leonidius.beatinspector.shared.logic.eventbus.UserHideExplicitSettingChangeEvent
 import ua.leonidius.beatinspector.shared.logic.eventbus.UserLogoutRequestEvent
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authenticator: IAuthenticator,
+    private val authenticator: PKCEAuthenticationInitiator,
     private val eventBus: EventBus,
 ): ViewModel() {
 
@@ -30,15 +30,10 @@ class LoginViewModel @Inject constructor(
             val errorDescription: String
         ): UiState()
 
-        object SuccessfulLogin: UiState()
+        object SuccessfulLogin: UiState() // todo: find a way to navigate to the main screen after login without having to use this state, and remove it
     }
 
-    private val initialState = if (!authenticator.isAuthorized())
-        UiState.LoginOffered
-    else
-        UiState.SuccessfulLogin
-
-    var uiState by mutableStateOf(initialState)
+    var uiState by mutableStateOf<UiState>(UiState.LoginOffered)
         private set
 
     // todo: single source of truth for auth status - authenticator class. maybe make it a stateflow?
@@ -107,7 +102,7 @@ class LoginViewModel @Inject constructor(
             }
 
 
-            uiState = UiState.SuccessfulLogin
+            //uiState = UiState.SuccessfulLogin
         }
     }
 

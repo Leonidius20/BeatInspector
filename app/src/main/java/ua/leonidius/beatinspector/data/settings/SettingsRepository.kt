@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.map
 import ua.leonidius.beatinspector.shared.logic.eventbus.EventBus
 import ua.leonidius.beatinspector.shared.logic.eventbus.UserHideExplicitSettingChangeEvent
-import ua.leonidius.beatinspector.shared.logic.settings.SettingsState
+import ua.leonidius.beatinspector.shared.domain.SettingsState
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -18,13 +18,9 @@ class SettingsRepository @Inject constructor(
 
     private val hideExplicitKey = booleanPreferencesKey("hide_explicit")
 
-    private val hideExplicitFlow = prefs.data.map {
-        it[hideExplicitKey] ?: false
-    }
-
-    val settingsFlow = hideExplicitFlow.map {
+    val settingsFlow = prefs.data.map {
         SettingsState(
-            hideExplicit = it
+            hideExplicit = it[hideExplicitKey] ?: false
         )
     }
 

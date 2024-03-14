@@ -7,7 +7,7 @@ import ua.leonidius.beatinspector.data.tracks.lists.BaseTrackPagingDataSource
 import ua.leonidius.beatinspector.data.tracks.lists.playlist.network.api.PlaylistApi
 import ua.leonidius.beatinspector.data.tracks.lists.playlist.network.dto.PlaylistResponse
 import ua.leonidius.beatinspector.data.tracks.shared.cache.SongTitlesInMemCache
-import ua.leonidius.beatinspector.shared.logic.settings.SettingsState
+import ua.leonidius.beatinspector.shared.domain.SettingsState
 import javax.inject.Inject
 
 /**

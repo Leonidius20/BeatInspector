@@ -2,7 +2,7 @@ package ua.leonidius.beatinspector
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ua.leonidius.beatinspector.data.auth.logic.IAuthenticator
+import ua.leonidius.beatinspector.data.auth.logic.AuthTokenProvider
 import javax.inject.Inject
 
 /**
@@ -15,7 +15,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val authenticator: IAuthenticator
+    private val authenticator: AuthTokenProvider
 ): ViewModel() {
 
     fun isLoggedIn(): Boolean {

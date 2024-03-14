@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mikepenz.aboutlibraries.entity.Library
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.data.account.repository.AccountRepository
 import ua.leonidius.beatinspector.data.settings.SettingsRepository
@@ -43,7 +45,8 @@ class SettingsViewModel @Inject constructor(
         Pair(it.name, it.licenses.firstOrNull()?.hash)
     }.toTypedArray()
 
-    val hideExplicit = settingsStore.settingsFlow.map { it.hideExplicit }
+    val hideExplicit = settingsStore.settingsFlow
+        .map { it.hideExplicit }
 
     init {
         loadAccountDetails()

@@ -63,19 +63,10 @@ sealed class SongDataIOException(
     }*/
 
     data class TokenRefresh(
-        val code: Int,
-        val errorFromLibrary: String?,
-        val errorDescriptionFromLibrary: String?,
-        val e: Throwable
+        val e: Throwable // (TokenRefreshException)
     ): SongDataIOException() {
 
-        override fun toTextDescription() = """
-            Code: $code
-            Error from library: $errorFromLibrary
-            Error description from library: $errorDescriptionFromLibrary
-            Exception (cause) type: ${e::class.java.name}
-            Exception (cause) message: ${e.message}
-        """.trimIndent()
+        override fun toTextDescription() = e.message!!
 
     }
 
