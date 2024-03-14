@@ -8,10 +8,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -143,7 +147,7 @@ fun PlaylistsList(
                 title = "Recently Played",
                 leadingContent = {
                     Icon(
-                        Icons.Filled.DateRange,
+                        Icons.Filled.History,
                         contentDescription = null,
                     )
                 }
@@ -156,7 +160,7 @@ fun PlaylistsList(
                 title = "Your Top Tracks",
                 leadingContent = {
                     Icon(
-                        Icons.Filled.Favorite,
+                        Icons.Filled.Leaderboard,
                         contentDescription = null,
                     )
                 }
