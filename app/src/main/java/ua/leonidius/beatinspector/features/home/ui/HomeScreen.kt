@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -42,10 +43,12 @@ import coil.compose.AsyncImage
 import ua.leonidius.beatinspector.ui.theme.Dimens
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.data.playlists.domain.PlaylistSearchResult
+import ua.leonidius.beatinspector.data.shared.exception.SongDataIOException
 import ua.leonidius.beatinspector.shared.viewmodels.PfpState
 import ua.leonidius.beatinspector.features.home.viewmodels.HomeScreenViewModel
-import ua.leonidius.beatinspector.shared.ui.LoadingScreen
-import ua.leonidius.beatinspector.shared.ui.SearchBoxScreenWithAttribution
+import ua.leonidius.beatinspector.features.shared.model.toUiMessage
+import ua.leonidius.beatinspector.features.shared.ui.LoadingScreen
+import ua.leonidius.beatinspector.features.shared.ui.SearchBoxScreenWithAttribution
 
 @Composable
 fun HomeScreen(
@@ -177,11 +180,25 @@ fun PlaylistsList(
             )
         }
 
-        if (playlists.loadState.refresh == LoadState.Loading) {
+        val refreshState = playlists.loadState.refresh
+        if (refreshState == LoadState.Loading) {
             // todo error handling            lazyItems.loadState.refresh / append is LoadState.Error
             item {
                 LoadingScreen()
             }
+        } else if (refreshState is LoadState.Error) {
+            // todo: universal error screen
+            val error = refreshState.error
+
+            item {
+                Text(
+                    if (error is SongDataIOException)
+                        stringResource(error.toUiMessage())
+                    // error.toTextDescription()
+                    else "Unknown error while loading, ${refreshState.error.message}"
+                )
+            }
+
         }
 
         items(count = playlists.itemCount) { index ->

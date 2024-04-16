@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -25,9 +26,11 @@ import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.Flow
 import ua.leonidius.beatinspector.ui.theme.Dimens
 import ua.leonidius.beatinspector.R
+import ua.leonidius.beatinspector.data.shared.exception.SongDataIOException
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
+import ua.leonidius.beatinspector.features.shared.model.toUiMessage
 import ua.leonidius.beatinspector.features.tracklist.shared.viewmodels.TrackListViewModel
-import ua.leonidius.beatinspector.shared.ui.LoadingScreen
+import ua.leonidius.beatinspector.features.shared.ui.LoadingScreen
 
 interface TrackListActions {
     val goToSongDetails: (String) -> Unit
@@ -68,7 +71,14 @@ private fun TrackListScreen(
 
     if (refreshState is LoadState.Error) {
         // todo: universal error screen
-        Text("Error loading, ${refreshState.error.message}")
+        val error = refreshState.error
+
+        Text(
+            if (error is SongDataIOException)
+                stringResource(error.toUiMessage())
+                // error.toTextDescription()
+            else "Unknown error while loading, ${refreshState.error.message}"
+        )
 
     } else if (lazyItems.loadState.refresh is LoadState.Loading) {
         LoadingScreen()
@@ -102,8 +112,13 @@ private fun TrackListScreen(
                     )
                 }
             } else if (appendState is LoadState.Error) {
+                val error = appendState.error
                 item {
-                    Text("Error loading, ${appendState.error.message}")
+                    Text(
+                        if (error is SongDataIOException)
+                            stringResource(error.toUiMessage())
+                        else "Unknown error while loading, ${appendState.error.message}"
+                    )
                 }
             }
         }

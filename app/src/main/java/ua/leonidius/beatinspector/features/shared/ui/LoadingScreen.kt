@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.shared.ui
+package ua.leonidius.beatinspector.features.shared.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight

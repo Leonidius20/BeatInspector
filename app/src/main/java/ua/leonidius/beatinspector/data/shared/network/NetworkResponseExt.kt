@@ -4,6 +4,11 @@ import com.haroldadmin.cnradapter.NetworkResponse
 import ua.leonidius.beatinspector.data.shared.exception.SongDataIOException
 
 fun <S> NetworkResponse.Error<S, ua.leonidius.beatinspector.data.shared.network.dto.ErrorResponse>.toUIException(): SongDataIOException {
+    if (this.error is SongDataIOException) {
+        return this.error as SongDataIOException // todo: we should clearly separate infrastructure layer exceptions, like api access blocked, from the rest
+    }
+
+
     return when (this) {
         is NetworkResponse.ServerError -> {
             SongDataIOException.Server(

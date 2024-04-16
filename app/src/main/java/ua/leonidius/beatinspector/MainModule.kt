@@ -58,6 +58,7 @@ import ua.leonidius.beatinspector.data.tracks.search.network.api.SearchApi
 import ua.leonidius.beatinspector.data.tracks.search.repository.SearchRepository
 import ua.leonidius.beatinspector.data.tracks.search.repository.SearchRepositoryImpl
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
+import ua.leonidius.beatinspector.infrastructure.ApiErrorInterceptor
 import ua.leonidius.beatinspector.infrastructure.AuthInterceptor
 import ua.leonidius.beatinspector.infrastructure.isPackageInstalled
 import ua.leonidius.beatinspector.shared.logic.eventbus.EventBus
@@ -99,6 +100,7 @@ object MainModule {
     @Singleton
     fun provideRetrofit(
         authInterceptor: AuthInterceptor,
+        apiErrorInterceptor: ApiErrorInterceptor,
         @ApplicationContext applicationContext: Context
     ): Retrofit {
 
@@ -114,6 +116,7 @@ object MainModule {
             .client(
                 OkHttpClient.Builder()
                 .addInterceptor(authInterceptor)
+                .addInterceptor(apiErrorInterceptor)
                 .cache(okHttpCache)
                 /*.addInterceptor(HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.HEADERS

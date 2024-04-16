@@ -15,7 +15,7 @@ import ua.leonidius.beatinspector.data.shared.exception.SongDataIOException
 import ua.leonidius.beatinspector.data.tracks.search.repository.SearchRepository
 import ua.leonidius.beatinspector.data.tracks.search.repository.SearchRepositoryImpl
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
-import ua.leonidius.beatinspector.shared.uimapping.toUiMessage
+import ua.leonidius.beatinspector.features.shared.model.toUiMessage
 import ua.leonidius.beatinspector.shared.viewmodels.AccountImageViewModel
 import ua.leonidius.beatinspector.shared.viewmodels.AccountImageViewModelImpl
 import javax.inject.Inject
@@ -67,18 +67,6 @@ class SearchViewModel @Inject constructor(
                 uiState = UiState.Loading
                 val results = searchRepository.get(query)
                 uiState = UiState.Loaded(results)
-            } catch (e: SearchRepositoryImpl.NotAuthedError) {
-                // todo: check how that is thrown, handle it differently so that it redirects to login page
-                // todo: set this to AuthStatusViewModel and initiate login
-
-                uiState = UiState.Error(
-                    R.string.other_error,
-                    """
-                        NotAuthedError thrown:
-                        Message: ${e.message}
-                        Try logging out (or clearing app data) and logging in again.
-                    """.trimIndent()
-                )
             } catch (e: SongDataIOException) {
                 uiState = UiState.Error(
                     e.toUiMessage(),

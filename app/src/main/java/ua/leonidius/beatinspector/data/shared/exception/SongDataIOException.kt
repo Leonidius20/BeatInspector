@@ -75,4 +75,10 @@ sealed class SongDataIOException(
         override fun toTextDescription() = "User is not logged in. Please relaunch the app to trigger the login sequence. If that doesn't work, clear app data and try again."
     }
 
+    object ApiAccessDenied: SongDataIOException() {
+
+        override fun toTextDescription() = "api access denied"
+
+    }
+
 }

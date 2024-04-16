@@ -256,5 +256,6 @@
     <string name="preferences_access_token">access_token</string>
     <string name="preferences_refresh_token">refresh_token</string>
     <string name="not_logged_in_error">You are not logged into your Spotify account. Please relaunch the app to trigger the login sequence. If that doesn\'t work, clear app data and try again.</string>
+    <string name="api_access_denied_error">The access to the API is denied by Spotify. Most likely this is because the app is still in Development mode and was not approved by Spotify. If you are using the official BeatInspector app, please wait until the approval process completes. It could take multiple weeks. If you are using a fork, contact its developer.</string>
 
 </resources>

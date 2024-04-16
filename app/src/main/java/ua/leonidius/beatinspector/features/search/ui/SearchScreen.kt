@@ -41,8 +41,8 @@ import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.ui.theme.ChangeStatusBarColor
 import ua.leonidius.beatinspector.shared.viewmodels.PfpState
 import ua.leonidius.beatinspector.features.search.viewmodels.SearchViewModel
-import ua.leonidius.beatinspector.shared.ui.LoadingScreen
-import ua.leonidius.beatinspector.shared.ui.SearchBoxScreenWithAttribution
+import ua.leonidius.beatinspector.features.shared.ui.LoadingScreen
+import ua.leonidius.beatinspector.features.shared.ui.SearchBoxScreenWithAttribution
 
 typealias SongId = String
 

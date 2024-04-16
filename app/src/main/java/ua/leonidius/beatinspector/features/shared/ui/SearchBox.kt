@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.shared.ui
+package ua.leonidius.beatinspector.features.shared.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image

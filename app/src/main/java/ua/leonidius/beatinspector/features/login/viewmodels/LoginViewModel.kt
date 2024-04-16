@@ -94,6 +94,8 @@ class LoginViewModel @Inject constructor(
 
             try {
                 authenticator.exchangeCodeForTokens(data)
+                // todo: remove when the auth state is converted to flow
+                uiState = UiState.SuccessfulLogin
             } catch (e: Exception) {
                 uiState = UiState.LoginError(
                     errorDescription = "Error while logging in. Please try again. (${e.message})"

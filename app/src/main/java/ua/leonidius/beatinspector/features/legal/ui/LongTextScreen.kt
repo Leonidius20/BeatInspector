@@ -10,7 +10,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ireward.htmlcompose.HtmlText
-import ua.leonidius.beatinspector.shared.ui.CenteredScrollableTextScreen
+import ua.leonidius.beatinspector.features.shared.ui.CenteredScrollableTextScreen
 import ua.leonidius.beatinspector.features.legal.viewmodels.LongTextViewModel
 
 @Composable

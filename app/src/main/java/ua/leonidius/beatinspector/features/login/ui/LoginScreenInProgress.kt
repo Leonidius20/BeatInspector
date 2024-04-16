@@ -6,7 +6,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import ua.leonidius.beatinspector.R
-import ua.leonidius.beatinspector.shared.ui.CenteredScrollableTextScreen
+import ua.leonidius.beatinspector.features.shared.ui.CenteredScrollableTextScreen
 
 @Composable
 fun LoginInProgressScreen() {

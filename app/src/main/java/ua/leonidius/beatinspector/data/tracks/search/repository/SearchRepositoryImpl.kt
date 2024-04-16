@@ -43,6 +43,4 @@ class SearchRepositoryImpl @Inject constructor(
         // todo maybe add network call here if not found in cache
     }
 
-    class NotAuthedError: Error() // todo: find a place for this
-
 }

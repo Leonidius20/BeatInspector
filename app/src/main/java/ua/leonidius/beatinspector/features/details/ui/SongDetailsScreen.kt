@@ -55,7 +55,7 @@ import coil.request.ImageRequest
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.ui.theme.ChangeStatusBarColor
 import ua.leonidius.beatinspector.features.details.viewmodels.SongDetailsViewModel
-import ua.leonidius.beatinspector.shared.ui.LoadingScreen
+import ua.leonidius.beatinspector.features.shared.ui.LoadingScreen
 
 @Composable
 fun SongDetailsScreen(
