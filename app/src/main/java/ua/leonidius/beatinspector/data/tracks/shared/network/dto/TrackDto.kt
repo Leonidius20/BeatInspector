@@ -11,8 +11,6 @@ data class TrackDto(
     val explicit: Boolean,
 ): Mapper<SongSearchResult> {
 
-    fun artistsListToString() = artists.map { it.name }.joinToString(", ")
-
     override fun toDomainObject(): SongSearchResult {
         val name = if (this.explicit) "$name \uD83C\uDD74" else name // "E" emoji
         return SongSearchResult(

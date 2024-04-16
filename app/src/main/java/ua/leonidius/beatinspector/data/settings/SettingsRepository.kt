@@ -10,7 +10,9 @@ import ua.leonidius.beatinspector.shared.logic.eventbus.UserHideExplicitSettingC
 import ua.leonidius.beatinspector.shared.domain.SettingsState
 import javax.inject.Inject
 import javax.inject.Named
+import javax.inject.Singleton
 
+@Singleton
 class SettingsRepository @Inject constructor(
     @Named("general") prefs: DataStore<Preferences>,
     eventBus: EventBus,

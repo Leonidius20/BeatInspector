@@ -66,7 +66,7 @@ abstract class BasePagingDataSourceWithTitleCache<T: SearchResult, D: ListMapper
 
     override fun getFlow(scope: CoroutineScope): Flow<PagingData<T>> {
         return Pager(PagingConfig(pageSize = itemsPerPage)) {
-            this
+            this // todo i think when cache is exhausted and after a network load it should be able to create a new instance
         }.flow.cachedIn(scope)
     }
 
