@@ -12,6 +12,7 @@ import ua.leonidius.beatinspector.data.playlists.domain.PlaylistSearchResult
 import ua.leonidius.beatinspector.data.playlists.network.api.MyPlaylistsService
 import ua.leonidius.beatinspector.data.shared.db.TracksDatabase
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 /**
  * by "synthetic" i mean that the spotify api doesn't take page numbers,
@@ -24,6 +25,16 @@ internal class MyPlaylistsMediator(
     private val api: MyPlaylistsService,
     private val db: TracksDatabase,
 ): RemoteMediator<Int, PlaylistSearchResult>() {
+
+    override suspend fun initialize(): InitializeAction {
+        val cacheTimeout = TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS)
+
+        return if (System.currentTimeMillis() - (db.playlistPageKeysDao().getCachingTimestamp() ?: 0) < cacheTimeout) {
+            InitializeAction.SKIP_INITIAL_REFRESH
+        } else {
+            InitializeAction.LAUNCH_INITIAL_REFRESH
+        }
+    }
 
     override suspend fun load(
         loadType: LoadType,

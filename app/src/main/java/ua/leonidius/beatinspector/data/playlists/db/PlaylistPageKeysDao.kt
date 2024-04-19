@@ -17,4 +17,7 @@ interface PlaylistPageKeysDao {
     @Query("DELETE FROM playlist_page_keys")
     suspend fun clearKeys()
 
+    @Query("SELECT cached_at FROM playlist_page_keys ORDER BY cached_at DESC LIMIT 1")
+    suspend fun getCachingTimestamp(): Long?
+
 }

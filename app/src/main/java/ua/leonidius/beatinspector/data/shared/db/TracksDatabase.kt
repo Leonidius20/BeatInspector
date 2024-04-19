@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Database(
     entities = [PlaylistSearchResult::class, PlaylistPageKeys::class],
-    version = 1,
+    version = 2,
     exportSchema = false,
 )
 @Singleton

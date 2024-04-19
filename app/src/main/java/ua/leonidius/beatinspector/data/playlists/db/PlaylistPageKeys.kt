@@ -8,5 +8,8 @@ import androidx.room.PrimaryKey
 data class PlaylistPageKeys(
     @PrimaryKey @ColumnInfo(name = "playlist_id") val playlistId: String,
     @ColumnInfo(name = "prev_key") val prevKey: Int?,
-    @ColumnInfo(name = "next_key") val nextKey: Int?
+    @ColumnInfo(name = "next_key") val nextKey: Int?,
+
+    @ColumnInfo(name = "cached_at")
+    val cachedAt: Long = System.currentTimeMillis()
 )
