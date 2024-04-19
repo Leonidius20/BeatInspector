@@ -7,6 +7,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
+import androidx.room.Room
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
@@ -43,6 +44,7 @@ import ua.leonidius.beatinspector.data.playlists.network.api.MyPlaylistsService
 import ua.leonidius.beatinspector.data.settings.SettingsRepository
 import ua.leonidius.beatinspector.data.shared.PagingDataSource
 import ua.leonidius.beatinspector.data.shared.cache.InMemCache
+import ua.leonidius.beatinspector.data.shared.db.TracksDatabase
 import ua.leonidius.beatinspector.data.tracks.details.network.api.ArtistsApi
 import ua.leonidius.beatinspector.data.tracks.details.network.api.TrackAudioAnalysisApi
 import ua.leonidius.beatinspector.data.tracks.details.repository.TrackDetailsRepository
@@ -283,6 +285,20 @@ object MainModule {
         @Named("spotify_installed") isIt: Boolean
     ): StateFlow<Boolean> {
         return MutableStateFlow(isIt)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDatabase(
+        @ApplicationContext context: Context
+    ): TracksDatabase {
+        return Room.databaseBuilder(
+            context.applicationContext,
+            TracksDatabase::class.java,
+            "tracks.db"
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 }
 
