@@ -10,22 +10,17 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.R
-import ua.leonidius.beatinspector.data.account.repository.AccountRepository
 import ua.leonidius.beatinspector.data.shared.exception.SongDataIOException
 import ua.leonidius.beatinspector.data.tracks.search.repository.SearchRepository
-import ua.leonidius.beatinspector.data.tracks.search.repository.SearchRepositoryImpl
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.features.shared.model.toUiMessage
-import ua.leonidius.beatinspector.shared.viewmodels.AccountImageViewModel
-import ua.leonidius.beatinspector.shared.viewmodels.AccountImageViewModelImpl
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val searchRepository: SearchRepository,
-    accountRepository: AccountRepository,
-) : ViewModel(), AccountImageViewModel by AccountImageViewModelImpl(accountRepository) {
+) : ViewModel() {
 
     sealed class UiState {
 
@@ -54,10 +49,7 @@ class SearchViewModel @Inject constructor(
         if (query.isNotEmpty()) {
             performSearch()
         }
-        loadAccountImage(viewModelScope)
     }
-
-
 
     fun performSearch() {
         //searchQueriesFlow.emit(query)
@@ -86,32 +78,5 @@ class SearchViewModel @Inject constructor(
 
         }
     }
-
-    /**
-     * Return to the list of user's playlists, hide the search results
-     */
-    fun returnToUninitialized() {
-        uiState = UiState.Uninitialized
-    }
-
-    /*companion object {
-
-        val Factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-                val app = checkNotNull(extras[APPLICATION_KEY]) as BeatInspectorApp
-
-                return SearchViewModel(
-                    extras.createSavedStateHandle(),
-                    app.searchRepository,
-                    app.accountRepository,
-                ) as T
-            }
-
-        }
-
-    }*/
-
 
 }

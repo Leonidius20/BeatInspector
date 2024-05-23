@@ -1,17 +1,15 @@
-package ua.leonidius.beatinspector.shared.viewmodels
+package ua.leonidius.beatinspector.features.shared.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.data.account.repository.AccountRepository
-
-interface AccountImageViewModel {
-    fun loadAccountImage(scope: CoroutineScope)
-
-    var pfpState: PfpState
-}
+import javax.inject.Inject
 
 /**
  * profile picture state
@@ -31,13 +29,18 @@ sealed class PfpState {
     object NoImageOnAccount : NotLoaded()
 }
 
-class AccountImageViewModelImpl(
+@HiltViewModel
+class AccountImageViewModel @Inject constructor(
     private val accountRepository: AccountRepository
-) : AccountImageViewModel {
+): ViewModel() {
 
-    override var pfpState by mutableStateOf<PfpState>(PfpState.Loading)
+    var pfpState by mutableStateOf<PfpState>(PfpState.Loading)
 
-    override fun loadAccountImage(scope: CoroutineScope) {
+    init {
+        loadAccountImage(viewModelScope)
+    }
+
+    private fun loadAccountImage(scope: CoroutineScope) {
         scope.launch {
             pfpState = PfpState.Loading
 

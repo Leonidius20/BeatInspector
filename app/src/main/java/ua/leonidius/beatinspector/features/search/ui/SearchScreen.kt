@@ -34,15 +34,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.data.tracks.shared.domain.Artist
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
-import ua.leonidius.beatinspector.ui.theme.ChangeStatusBarColor
-import ua.leonidius.beatinspector.shared.viewmodels.PfpState
 import ua.leonidius.beatinspector.features.search.viewmodels.SearchViewModel
 import ua.leonidius.beatinspector.features.shared.ui.LoadingScreen
 import ua.leonidius.beatinspector.features.shared.ui.SearchBoxScreenWithAttribution
+import ua.leonidius.beatinspector.ui.theme.ChangeStatusBarColor
 
 typealias SongId = String
 
@@ -67,7 +65,6 @@ fun SearchScreen(
         onNavigateToSettings = onNavigateToSettings,
         state = searchViewModel.uiState,
        // playlistsPaging = searchViewModel.playlistsPagingFlow.collectAsLazyPagingItems(),
-        accountImageState = searchViewModel.pfpState,
         onOpenSongInSpotify = onOpenSongInSpotify,
         onOpenSavedTracks = onOpenSavedTracks,
         // called when pressing clear function to go back to the list of user's playlists
@@ -89,7 +86,6 @@ fun SearchScreen(
     onNavigateToSettings: () -> Unit,
     state: SearchViewModel.UiState,
    // playlistsPaging: LazyPagingItems<PlaylistSearchResult>,
-    accountImageState: PfpState,
     onOpenSongInSpotify: (SongId) -> Unit,
     onOpenSavedTracks: () -> Unit,
     //onReturnToPlaylistsList: () -> Unit,
@@ -102,7 +98,6 @@ fun SearchScreen(
         onSearch = onSearch,
         //onReturnToPlaylistsList = onReturnToPlaylistsList,
         onNavigateToSettings = onNavigateToSettings,
-        accountImageState = accountImageState,
         searchBarActive = searchBarActive,
         setSearchBarActive = { searchBarActive = it },
     ) {

@@ -8,14 +8,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.ThumbUp
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,20 +31,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
-import ua.leonidius.beatinspector.ui.theme.Dimens
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.data.playlists.domain.PlaylistSearchResult
 import ua.leonidius.beatinspector.data.shared.exception.SongDataIOException
-import ua.leonidius.beatinspector.shared.viewmodels.PfpState
 import ua.leonidius.beatinspector.features.home.viewmodels.HomeScreenViewModel
 import ua.leonidius.beatinspector.features.shared.model.toUiMessage
 import ua.leonidius.beatinspector.features.shared.ui.LoadingScreen
 import ua.leonidius.beatinspector.features.shared.ui.SearchBoxScreenWithAttribution
+import ua.leonidius.beatinspector.ui.theme.Dimens
 
 @Composable
 fun HomeScreen(
@@ -68,7 +62,6 @@ fun HomeScreen(
 
     HomeScreen(
         viewModel.playlistsPagingFlow.collectAsLazyPagingItems(),
-        viewModel.pfpState,
         query,
         onQueryChange = { query = it },
         onSearch = onSearch,
@@ -86,7 +79,6 @@ fun HomeScreen(
 @Composable
 fun HomeScreen(
     playlistsPaging: LazyPagingItems<PlaylistSearchResult>,
-    pfpState: PfpState,
     query: String,
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
@@ -104,7 +96,6 @@ fun HomeScreen(
         onQueryChange = onQueryChange,
         onSearch = onSearch,
         onNavigateToSettings = goToSettings,
-        accountImageState = pfpState,
         searchBarActive = searchBarActive,
         setSearchBarActive = setSearchBarActive,
     ) {

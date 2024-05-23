@@ -190,6 +190,10 @@ dependencies {
     // optional - Paging 3 Integration
     implementation("androidx.room:room-paging:$room_version")
 
+    // scoping viewmodel to composable
+    implementation("io.github.sebaslogen:resaca:3.2.2")
+    implementation("io.github.sebaslogen:resacahilt:3.2.2")
+
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

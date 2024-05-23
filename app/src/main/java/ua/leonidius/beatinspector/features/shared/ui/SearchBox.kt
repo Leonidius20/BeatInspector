@@ -12,10 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,9 +25,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -38,9 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import ua.leonidius.beatinspector.R
-import ua.leonidius.beatinspector.shared.viewmodels.PfpState
 
 /**
  * Search box that is used in the main (playlists) page and
@@ -54,7 +47,6 @@ fun SearchBox(
     onSearch: (String) -> Unit,
     // onReturnToPlaylistsList: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    accountImageState: PfpState,
     searchBarActive: Boolean,
     setSearchBarActive: (Boolean) -> Unit,
 ) {
@@ -122,33 +114,7 @@ fun SearchBox(
             },
             trailingIcon = {
                 if (!searchBarActive) {
-                    IconButton(
-                        onClick = onNavigateToSettings,
-                    ) {
-
-                        when (accountImageState) {
-                            // todo: the alternative is having one Image with painters changed
-                            // based on whther there is a URL or not
-
-                            is PfpState.Loaded -> {
-                                AsyncImage(
-                                    modifier = Modifier
-                                        .clip(CircleShape),
-                                    model = accountImageState.imageUrl,
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop,
-                                    placeholder = rememberVectorPainter(Icons.Filled.AccountCircle), // todo: is rememberVectorPainter a good idea?
-                                )
-                            }
-
-                            is PfpState.NotLoaded -> {
-                                Icon(
-                                    imageVector = Icons.Filled.AccountCircle,
-                                    contentDescription = null,
-                                )
-                            }
-                        }
-                    }
+                    AccountImage(onClick = onNavigateToSettings)
                 } else {
                     IconButton(
                         modifier = Modifier.align(Alignment.CenterVertically),
@@ -217,7 +183,6 @@ fun SearchBoxScreenWithAttribution(
     onSearch: (String) -> Unit,
     // onReturnToPlaylistsList: () -> Unit,
     onNavigateToSettings: () -> Unit,
-    accountImageState: PfpState,
     searchBarActive: Boolean,
     setSearchBarActive: (Boolean) -> Unit,
     content: @Composable () -> Unit,
@@ -239,7 +204,6 @@ fun SearchBoxScreenWithAttribution(
                 onSearch = onSearch,
                 // onReturnToPlaylistsList = onReturnToPlaylistsList,
                 onNavigateToSettings = onNavigateToSettings,
-                accountImageState = accountImageState,
                 searchBarActive = searchBarActive,
                 setSearchBarActive = setSearchBarActive,
             )
