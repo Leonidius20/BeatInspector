@@ -26,11 +26,26 @@ import androidx.room.PrimaryKey
  *
  * Overall, we should delete the TrackShelfInfo table and store the song
  * titles/cover urls embedded right into the search results and playlist
- * contents tables. todo: do just that.
+ * contents tables.
  *
  * However, the Artists and their genres should be stored in a separate table, because they
  * can be shared between tracks, and old artist's data can be reused for
  * new tracks. So we will have to join the artists table to Searchresult
+ *
+ *
+ *
+ *
+ * Alternative: we could try using ON DELETE RESTRICT and CASCADE combinator
+ * that tries to delete associated TrackShelfInfo when you delete a
+ * SearchResult or a PlaylistContentItem, but fails to do so if there are other
+ * cached items referencing it. todo: research if this is possible
+ *
+ * the upside of this is that it will be possible to imeplement a feature
+ * that takes the user to the track details screen directly by link, should
+ * i choose to implement it/
+ *
+ * However, first we should research if it is possible in room to insert
+ * new data together with JOINED tables (e.g. SearchResult + TrackShelfInfo + Artist + ArtistGenre)
  */
 @Entity(tableName = "search_results")
 data class SearchResult(
