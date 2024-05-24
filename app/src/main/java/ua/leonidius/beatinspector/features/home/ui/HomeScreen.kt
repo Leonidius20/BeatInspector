@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -180,26 +181,50 @@ fun PlaylistsList(
             )
         }
 
-        val refreshState = playlists.loadState.refresh
-        if (refreshState == LoadState.Loading) {
+        val networkLoadingState = playlists.loadState.source.refresh // apparently the state of loading from cache (when nothing is shown yet)
+        val databaseLoadingState = playlists.loadState.mediator?.refresh // apparently the state of refreshing from network (when old cached data is shown)
+
+        // val refreshState = playlists.loadState.refresh
+        if (networkLoadingState == LoadState.Loading) {
             // todo error handling            lazyItems.loadState.refresh / append is LoadState.Error
             item {
                 LoadingScreen()
             }
-        } else if (refreshState is LoadState.Error) {
+        } else if (networkLoadingState is LoadState.Error) {
             // todo: universal error screen
-            val error = refreshState.error
+            val error = networkLoadingState.error
 
             item {
                 Text(
                     if (error is SongDataIOException)
                         stringResource(error.toUiMessage())
-                    // error.toTextDescription()
-                    else "Unknown error while loading, ${refreshState.error.message}"
+                    else "Unknown error while loading, ${error.message}"
                 )
             }
 
         }
+
+
+        // NEW STUFF
+        if (databaseLoadingState == LoadState.Loading) {
+            item {
+                LinearProgressIndicator(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(Dimens.paddingNormal)
+                )
+            }
+        } else if (databaseLoadingState is LoadState.Error) {
+            val error = databaseLoadingState.error
+            item {
+                Text(
+                    if (error is SongDataIOException)
+                        stringResource(error.toUiMessage())
+                    else "Unknown error while loading, ${error.message}"
+                )
+            }
+        }
+        // END OF NEW STUFF
 
         items(count = playlists.itemCount) { index ->
             val playlist = playlists[index] ?: return@items

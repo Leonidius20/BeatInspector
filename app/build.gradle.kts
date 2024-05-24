@@ -164,6 +164,8 @@ dependencies {
     // optional - Jetpack Compose integration
     implementation("androidx.paging:paging-compose:3.3.0")
 
+    testImplementation("androidx.paging:paging-testing:3.3.0")
+
     // hilt
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
@@ -187,6 +189,7 @@ dependencies {
 
     // optional - Paging 3 Integration
     implementation("androidx.room:room-paging:$room_version")
+
 
 
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
