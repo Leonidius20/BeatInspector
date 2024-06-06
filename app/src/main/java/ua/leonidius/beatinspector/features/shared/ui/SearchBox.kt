@@ -196,7 +196,7 @@ fun SpotifyAttributionBoxLandscape(
                 fontSize = TextUnit(10f, TextUnitType.Sp)
             )
 
-            Image(
+            Icon(
                 painterResource(R.drawable.spotify_full_logo_black),
                 contentDescription = null,
                 modifier = Modifier
@@ -279,7 +279,7 @@ fun SpotifyAttributionBoxPortrait(
                 style = MaterialTheme.typography.bodyLarge,
             )
 
-            Image(
+            Icon(
                 painterResource(R.drawable.spotify_full_logo_black),
                 contentDescription = null,
                 modifier = Modifier

@@ -2,6 +2,7 @@ package ua.leonidius.beatinspector.features.details.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -21,6 +22,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,14 +50,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.palette.graphics.Palette
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import ua.leonidius.beatinspector.R
-import ua.leonidius.beatinspector.ui.theme.ChangeStatusBarColor
 import ua.leonidius.beatinspector.features.details.viewmodels.SongDetailsViewModel
 import ua.leonidius.beatinspector.features.shared.ui.LoadingScreen
+import ua.leonidius.beatinspector.ui.theme.ChangeStatusBarColor
 
 @Composable
 fun SongDetailsScreen(
@@ -172,7 +173,17 @@ fun SongDetailsPortraitScreen(
                 ChangeStatusBarColor(palette?.darkVibrantSwatch?.rgb ?: Color.Transparent.toArgb())
             }
 
+            val swatch = palette?.let {
+                if (isSystemInDarkTheme()) it.darkMutedSwatch else it.lightMutedSwatch
+            }
 
+
+            val cardColors = swatch?.let {
+                CardDefaults.cardColors(
+                    containerColor = Color(it.rgb),
+                    // contentColor = Color(it.bodyTextColor)
+                )
+            } ?: CardDefaults.cardColors()
 
             Column(
                 // modifier = Modifier.align(Alignment.BottomStart)
@@ -198,11 +209,7 @@ fun SongDetailsPortraitScreen(
 
                 // Spacer(modifier = Modifier.height(10.dp))
 
-                val cardColors = palette?.lightMutedSwatch?.let { Color(it.rgb) }?.let {
-                    CardDefaults.cardColors(
-                        containerColor = it,
-                    )
-                } ?: CardDefaults.cardColors()
+
 
                 Row(
                     Modifier
@@ -309,7 +316,7 @@ fun SongDetailsPortraitScreen(
 
             }
 
-            val buttonColors = palette?.lightMutedSwatch?.let { Color(it.rgb) }?.let {
+            val buttonColors = swatch?.let { Color(it.rgb) }?.let {
                 ButtonDefaults.buttonColors(
                     containerColor = it,
                     contentColor = MaterialTheme.colorScheme.onSurface
@@ -347,7 +354,7 @@ fun OpenInSpotifyButton(
     ) {
         if (isSpotifyInstalled) {
             Text("PLAY ON")
-            Image(
+            Icon(
                 modifier = Modifier
                     .height(30.dp)
                     .padding(start = 15.dp),
@@ -355,7 +362,9 @@ fun OpenInSpotifyButton(
                 contentDescription = "Spotify")
         } else {
             Text("GET")
-            Image(
+
+
+            Icon(
                 modifier = Modifier
                     .height(30.dp)
                     .padding(start = 15.dp, end = 15.dp),
@@ -406,13 +415,17 @@ fun SongDetailsLandscapeScreen(
             ChangeStatusBarColor(palette?.darkVibrantSwatch?.rgb ?: Color.Transparent.toArgb())
         }
 
-        val cardColors = palette?.lightMutedSwatch?.let { Color(it.rgb) }?.let {
+        val swatch = palette?.let {
+            if (isSystemInDarkTheme()) it.darkMutedSwatch else it.lightMutedSwatch
+        }
+
+        val cardColors = swatch?.let { Color(it.rgb) }?.let {
             CardDefaults.cardColors(
                 containerColor = it,
             )
         } ?: CardDefaults.cardColors()
 
-        val buttonColors = palette?.lightMutedSwatch?.let { Color(it.rgb) }?.let {
+        val buttonColors = swatch?.let { Color(it.rgb) }?.let {
             ButtonDefaults.buttonColors(
                 containerColor = it,
                 contentColor = MaterialTheme.colorScheme.onSurface
