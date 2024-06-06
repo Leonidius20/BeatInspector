@@ -177,13 +177,17 @@ fun SongDetailsPortraitScreen(
                 if (isSystemInDarkTheme()) it.darkMutedSwatch else it.lightMutedSwatch
             }
 
+            val contentColor = swatch?.let { Color(it.bodyTextColor).copy(alpha = 0.87F) } ?: MaterialTheme.colorScheme.onSurface
 
             val cardColors = swatch?.let {
                 CardDefaults.cardColors(
                     containerColor = Color(it.rgb),
-                    // contentColor = Color(it.bodyTextColor)
+                    // contentColor = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
+                    contentColor = contentColor
                 )
             } ?: CardDefaults.cardColors()
+
+
 
             Column(
                 // modifier = Modifier.align(Alignment.BottomStart)
@@ -195,7 +199,7 @@ fun SongDetailsPortraitScreen(
                         .padding(start = 10.dp, end = 10.dp, top = 25.dp, bottom = 10.dp),
                     text = name,
                     style = MaterialTheme.typography.headlineLarge,
-                    //color = MaterialTheme.colorScheme.inverseOnSurface,
+                    color = contentColor,
                 )
 
                 Text(
@@ -204,7 +208,7 @@ fun SongDetailsPortraitScreen(
                     text = artistString,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Light,
-                    //color = MaterialTheme.colorScheme.inverseOnSurface,
+                    color = contentColor,
                 )
 
                 // Spacer(modifier = Modifier.height(10.dp))
@@ -319,11 +323,11 @@ fun SongDetailsPortraitScreen(
             val buttonColors = swatch?.let { Color(it.rgb) }?.let {
                 ButtonDefaults.buttonColors(
                     containerColor = it,
-                    contentColor = MaterialTheme.colorScheme.onSurface
+                    contentColor = contentColor
                 )
             } ?: ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                contentColor = MaterialTheme.colorScheme.onSurface
+                containerColor = CardDefaults.cardColors().containerColor,
+                contentColor = CardDefaults.cardColors().contentColor
             )
 
             OpenInSpotifyButton(
@@ -419,18 +423,24 @@ fun SongDetailsLandscapeScreen(
             if (isSystemInDarkTheme()) it.darkMutedSwatch else it.lightMutedSwatch
         }
 
+        val contentColor = swatch?.let { Color(it.bodyTextColor).copy(alpha = 0.87F) } ?: MaterialTheme.colorScheme.onSurface
+
         val cardColors = swatch?.let { Color(it.rgb) }?.let {
             CardDefaults.cardColors(
                 containerColor = it,
+                contentColor = contentColor
             )
         } ?: CardDefaults.cardColors()
 
         val buttonColors = swatch?.let { Color(it.rgb) }?.let {
             ButtonDefaults.buttonColors(
                 containerColor = it,
-                contentColor = MaterialTheme.colorScheme.onSurface
+                contentColor = contentColor
             )
-        } ?: ButtonDefaults.buttonColors()
+        } ?: ButtonDefaults.buttonColors(
+            containerColor = CardDefaults.cardColors().containerColor,
+            contentColor = CardDefaults.cardColors().contentColor
+        )
 
         BoxWithConstraints(
             Modifier
@@ -465,7 +475,7 @@ fun SongDetailsLandscapeScreen(
                             .padding(start = 10.dp, end = 10.dp, top = 25.dp, bottom = 10.dp),
                         text = name,
                         style = MaterialTheme.typography.headlineLarge,
-                        //color = MaterialTheme.colorScheme.inverseOnSurface,
+                        color = contentColor,
                     )
                     // todo: do the joining in a different layer (presentation)
                     Text(
@@ -474,7 +484,7 @@ fun SongDetailsLandscapeScreen(
                         text = artistString,
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Light,
-                        //color = MaterialTheme.colorScheme.inverseOnSurface,
+                        color = contentColor,
                     )
                 }
 
