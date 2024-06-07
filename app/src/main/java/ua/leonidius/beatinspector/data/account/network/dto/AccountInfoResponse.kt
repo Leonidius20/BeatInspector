@@ -1,10 +1,12 @@
 package ua.leonidius.beatinspector.data.account.network.dto
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import ua.leonidius.beatinspector.data.account.domain.AccountDetails
 import ua.leonidius.beatinspector.data.shared.Mapper
 import ua.leonidius.beatinspector.data.shared.network.dto.ImageDto
 
+@Keep
 data class AccountInfoResponse(
     val id: String,
 

@@ -1,7 +1,9 @@
 package ua.leonidius.beatinspector.data.tracks.lists.liked.network.dto
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 
+@Keep
 data class LikedTracksResponse(
 
     @SerializedName("previous")

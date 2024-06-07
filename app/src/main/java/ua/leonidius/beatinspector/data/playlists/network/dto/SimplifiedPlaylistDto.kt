@@ -1,7 +1,9 @@
 package ua.leonidius.beatinspector.data.playlists.network.dto
 
+import androidx.annotation.Keep
 import ua.leonidius.beatinspector.data.shared.network.dto.ImageDto
 
+@Keep
 data class SimplifiedPlaylistDto(
     val id: String,
     val name: String,

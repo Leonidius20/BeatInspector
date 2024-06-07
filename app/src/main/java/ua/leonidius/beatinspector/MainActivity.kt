@@ -54,8 +54,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        throw RuntimeException("test crash")
-
         val mainViewModel: MainViewModel by viewModels()
 
         val loginViewModel: LoginViewModel by viewModels()

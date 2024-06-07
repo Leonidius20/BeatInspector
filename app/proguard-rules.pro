@@ -18,7 +18,8 @@
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
--renamesourcefileattribute SourceFile
+# -renamesourcefileattribute SourceFile
+# apparentry this makes the app crash for some reason
 
 # Save mapping between original and obfuscated class names
 # for stack traces decoding in the future
@@ -41,4 +42,5 @@
 -dontwarn com.google.errorprone.annotations.RestrictedApi
 
 -dontobfuscate
- -keep class ua.leonidius.beatinspector.datasources.network.dto.** {*;}
+
+

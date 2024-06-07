@@ -1,7 +1,9 @@
 package ua.leonidius.beatinspector.data.tracks.details.network.dto
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 
+@Keep
 data class TrackAudioAnalysisDto(
     val duration: Double,
     // todo: display loudness in UI? is it LUFS?

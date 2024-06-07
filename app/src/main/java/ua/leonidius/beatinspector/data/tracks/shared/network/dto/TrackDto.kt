@@ -1,8 +1,10 @@
 package ua.leonidius.beatinspector.data.tracks.shared.network.dto
 
+import androidx.annotation.Keep
 import ua.leonidius.beatinspector.data.shared.Mapper
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 
+@Keep
 data class TrackDto(
     val id: String,
     val name: String,
