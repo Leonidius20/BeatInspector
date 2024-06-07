@@ -39,6 +39,22 @@
                 <data android:scheme="ua.leonidius.beatinspector"/>
             </intent-filter>
         </activity>
+
+        <!-- todo: make it not exported -->
+        <activity android:name=".features.crash.ui.OnCrashActivity"
+            android:exported="true"
+            android:process=":error_activity"
+
+            android:excludeFromRecents="true"
+
+            android:theme="@style/Theme.BeatInspector.DialogActivity" >
+
+            <intent-filter>
+                <!-- ... -->
+                <action android:name="cat.ereza.customactivityoncrash.ERROR" />
+            </intent-filter>
+
+        </activity>
     </application>
 
     <queries>

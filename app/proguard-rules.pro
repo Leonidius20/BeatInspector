@@ -18,13 +18,11 @@
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-#-renamesourcefileattribute SourceFile
+-renamesourcefileattribute SourceFile
 
 # Save mapping between original and obfuscated class names
 # for stack traces decoding in the future
 -printmapping ./build/app-r8-mapping.txt
-
--optimizationpasses 5
 
 # Print the resulting configuration
 -printconfiguration ./build/app-full-r8-config.txt

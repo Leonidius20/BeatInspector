@@ -2,4 +2,6 @@
 <resources>
 
     <style name="Theme.BeatInspector" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.BeatInspector.DialogActivity" parent="android:Theme.Material.Light.Dialog" />
 </resources>
