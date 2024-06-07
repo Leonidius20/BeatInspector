@@ -46,6 +46,8 @@
             android:process=":error_activity"
 
             android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:finishOnTaskLaunch="true"
 
             android:theme="@style/Theme.BeatInspector.DialogActivity" >
 

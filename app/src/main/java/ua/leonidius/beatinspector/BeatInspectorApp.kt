@@ -14,6 +14,7 @@ class BeatInspectorApp: Application() {
         CaocConfig.Builder
             .create()
             .errorActivity(OnCrashActivity::class.java)
+            .restartActivity(MainActivity::class.java)
             .apply()
     }
 

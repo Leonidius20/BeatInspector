@@ -3,5 +3,9 @@
 
     <style name="Theme.BeatInspector" parent="android:Theme.Material.Light.NoActionBar" />
 
-    <style name="Theme.BeatInspector.DialogActivity" parent="android:Theme.Material.Light.Dialog" />
+    <style name="Theme.BeatInspector.DialogActivity" parent="android:Theme.Material.Dialog.NoActionBar" >
+
+        <item name="android:windowBackground">@android:color/transparent</item>
+
+    </style>
 </resources>
