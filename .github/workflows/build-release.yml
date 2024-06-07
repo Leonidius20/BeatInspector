@@ -71,7 +71,6 @@ jobs:
                   draft: true
                   prerelease: false
             - name: Attach APK to Release
-              id: upload-release-asset
               uses: actions/upload-release-asset@v1
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -81,7 +80,6 @@ jobs:
                  asset_name: app-release.apk
                  asset_content_type: application/vnd.android.package-archive
             - name: Attach deobfuscation file to Release
-              id: upload-release-asset
               uses: actions/upload-release-asset@v1
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
