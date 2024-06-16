@@ -18,7 +18,7 @@
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
-# -renamesourcefileattribute SourceFile
+-renamesourcefileattribute SourceFile
 # apparentry this makes the app crash for some reason
 
 # Save mapping between original and obfuscated class names
@@ -26,10 +26,9 @@
 -printmapping ./build/app-r8-mapping.txt
 
 # Print the resulting configuration
--printconfiguration ./build/app-full-r8-config.txt
-
--printusage ./build/app-full-r8-usage.txt
--printseeds ./build/app-full-r8-seeds.txt
+# -printconfiguration ./build/app-full-r8-config.txt
+# -printusage ./build/app-full-r8-usage.txt
+# -printseeds ./build/app-full-r8-seeds.txt
 
 # maybe this will keep the NetworkResponseAdapter library working
 #-keep class com.haroldadmin.cnradapter.** { *; }
@@ -40,7 +39,3 @@
 -dontwarn com.google.errorprone.annotations.CheckReturnValue
 -dontwarn com.google.errorprone.annotations.Immutable
 -dontwarn com.google.errorprone.annotations.RestrictedApi
-
--dontobfuscate
-
-
