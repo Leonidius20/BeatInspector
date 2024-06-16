@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.Close
@@ -121,7 +123,9 @@ fun CrashScreen(
 ) {
     
     Column(
-        modifier = Modifier.padding(Dimens.paddingLarge),
+        modifier = Modifier
+            .padding(Dimens.paddingLarge)
+            .verticalScroll(rememberScrollState()),
     ) {
         Text(
             text = stringResource(id = R.string.app_name),
