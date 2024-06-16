@@ -18,19 +18,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import kotlinx.coroutines.flow.Flow
-import ua.leonidius.beatinspector.ui.theme.Dimens
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.data.shared.exception.SongDataIOException
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.features.shared.model.toUiMessage
-import ua.leonidius.beatinspector.features.tracklist.shared.viewmodels.TrackListViewModel
 import ua.leonidius.beatinspector.features.shared.ui.LoadingScreen
+import ua.leonidius.beatinspector.features.tracklist.shared.viewmodels.TrackListViewModel
+import ua.leonidius.beatinspector.ui.theme.Dimens
 
 interface TrackListActions {
     val goToSongDetails: (String) -> Unit
@@ -86,6 +87,12 @@ private fun TrackListScreen(
         LazyColumn {
             item {
                 headerContent()
+            }
+
+            if (lazyItems.itemCount == 0) {
+                item {
+                    EmptyListScreen()
+                }
             }
 
             items(count = lazyItems.itemCount) { index ->
@@ -215,4 +222,13 @@ private fun TrackListItem(
             )
         },
     )
+}
+
+@Composable
+fun EmptyListScreen() {
+    Text(text = stringResource(R.string.tracklist_empty),
+        modifier = Modifier
+            .padding(Dimens.paddingNormal)
+            .fillMaxWidth(),
+        textAlign = TextAlign.Center)
 }
