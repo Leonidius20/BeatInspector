@@ -300,6 +300,13 @@ object MainModule {
             .fallbackToDestructiveMigration()
             .build()
     }
+
+    // todo: place in a separate module
+    @Provides
+    @Singleton
+    fun providePlaylistDao(
+        database: TracksDatabase
+    ) = database.playlistDao()
 }
 
 @Module

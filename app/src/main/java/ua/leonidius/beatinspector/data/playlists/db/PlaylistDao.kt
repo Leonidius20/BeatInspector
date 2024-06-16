@@ -20,4 +20,7 @@ interface PlaylistDao {
     @Query("SELECT * FROM playlists")
     fun getAll(): PagingSource<Int, PlaylistSearchResult>
 
+    @Query("SELECT * FROM playlists WHERE id = :id")
+    suspend fun get(id: String): PlaylistSearchResult?
+
 }
