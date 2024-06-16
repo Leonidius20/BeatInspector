@@ -1,14 +1,17 @@
 package ua.leonidius.beatinspector.data.playlists.network.dto
 
 import androidx.annotation.Keep
+import ua.leonidius.beatinspector.data.playlists.domain.PlaylistSearchResult
+import ua.leonidius.beatinspector.data.shared.ListMapper
+import ua.leonidius.beatinspector.data.shared.Mapper
 
 @Keep
 data class MyPlaylistsResponse(
     val items: List<SimplifiedPlaylistDto>
-): ua.leonidius.beatinspector.data.shared.Mapper<List<ua.leonidius.beatinspector.data.playlists.domain.PlaylistSearchResult>>,
-    ua.leonidius.beatinspector.data.shared.ListMapper<ua.leonidius.beatinspector.data.playlists.domain.PlaylistSearchResult> {
+): Mapper<List<PlaylistSearchResult>>,
+    ListMapper<PlaylistSearchResult> {
 
-    override fun toDomainObject(): List<ua.leonidius.beatinspector.data.playlists.domain.PlaylistSearchResult> {
+    override fun toDomainObject(): List<PlaylistSearchResult> {
         return items.map { it.toDomainObject() }
     }
 

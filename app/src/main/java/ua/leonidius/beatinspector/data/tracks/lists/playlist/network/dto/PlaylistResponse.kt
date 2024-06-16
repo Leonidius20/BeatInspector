@@ -12,10 +12,12 @@ data class PlaylistResponse(
     val items: List<PlaylistTrackDto>
 ): ListMapper<SongSearchResult> {
 
+    @Keep
     data class PlaylistTrackDto(
         val track: PlaylistTrackOrPodcastEpDto
     ) {
 
+        @Keep
         data class PlaylistTrackOrPodcastEpDto(
             val id: String,
             val name: String,
