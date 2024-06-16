@@ -272,9 +272,12 @@ fun AboutDialog(
         },
         text = {
             Text(
-                text = stringResource(R.string.version, BuildConfig.VERSION_NAME),
-                textAlign = TextAlign.Justify,
+                stringResource(id = R.string.about_app_version,
+                  BuildConfig.VERSION_NAME,
+                  BuildConfig.BUILD_TYPE,
+                ),
             )
+
         },
         onDismissRequest = onDismissRequest,
         confirmButton = { }
