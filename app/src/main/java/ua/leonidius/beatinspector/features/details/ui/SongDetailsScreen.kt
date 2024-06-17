@@ -155,7 +155,7 @@ fun SongDetailsPortraitScreen(
     timeSignature: Int,
     loudness: String,
     genres: String,
-    albumArtUrl: String,
+    albumArtUrl: String?,
     onOpenInSpotifyButtonClick: () -> Unit,
     isSpotifyInstalled: Boolean,
 ) {
@@ -407,7 +407,7 @@ fun SongDetailsLandscapeScreen(
     timeSignature: Int,
     loudness: String,
     genres: String,
-    albumArtUrl: String,
+    albumArtUrl: String?,
     onOpenInSpotifyButtonClick: () -> Unit,
     isSpotifyInstalled: Boolean,
 ) {

@@ -1,5 +1,6 @@
 package ua.leonidius.beatinspector.features.home.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -8,14 +9,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.TrendingUp
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Album
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material.icons.filled.ThumbUp
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,20 +33,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
-import ua.leonidius.beatinspector.ui.theme.Dimens
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.data.playlists.domain.PlaylistSearchResult
 import ua.leonidius.beatinspector.data.shared.exception.SongDataIOException
-import ua.leonidius.beatinspector.shared.viewmodels.PfpState
 import ua.leonidius.beatinspector.features.home.viewmodels.HomeScreenViewModel
 import ua.leonidius.beatinspector.features.shared.model.toUiMessage
 import ua.leonidius.beatinspector.features.shared.ui.LoadingScreen
 import ua.leonidius.beatinspector.features.shared.ui.SearchBoxScreenWithAttribution
+import ua.leonidius.beatinspector.shared.viewmodels.PfpState
+import ua.leonidius.beatinspector.ui.theme.Dimens
 
 @Composable
 fun HomeScreen(
@@ -282,12 +278,20 @@ fun PlaylistWithImageListItem(
         title = title,
         onClick = onClick,
         leadingContent = {
-            AsyncImage(
+            // todo: one Image (you can adapt Coil to use Image, i believe)
+            imageUrl?.apply {
+                AsyncImage(
+                    modifier = Modifier.size(40.dp),
+                    model = imageUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    placeholder = rememberVectorPainter(Icons.Filled.Album),
+                )
+            } ?: Image(
                 modifier = Modifier.size(40.dp),
-                model = imageUrl,
+                imageVector = Icons.Filled.Album,
+                contentScale =  ContentScale.Crop,
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
-                placeholder = rememberVectorPainter(Icons.Filled.AccountCircle),
             )
         },
         trailingContent = {

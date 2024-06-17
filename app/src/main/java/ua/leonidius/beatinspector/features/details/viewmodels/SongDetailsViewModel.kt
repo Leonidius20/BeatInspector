@@ -41,7 +41,7 @@ class SongDetailsViewModel @Inject constructor(
             val timeSignatureOver4: Int,
             val loudness: String,
             val genres: String,
-            val albumArtUrl: String,
+            val albumArtUrl: String?,
             val isSpotifyInstalled: Boolean,
         ): UiState()
 

@@ -9,15 +9,15 @@ import ua.leonidius.beatinspector.data.shared.network.dto.ImageDto
 data class SimplifiedPlaylistDto(
     val id: String,
     val name: String,
-    val images: List<ImageDto>,
+    val images: List<ImageDto>?,
     val uri: String,
 ): Mapper<PlaylistSearchResult> {
 
     private val smallestImageOrNull: ImageDto?
-        get() = images.lastOrNull() // according to the API, the smallest image is the last one
+        get() = images?.lastOrNull() // according to the API, the smallest image is the last one
 
     private val biggestImageOrNull: ImageDto?
-        get() = images.firstOrNull() // according to the API, images returned in descending order
+        get() = images?.firstOrNull() // according to the API, images returned in descending order
 
     override fun toDomainObject(): PlaylistSearchResult {
         return PlaylistSearchResult(

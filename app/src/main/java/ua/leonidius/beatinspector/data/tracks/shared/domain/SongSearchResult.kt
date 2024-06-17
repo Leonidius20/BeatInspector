@@ -27,7 +27,7 @@ data class SongSearchResult(
 
     val artists: List<Artist>, // todo: how do we represent the artists?
     @ColumnInfo(name = "is_explicit") val isExplicit: Boolean,
-    @ColumnInfo(name = "big_image_url") val imageUrl: String,
+    @ColumnInfo(name = "big_image_url") val imageUrl: String?,
     @ColumnInfo(name = "small_image_url") val smallestImageUrl: String? = null,
 
 

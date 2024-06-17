@@ -20,8 +20,8 @@ data class TrackDto(
             name = name,
             artists = artists.map { it.toDomainObject() },
             isExplicit = explicit,
-            imageUrl = album.images[0].url,
-            smallestImageUrl = album.images.minByOrNull { it.width * it.height }?.url,
+            imageUrl = album.biggestImageUrlOrNull(),
+            smallestImageUrl = album.smallestImageUrlOrNull(),
         )
     }
 

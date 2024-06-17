@@ -64,9 +64,9 @@ class TrackDetailsRepositoryImpl @Inject constructor(
         baseInfo: ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult,
         details: ua.leonidius.beatinspector.data.tracks.details.network.dto.TrackAudioAnalysisDto,
         genres: List<String>,
-    ): ua.leonidius.beatinspector.data.tracks.details.domain.Song {
+    ): Song {
 
-        return ua.leonidius.beatinspector.data.tracks.details.domain.Song(
+        return Song(
             id = baseInfo.id,
             name = baseInfo.name,
             artist = baseInfo.artists.joinToString(", ") { it.name }, // todo: don't, just return as is and let ui layer handle it
