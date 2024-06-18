@@ -15,19 +15,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -38,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -195,6 +204,7 @@ fun SettingsScreenLandscape(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreenPortrait(
     modifier: Modifier = Modifier,
@@ -210,33 +220,60 @@ fun SettingsScreenPortrait(
     explicitHidden: Boolean,
     onExplicitHiddenChanged: (Boolean) -> Unit,
 ) {
-    LazyColumn(modifier) {
-        item {
-            PageTitle(title = R.string.settings_title)
+    val scrollBehavior = TopAppBarDefaults
+        .pinnedScrollBehavior(rememberTopAppBarState())
 
-            AccountCardPortrait(
-                uiState = accountDetailsState,
-            )
+    Scaffold(
+        modifier = modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
 
-            StaticSettingsBlock(
-                expanded = expanded,
-                onExpansionStateChanged = onExpansionStateChanged,
-                onLegalDocClicked = onLegalDocClicked,
-                onLinkClicked = onLinkClicked,
-                onLogoutOptionChosen = onLogOutOptionChosen,
-                onAboutOptionChosen = onAboutOptionChosen,
-                isExplicitHidden = explicitHidden,
-                onExplicitHiddenChanged = onExplicitHiddenChanged,
-            )
-        }
-        if (expanded) {
-            licensesList(
-                libraryNameAndLicenseHash = libraryNameAndLicenseHash,
-                onLicenseClicked = onLicenseClicked,
+        topBar = {
+            TopAppBar(
+                scrollBehavior = scrollBehavior,
+                title = {
+                    Text(stringResource(R.string.settings_title))
+                },
+                navigationIcon = {
+                    IconButton(onClick = { /* do something */ }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Localized description"
+                        )
+                    }
+                },
             )
         }
+    ) { innerPadding ->
+        LazyColumn(
+            Modifier.padding(top = innerPadding.calculateTopPadding()),
+        ) {
+            item {
 
+                AccountCardPortrait(
+                    uiState = accountDetailsState,
+                )
+
+                StaticSettingsBlock(
+                    expanded = expanded,
+                    onExpansionStateChanged = onExpansionStateChanged,
+                    onLegalDocClicked = onLegalDocClicked,
+                    onLinkClicked = onLinkClicked,
+                    onLogoutOptionChosen = onLogOutOptionChosen,
+                    onAboutOptionChosen = onAboutOptionChosen,
+                    isExplicitHidden = explicitHidden,
+                    onExplicitHiddenChanged = onExplicitHiddenChanged,
+                )
+            }
+            if (expanded) {
+                licensesList(
+                    libraryNameAndLicenseHash = libraryNameAndLicenseHash,
+                    onLicenseClicked = onLicenseClicked,
+                )
+            }
+
+        }
     }
+
 }
 
 private fun LazyListScope.licensesList(
@@ -363,7 +400,8 @@ fun AccountCardPortrait(
             .padding(
                 start = Dimens.paddingNormal,
                 end = Dimens.paddingNormal,
-                bottom = Dimens.paddingNormal
+                bottom = Dimens.paddingNormal,
+                top = Dimens.paddingSmall,
             )
     ) {
         if (uiState is SettingsViewModel.AccountDetailsState.Error) {
