@@ -309,11 +309,24 @@ fun StaticSettingsBlock(
         )
     }
     SettingsBlock(title = R.string.settings_block_links) {
-        LinkSettingsItem(
+        val link = stringResource(R.string.github_link)
+        ListItem(
+            headlineContent = {
+                Text(text = stringResource(R.string.github))
+            },
+            supportingContent = {
+                Text(text = stringResource(R.string.github_subtext))
+            },
+            modifier = Modifier.clickable {
+                onLinkClicked(link)
+            }
+
+        )
+        /*LinkSettingsItem(
             title = stringResource(R.string.github),
             link = stringResource(id = R.string.github_link),
             onLinkClicked = onLinkClicked
-        )
+        )*/
     }
     SettingsBlockWithTrailingExpandableItem(
         title = R.string.settings_block_title_legal_docs
