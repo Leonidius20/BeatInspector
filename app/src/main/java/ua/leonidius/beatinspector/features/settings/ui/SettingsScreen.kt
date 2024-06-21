@@ -29,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -167,6 +168,18 @@ fun SettingsScreenLandscape(
     explicitHidden: Boolean,
     onExplicitHiddenChanged: (Boolean) -> Unit,
 ) {
+    /*NavigationRail(
+        header = {
+            IconButton(onClick = { /* do something */ }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back button"
+                )
+            }
+        }
+    ) {
+        // maybe a word Settings but turned to the side
+    }*/
     Column(modifier) {
         PageTitle(title = R.string.settings_title)
 
@@ -237,7 +250,7 @@ fun SettingsScreenPortrait(
                     IconButton(onClick = { /* do something */ }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Localized description"
+                            contentDescription = "Back button"
                         )
                     }
                 },
