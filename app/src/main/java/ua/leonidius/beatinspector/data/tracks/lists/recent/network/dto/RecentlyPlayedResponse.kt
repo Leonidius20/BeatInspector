@@ -11,11 +11,13 @@ data class RecentlyPlayedResponse(
     val items: List<PlayHistoryDto>,
 ): ListMapper<SongSearchResult> {
 
+    @Keep
     data class Cursors(
         val after: String,
         val before: String,
     )
 
+    @Keep
     data class PlayHistoryDto(
         val track: TrackDto,
     ): ua.leonidius.beatinspector.data.shared.Mapper<ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult> {
