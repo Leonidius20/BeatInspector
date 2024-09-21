@@ -131,7 +131,7 @@ fun PlaylistsList(
         item {
             PlaylistsListItem(
                 onClick = onOpenSavedTracks,
-                title = "Liked Tracks",
+                title = stringResource(R.string.home_menu_liked_tracks),
                 leadingContent = {
                     Icon(
                         Icons.Filled.ThumbUp,
@@ -144,7 +144,7 @@ fun PlaylistsList(
         item {
             PlaylistsListItem(
                 onClick = goToRecentlyPlayed,
-                title = "Recently Played",
+                title = stringResource(R.string.home_menu_recently_played),
                 leadingContent = {
                     Icon(
                         Icons.Filled.History,
@@ -157,7 +157,7 @@ fun PlaylistsList(
         item {
             PlaylistsListItem(
                 onClick = goToTopTracks,
-                title = "Your Top Tracks",
+                title = stringResource(R.string.home_menu_top_tracks),
                 leadingContent = {
                     Icon(
                         Icons.Filled.Leaderboard,

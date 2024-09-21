@@ -2,6 +2,7 @@ package ua.leonidius.beatinspector.data.tracks.lists.recent.network.dto
 
 import androidx.annotation.Keep
 import ua.leonidius.beatinspector.data.shared.ListMapper
+import ua.leonidius.beatinspector.data.shared.Mapper
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.data.tracks.shared.network.dto.TrackDto
 
@@ -20,7 +21,7 @@ data class RecentlyPlayedResponse(
     @Keep
     data class PlayHistoryDto(
         val track: TrackDto,
-    ): ua.leonidius.beatinspector.data.shared.Mapper<ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult> {
+    ): Mapper<SongSearchResult> {
 
         override fun toDomainObject() = track.toDomainObject()
 

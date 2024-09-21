@@ -31,9 +31,11 @@ import ua.leonidius.beatinspector.features.login.viewmodels.LoginViewModel
 import ua.leonidius.beatinspector.features.search.ui.SearchScreen
 import ua.leonidius.beatinspector.features.settings.ui.SettingsScreen
 import ua.leonidius.beatinspector.features.tracklist.liked.viewmodels.LikedTracksViewModel
+import ua.leonidius.beatinspector.features.tracklist.liked.views.LikedTracksScreen
 import ua.leonidius.beatinspector.features.tracklist.playlist.ui.PlaylistContentActions
 import ua.leonidius.beatinspector.features.tracklist.playlist.ui.PlaylistContentScreen
 import ua.leonidius.beatinspector.features.tracklist.recent.viewmodels.RecentlyPlayedViewModel
+import ua.leonidius.beatinspector.features.tracklist.shared.ui.TrackListActions
 import ua.leonidius.beatinspector.features.tracklist.shared.ui.TrackListActionsImpl
 import ua.leonidius.beatinspector.features.tracklist.shared.ui.TrackListScreen
 import ua.leonidius.beatinspector.features.tracklist.top.viewmodels.TopTracksViewModel
@@ -181,16 +183,17 @@ class MainActivity : ComponentActivity() {
                             })
                         }
 
-                        val trackListActions = TrackListActionsImpl(
+                        val playlistContentActions = PlaylistContentActions(
                             openSongInSpotify = openTrackOnSpotifyOrAppStore,
-                            goToSongDetails = { navController.navigate("song/${it}") }
+                            goToSongDetails = { navController.navigate("song/${it}") },
+                            openPlaylistInSpotify = openPlaylistInAppOrAppStore,
+                            back = { navController.navigateUp() },
                         )
 
+                        val trackListActions: TrackListActions = playlistContentActions
+
                         composable("saved_tracks") {
-                            TrackListScreen(
-                                hiltViewModel<LikedTracksViewModel>(),
-                                trackListActions,
-                            )
+                            LikedTracksScreen(trackListActions = trackListActions)
                         }
                         composable(Screen.Playlists.routeTemplate) {
                             HomeScreen(
@@ -205,18 +208,12 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("recently_played") {
                             TrackListScreen(
-                                hiltViewModel<RecentlyPlayedViewModel>(),
-                                trackListActions,
+                                viewModel = hiltViewModel<RecentlyPlayedViewModel>(),
+                                actions = trackListActions,
                             )
                         }
 
                         composable("playlist/{playlistId}") {
-                            val playlistContentActions = PlaylistContentActions(
-                                openSongInSpotify = trackListActions.openSongInSpotify,
-                                goToSongDetails = trackListActions.goToSongDetails,
-                                openPlaylistInSpotify = openPlaylistInAppOrAppStore
-                            )
-
                             PlaylistContentScreen(
                                 playlistContentActions,
                                 isSpotifyInstalledFlow,
@@ -224,8 +221,8 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("top_tracks") {
                             TrackListScreen(
-                                hiltViewModel<TopTracksViewModel>(),
-                                trackListActions,
+                                viewModel = hiltViewModel<TopTracksViewModel>(),
+                                actions = trackListActions,
                             )
                         }
                     }

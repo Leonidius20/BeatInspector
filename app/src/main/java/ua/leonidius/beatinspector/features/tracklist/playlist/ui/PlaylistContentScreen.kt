@@ -24,6 +24,7 @@ data class PlaylistContentActions(
     override val goToSongDetails: (String) -> Unit,
     override val openSongInSpotify: (String) -> Unit,
     val openPlaylistInSpotify: (String) -> Unit,
+    override val back: () -> Unit,
 ): TrackListActions
 
 @Composable
@@ -34,8 +35,8 @@ fun PlaylistContentScreen(
     val model = hiltViewModel<PlaylistContentViewModel>()
 
     TrackListScreen(
-        model,
-        actions,
+        viewModel = model,
+        actions = actions,
         headerContent = {
             when (val state = model.uiState) {
                 is PlaylistContentViewModel.UiState.Loading -> {

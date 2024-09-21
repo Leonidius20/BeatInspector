@@ -15,6 +15,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,20 +43,24 @@ import ua.leonidius.beatinspector.ui.theme.Dimens
 interface TrackListActions {
     val goToSongDetails: (String) -> Unit
     val openSongInSpotify: (String) -> Unit
+    val back: () -> Unit
 }
 
 data class TrackListActionsImpl(
     override val goToSongDetails: (String) -> Unit,
     override val openSongInSpotify: (String) -> Unit,
+    override val back: () -> Unit,
 ): TrackListActions
 
 @Composable
 fun TrackListScreen(
+    modifier: Modifier = Modifier,
     viewModel: TrackListViewModel,
     actions: TrackListActions,
     headerContent: @Composable () -> Unit = {},
 ) {
     TrackListScreen(
+        modifier = modifier,
         pagingFlow = viewModel.flow,
         onOpenSongInSpotify = actions.openSongInSpotify,
         onNavigateToSongDetails = actions.goToSongDetails,
@@ -65,6 +70,7 @@ fun TrackListScreen(
 
 @Composable
 private fun TrackListScreen(
+    modifier: Modifier = Modifier,
     pagingFlow: Flow<PagingData<SongSearchResult>>,
     onOpenSongInSpotify: (String) -> Unit,
     onNavigateToSongDetails: (String) -> Unit,
@@ -90,7 +96,7 @@ private fun TrackListScreen(
     } else if (lazyItems.loadState.refresh is LoadState.Loading) {
         LoadingScreen()
     } else {
-        LazyColumn {
+        LazyColumn(modifier) {
             item {
                 headerContent()
             }
@@ -135,6 +141,8 @@ private fun TrackListScreen(
                 }
             }
         }
+
+
     }
 
 

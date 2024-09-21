@@ -259,5 +259,8 @@
     <string name="api_access_denied_error">The access to the API is denied by Spotify. Most likely this is because the app is still in Development mode and was not approved by Spotify. If you are using the official BeatInspector app, please wait until the approval process completes. It could take multiple weeks. If you are using a fork, contact its developer.</string>
     <string name="tracklist_empty">No tracks here</string>
     <string name="github_subtext"><![CDATA[Report issues, suggest improvements & view source code]]></string>
+    <string name="home_menu_liked_tracks">Liked Tracks</string>
+    <string name="home_menu_recently_played">Recently Played</string>
+    <string name="home_menu_top_tracks">Your Top Tracks</string>
 
 </resources>
