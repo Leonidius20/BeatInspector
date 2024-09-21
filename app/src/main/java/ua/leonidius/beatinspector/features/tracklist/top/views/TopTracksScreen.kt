@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.features.tracklist.liked.views
+package ua.leonidius.beatinspector.features.tracklist.top.views
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -17,16 +17,16 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import ua.leonidius.beatinspector.R
-import ua.leonidius.beatinspector.features.tracklist.liked.viewmodels.LikedTracksViewModel
 import ua.leonidius.beatinspector.features.tracklist.shared.ui.TrackListActions
 import ua.leonidius.beatinspector.features.tracklist.shared.ui.TrackListScreen
+import ua.leonidius.beatinspector.features.tracklist.top.viewmodels.TopTracksViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LikedTracksScreen(
+fun TopTracksScreen(
     trackListActions: TrackListActions,
 ) {
-    val viewModel = hiltViewModel<LikedTracksViewModel>()
+    val viewModel = hiltViewModel<TopTracksViewModel>()
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
@@ -36,7 +36,7 @@ fun LikedTracksScreen(
             LargeTopAppBar(
                 title = {
                     Text(
-                        stringResource(id = R.string.home_menu_liked_tracks),
+                        stringResource(id = R.string.home_menu_top_tracks),
                     )
                 },
                 navigationIcon = {
@@ -60,6 +60,4 @@ fun LikedTracksScreen(
             }
         )
     }
-
-
 }

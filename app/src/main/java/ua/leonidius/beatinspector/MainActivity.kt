@@ -30,15 +30,18 @@ import ua.leonidius.beatinspector.features.login.ui.LoginScreen
 import ua.leonidius.beatinspector.features.login.viewmodels.LoginViewModel
 import ua.leonidius.beatinspector.features.search.ui.SearchScreen
 import ua.leonidius.beatinspector.features.settings.ui.SettingsScreen
+import ua.leonidius.beatinspector.features.settings.ui.SettingsScreenActions
 import ua.leonidius.beatinspector.features.tracklist.liked.viewmodels.LikedTracksViewModel
 import ua.leonidius.beatinspector.features.tracklist.liked.views.LikedTracksScreen
 import ua.leonidius.beatinspector.features.tracklist.playlist.ui.PlaylistContentActions
 import ua.leonidius.beatinspector.features.tracklist.playlist.ui.PlaylistContentScreen
 import ua.leonidius.beatinspector.features.tracklist.recent.viewmodels.RecentlyPlayedViewModel
+import ua.leonidius.beatinspector.features.tracklist.recent.views.RecentlyPlayedScreen
 import ua.leonidius.beatinspector.features.tracklist.shared.ui.TrackListActions
 import ua.leonidius.beatinspector.features.tracklist.shared.ui.TrackListActionsImpl
 import ua.leonidius.beatinspector.features.tracklist.shared.ui.TrackListScreen
 import ua.leonidius.beatinspector.features.tracklist.top.viewmodels.TopTracksViewModel
+import ua.leonidius.beatinspector.features.tracklist.top.views.TopTracksScreen
 import ua.leonidius.beatinspector.ui.theme.BeatInspectorTheme
 import javax.inject.Inject
 import javax.inject.Named
@@ -157,7 +160,10 @@ class MainActivity : ComponentActivity() {
                             LongTextScreen(text = licenses.find { it.hash == licenseHash }!!.licenseContent!!)
                         }
                         composable("settings") {
-                            SettingsScreen(onLegalDocClicked = {
+                            SettingsScreen(actions = SettingsScreenActions(
+                                onBack = { navController.navigateUp() },
+
+                                onLegalDocClicked = {
                                 navController.navigate("text/${it}")
                             }, onLogOutClicked = {
                                 loginViewModel.logout()
@@ -180,7 +186,7 @@ class MainActivity : ComponentActivity() {
                                 startActivity(browserIntent)
                             }, onLicenseClicked = { licenseHash ->
                                 navController.navigate("license/${licenseHash}")
-                            })
+                            }))
                         }
 
                         val playlistContentActions = PlaylistContentActions(
@@ -207,9 +213,8 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("recently_played") {
-                            TrackListScreen(
-                                viewModel = hiltViewModel<RecentlyPlayedViewModel>(),
-                                actions = trackListActions,
+                            RecentlyPlayedScreen(
+                                trackListActions = trackListActions,
                             )
                         }
 
@@ -220,9 +225,8 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable("top_tracks") {
-                            TrackListScreen(
-                                viewModel = hiltViewModel<TopTracksViewModel>(),
-                                actions = trackListActions,
+                            TopTracksScreen(
+                                trackListActions = trackListActions,
                             )
                         }
                     }

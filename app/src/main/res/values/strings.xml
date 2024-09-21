@@ -262,5 +262,6 @@
     <string name="home_menu_liked_tracks">Liked Tracks</string>
     <string name="home_menu_recently_played">Recently Played</string>
     <string name="home_menu_top_tracks">Your Top Tracks</string>
+    <string name="back_button_desc">Back</string>
 
 </resources>

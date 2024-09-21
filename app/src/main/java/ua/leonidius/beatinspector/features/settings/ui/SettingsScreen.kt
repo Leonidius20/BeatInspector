@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -29,7 +28,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -56,33 +54,38 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import ua.leonidius.beatinspector.BuildConfig
-import ua.leonidius.beatinspector.ui.theme.Dimens
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.features.settings.viewmodels.SettingsViewModel
+import ua.leonidius.beatinspector.ui.theme.Dimens
+
+data class SettingsScreenActions(
+    val onLegalDocClicked: (Int) -> Unit,
+    val onLogOutClicked: () -> Unit,
+    val onLinkClicked: (String) -> Unit,
+    val onLicenseClicked: (String) -> Unit,
+    val onBack: () -> Unit,
+)
 
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = hiltViewModel(),
     // if DataLoading, show placeholder image and empty text (or wiped out text)
-    onLegalDocClicked: (Int) -> Unit,
-    onLogOutClicked: () -> Unit,
-    onLinkClicked: (String) -> Unit,
-    onLicenseClicked: (String) -> Unit,
+    actions: SettingsScreenActions,
 ) {
     SettingsScreen(
         modifier = modifier,
         accountDetailsState = viewModel.accountDetailsState,
         libraryNameAndLicenseHash = viewModel.libraryNameAndLicenseHash,
-        onLegalDocClicked = onLegalDocClicked,
-        onLogOutClicked = onLogOutClicked,
-        onLinkClicked = onLinkClicked,
-        onLicenseClicked = onLicenseClicked,
+        onLegalDocClicked = actions.onLegalDocClicked,
+        onLogOutClicked = actions.onLogOutClicked,
+        onLinkClicked = actions.onLinkClicked,
+        onLicenseClicked = actions.onLicenseClicked,
         explicitHidden = viewModel.hideExplicit.collectAsState(initial = false).value,
         onExplicitHiddenChanged = { viewModel.toggleHideExplicit(it) },
+        onBack = actions.onBack
     )
 }
 
@@ -99,6 +102,7 @@ fun SettingsScreen(
     onLicenseClicked: (String) -> Unit,
     explicitHidden: Boolean,
     onExplicitHiddenChanged: (Boolean) -> Unit,
+    onBack: () -> Unit,
 ) {
     val expanded = rememberSaveable { mutableStateOf(false) }
     var aboutAppDialogShown by rememberSaveable { mutableStateOf(false) }
@@ -120,6 +124,7 @@ fun SettingsScreen(
             onExpansionStateChanged = { expanded.value = !expanded.value },
             explicitHidden = explicitHidden,
             onExplicitHiddenChanged = onExplicitHiddenChanged,
+            onBack = onBack,
         )
     } else {
         SettingsScreenLandscape(
@@ -232,6 +237,7 @@ fun SettingsScreenPortrait(
     onExpansionStateChanged: () -> Unit,
     explicitHidden: Boolean,
     onExplicitHiddenChanged: (Boolean) -> Unit,
+    onBack: () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults
         .pinnedScrollBehavior(rememberTopAppBarState())
@@ -247,10 +253,10 @@ fun SettingsScreenPortrait(
                     Text(stringResource(R.string.settings_title))
                 },
                 navigationIcon = {
-                    IconButton(onClick = { /* do something */ }) {
+                    IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back button"
+                            contentDescription = stringResource(R.string.back_button_desc)
                         )
                     }
                 },
@@ -722,5 +728,6 @@ fun SettingsScreenPreview() {
         onLicenseClicked = {},
         explicitHidden = false,
         onExplicitHiddenChanged = {},
+        onBack = {}
     )
 }
