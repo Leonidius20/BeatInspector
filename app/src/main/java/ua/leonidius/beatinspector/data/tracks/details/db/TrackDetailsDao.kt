@@ -10,13 +10,15 @@ import ua.leonidius.beatinspector.data.tracks.shared.db.TrackBaseDetails
 @Dao
 interface TrackDetailsDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    // never update the data as this leads to the associated Extended Details
+    // record to be deleted. Hence IGNORE collisions
     suspend fun insertTrackBaseDetails(details: TrackBaseDetails)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAllTrackBaseDetails(details: List<TrackBaseDetails>)
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTrackExtendedDetails(details: TrackExtendedDetails)
 
     @Query("select * from tracks where trackId = :trackId")
