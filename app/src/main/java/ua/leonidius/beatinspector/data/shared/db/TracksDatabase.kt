@@ -20,7 +20,7 @@ import javax.inject.Singleton
         //Artist::class,
     ],
     version = 2,
-    // exportSchema = true,
+    exportSchema = true,
     //autoMigrations = [
     //    AutoMigration(from = 2, to = 3)
     //]

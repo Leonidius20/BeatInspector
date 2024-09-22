@@ -1,15 +1,19 @@
 import java.util.Properties
 
 plugins {
-    // kotlin("kapt")
-    id("kotlin-kapt")
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.ksp)
+
     id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     id("com.github.alexfu.androidautoversion")
     id("com.mikepenz.aboutlibraries.plugin")
-    id("com.google.dagger.hilt.android") // todo: maybe should change that dagger.hilt.android.plugin
-    id("androidx.room")
+    // id("com.google.dagger.hilt.android") // todo: maybe should change that dagger.hilt.android.plugin
+    alias(libs.plugins.hilt)
+
+    alias(libs.plugins.room)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -170,28 +174,20 @@ dependencies {
     testImplementation("androidx.paging:paging-testing:3.3.0")
 
     // hilt
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    kapt("androidx.hilt:hilt-compiler:1.2.0")
+    ksp("androidx.hilt:hilt-compiler:1.2.0")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("io.mockk:mockk:1.13.10")
 
     // room
-    val room_version = "2.6.1"
-
-    implementation("androidx.room:room-runtime:$room_version")
-    annotationProcessor("androidx.room:room-compiler:$room_version")
-
-    // To use Kotlin annotation processing tool (kapt)
-    kapt("androidx.room:room-compiler:$room_version")
-
-    // optional - Kotlin Extensions and Coroutines support for Room
-    implementation("androidx.room:room-ktx:$room_version")
-
-    // optional - Paging 3 Integration
-    implementation("androidx.room:room-paging:$room_version")
+    implementation(libs.room.runtime)
+    annotationProcessor(libs.room.compiler)
+    ksp(libs.room.compiler)
+    implementation(libs.room.ktx)
+    implementation(libs.room.paging)
 
     // crush handling
     implementation ("cat.ereza:customactivityoncrash:2.4.0")
@@ -202,10 +198,6 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-}
-
-kapt {
-    correctErrorTypes = true
 }
 
 room {
