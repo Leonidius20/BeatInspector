@@ -9,14 +9,14 @@ import androidx.room.PrimaryKey
  */
 @Entity(tableName = "track_audio_details", foreignKeys = [
     ForeignKey(
-        entity = TrackShelfInfo::class,
+        entity = TrackBaseDetails::class,
         parentColumns = arrayOf("trackId"),
         childColumns = arrayOf("trackId"),
         onUpdate = ForeignKey.CASCADE,
         onDelete = ForeignKey.CASCADE,
     )
 ])
-data class TrackAudioDetails(
+data class TrackExtendedDetails(
     @PrimaryKey
     val trackId: String,
 
@@ -29,5 +29,7 @@ data class TrackAudioDetails(
     val key: String, // todo: enum
     val keyConfidence: Double,
     val modeConfidence: Double,
+
+    val genres: String, // just a list of genres separated by comma with space
 
 )

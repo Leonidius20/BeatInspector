@@ -10,7 +10,7 @@ import androidx.room.PrimaryKey
  * is JOIN-ed in SQL.
  */
 @Entity(tableName = "tracks")
-data class TrackShelfInfo(
+data class TrackBaseDetails(
 
     @PrimaryKey val trackId: String,
 
@@ -22,5 +22,7 @@ data class TrackShelfInfo(
 
     @ColumnInfo(name = "small_image_url") val smallestImageUrl: String? = null,
 
-    val audioDetailsLoaded: Boolean,
+    val artistNames: String, // separated by comma with space
+
+    val artistIds: String, // separated by comma
 )

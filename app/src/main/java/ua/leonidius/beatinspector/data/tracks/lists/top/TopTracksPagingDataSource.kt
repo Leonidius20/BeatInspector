@@ -2,7 +2,7 @@ package ua.leonidius.beatinspector.data.tracks.lists.top
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import ua.leonidius.beatinspector.data.tracks.shared.cache.SongTitlesInMemCache
+import ua.leonidius.beatinspector.data.tracks.shared.cache.TrackBaseDetailsDbDataSource
 import ua.leonidius.beatinspector.data.tracks.lists.top.network.dto.TopTracksResponse
 import ua.leonidius.beatinspector.data.tracks.lists.top.network.api.TopTracksApi
 import ua.leonidius.beatinspector.data.tracks.lists.BaseTrackPagingDataSource
@@ -11,7 +11,7 @@ import javax.inject.Inject
 
 class TopTracksPagingDataSource @Inject constructor(
     topTracksApi: TopTracksApi,
-    cache: SongTitlesInMemCache,
+    cache: TrackBaseDetailsDbDataSource,
     settingsFlow: Flow<SettingsState>,
 ): BaseTrackPagingDataSource<TopTracksResponse>(
     topTracksApi::getTopTracks,

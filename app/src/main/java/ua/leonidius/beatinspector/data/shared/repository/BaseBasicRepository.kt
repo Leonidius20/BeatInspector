@@ -20,13 +20,13 @@ abstract class BaseBasicRepository<I, D: Mapper<T>, T>(
 
     override suspend fun get(id: I): T = withContext(ioDispatcher) {
         if (cache.has(id)) {
-            return@withContext cache[id]
+            return@withContext cache.get(id)
         }
 
         val data = networkDataSource.load(id)
 
         launch {
-            cache[id] = data
+            cache.set(id, data)
         }
 
         return@withContext data

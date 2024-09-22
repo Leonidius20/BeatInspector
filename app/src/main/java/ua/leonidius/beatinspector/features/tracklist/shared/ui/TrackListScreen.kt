@@ -18,6 +18,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -210,10 +211,16 @@ private fun TrackListItem(
     track: SongSearchResult,
     onOpenSongInSpotify: () -> Unit,
 ) {
+    val trackName = remember(track.name, track.isExplicit) {
+        if (track.isExplicit)
+            "${track.name} \uD83C\uDD74"
+        else track.name
+    }
+
     ListItem(
         modifier = modifier,
-        headlineContent = { Text(text = track.name) },
-        supportingContent = { Text(text = track.artists.joinToString(", ") { it.name }) },
+        headlineContent = { Text(text = trackName) },
+        supportingContent = { Text(text = track.artistNames) },
         trailingContent = {
             IconButton(
                 onClick = onOpenSongInSpotify,
@@ -267,10 +274,11 @@ fun TrackListItemWithNoImage() {
         track = SongSearchResult(
             id = "1",
             name = "Track with no image",
-            artists = listOf(),
+            artistNames = "Art, Ist",
             isExplicit = false,
             imageUrl = null,
             smallestImageUrl = null,
+            artistIds = "rr,rr"
         ),
         onOpenSongInSpotify = {},
     )

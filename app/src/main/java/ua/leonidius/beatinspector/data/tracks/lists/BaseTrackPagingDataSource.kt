@@ -8,10 +8,11 @@ import ua.leonidius.beatinspector.data.shared.network.dto.ErrorResponse
 import ua.leonidius.beatinspector.data.shared.ListMapper
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.data.shared.BasePagingDataSourceWithTitleCache
+import ua.leonidius.beatinspector.data.shared.cache.Cache
 
 open class BaseTrackPagingDataSource<D: ListMapper<SongSearchResult>>(
     api: suspend (limit: Int, offset: Int) -> NetworkResponse<D, ErrorResponse>,
-    cache: InMemCache<String, SongSearchResult>,
+    cache: Cache<String, SongSearchResult>,
     hideExplicit: Flow<Boolean>,
 ): BasePagingDataSourceWithTitleCache<SongSearchResult, D>(
     api, cache,

@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.map
 import ua.leonidius.beatinspector.data.shared.repository.BaseTrackListPagingRepository
 import ua.leonidius.beatinspector.data.tracks.lists.liked.SavedTracksNetworkPagingSource
 import ua.leonidius.beatinspector.data.tracks.lists.liked.network.api.LikedTracksApi
-import ua.leonidius.beatinspector.data.tracks.shared.cache.SongTitlesInMemCache
+import ua.leonidius.beatinspector.data.tracks.shared.cache.TrackBaseDetailsDbDataSource
 import ua.leonidius.beatinspector.shared.domain.SettingsState
 import javax.inject.Inject
 
@@ -17,7 +17,7 @@ private const val PAGE_SIZE = 50
 
 class LikedTracksRepository @Inject constructor(
     private val api: LikedTracksApi,
-    private val cache: SongTitlesInMemCache,
+    private val cache: TrackBaseDetailsDbDataSource,
     private val settingsFlow: Flow<SettingsState>,
 ): BaseTrackListPagingRepository() {
     override protected fun createPagingSource() = SavedTracksNetworkPagingSource(

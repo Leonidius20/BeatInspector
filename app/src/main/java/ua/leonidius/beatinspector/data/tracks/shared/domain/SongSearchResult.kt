@@ -1,9 +1,5 @@
 package ua.leonidius.beatinspector.data.tracks.shared.domain
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
 /**
  * this represents the title and the artists and the small & big cover
  * images of a song. This data will be updated every time someone fetches
@@ -24,7 +20,17 @@ data class SongSearchResult(
     override val id: String,
     val name: String,
 
-    val artists: List<Artist>,
+    /**
+     * Artist names separated by comma with a space. Used for displaying in the UI
+     */
+    val artistNames: String,
+
+    /**
+     * Artist IDs separated by a comma without a space. Used to load genres associated
+     * with all artists at once
+     */
+    val artistIds: String,
+
     val isExplicit: Boolean,
     val imageUrl: String?,
     val smallestImageUrl: String? = null,

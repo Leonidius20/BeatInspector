@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,7 +35,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import ua.leonidius.beatinspector.R
 import ua.leonidius.beatinspector.data.tracks.shared.domain.Artist
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
@@ -156,38 +156,6 @@ fun SearchScreen(
 
 }
 
-
-@Composable
-@Preview("SearchScreenPreview", widthDp = 320, showBackground = true)
-fun SearchScreenPortraitPreview() {
-    val artist1 = Artist("1", "artist1")
-    val artist2 = Artist("2", "artist2")
-    val song1 = SongSearchResult("1", "song1", listOf(artist1, artist2), true,"")
-    val song2 = SongSearchResult("2", "song2", listOf(artist1), true,"")
-
-    SearchResultsList(
-        results = listOf(song1, song2),
-        onNavigateToSongDetails = {},
-        onOpenSongInSpotify = {},
-    )
-}
-
-@Composable
-@Preview("SearchResultsGridPreview", widthDp = 720, showBackground = true)
-fun SearchResultsGridPreview() {
-    val artist1 = Artist("1", "artist1")
-    val artist2 = Artist("2", "artist2")
-    // todo: maybe there should be a factory so that we don't depend on SongSearchResult directly
-    val song1 = SongSearchResult("1", "song1", listOf(artist1, artist2), true,"")
-    val song2 = SongSearchResult("2", "song2", listOf(artist1), true,"")
-
-    SearchResultsGrid(
-        results = listOf(song1, song2),
-        onNavigateToSongDetails = {},
-        onOpenSongInSpotify = {},
-    )
-}
-
 @Composable
 fun SearchResultsList(
     modifier: Modifier = Modifier,
@@ -199,9 +167,10 @@ fun SearchResultsList(
         items(results, key = { it.id }) {
             SearchResultsListItem(
                 Modifier.clickable { onNavigateToSongDetails(it.id) },
-                title = it.name,
-                artist = it.artists.joinToString(", ") { it.name },
+                name = it.name,
+                artist = it.artistNames,
                 onOpenSongInSpotify = { onOpenSongInSpotify(it.id) },
+                isExplicit = it.isExplicit,
             )
         }
     }
@@ -210,13 +179,20 @@ fun SearchResultsList(
 @Composable
 fun SearchResultsListItem(
     modifier: Modifier = Modifier,
-    title: String,
+    name: String,
     artist: String,
     onOpenSongInSpotify: () -> Unit,
+    isExplicit: Boolean,
 ) {
+    val trackName = remember(name, isExplicit) {
+        if (isExplicit)
+            "$name \uD83C\uDD74"
+        else name
+    }
+
     ListItem(
         modifier = modifier,
-        headlineContent = { Text(text = title) },
+        headlineContent = { Text(text = trackName) },
         supportingContent = { Text(text = artist) },
         trailingContent = {
             IconButton(
@@ -248,9 +224,10 @@ fun SearchResultsGrid(
         items(results, key = { it.id }) {
             SearchResultsListItem(
                 Modifier.clickable { onNavigateToSongDetails(it.id) },
-                title = it.name,
-                artist = it.artists.joinToString(", ") { it.name },
+                name = it.name,
+                artist = it.artistNames,
                 onOpenSongInSpotify = { onOpenSongInSpotify(it.id) },
+                isExplicit = it.isExplicit,
             )
         }
     }

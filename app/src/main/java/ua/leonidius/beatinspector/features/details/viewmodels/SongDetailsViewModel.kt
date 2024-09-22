@@ -43,6 +43,7 @@ class SongDetailsViewModel @Inject constructor(
             val genres: String,
             val albumArtUrl: String?,
             val isSpotifyInstalled: Boolean,
+            val isExplicit: Boolean,
         ): UiState()
 
         data class Error(
@@ -70,9 +71,10 @@ class SongDetailsViewModel @Inject constructor(
                     key = song.key,
                     timeSignatureOver4 = song.timeSignature,
                     loudness = decimalFormat.format(song.loudness) + " db",
-                    genres = song.genres.joinToString(", "),
+                    genres = song.genres,
                     albumArtUrl = song.albumArtUrl,
                     isSpotifyInstalled = isSpotifyInstalled,
+                    isExplicit = song.isExplicit,
                 )
             } catch (e: SongDataIOException) {
                 UiState.Error(

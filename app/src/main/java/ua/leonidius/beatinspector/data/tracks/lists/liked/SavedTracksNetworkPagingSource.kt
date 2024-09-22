@@ -5,13 +5,13 @@ import kotlinx.coroutines.flow.map
 import ua.leonidius.beatinspector.data.tracks.lists.liked.network.dto.LikedTracksResponse
 import ua.leonidius.beatinspector.data.tracks.lists.liked.network.api.LikedTracksApi
 import ua.leonidius.beatinspector.data.tracks.lists.BaseTrackPagingDataSource
-import ua.leonidius.beatinspector.data.tracks.shared.cache.SongTitlesInMemCache
+import ua.leonidius.beatinspector.data.tracks.shared.cache.TrackBaseDetailsDbDataSource
 import ua.leonidius.beatinspector.shared.domain.SettingsState
 import javax.inject.Inject
 
 class SavedTracksNetworkPagingSource @Inject constructor(
     service: LikedTracksApi,
-    searchCache: SongTitlesInMemCache,
+    searchCache: TrackBaseDetailsDbDataSource,
     settingsFlow: Flow<SettingsState>,
 ): BaseTrackPagingDataSource<LikedTracksResponse>(
     service::getSavedTracks,

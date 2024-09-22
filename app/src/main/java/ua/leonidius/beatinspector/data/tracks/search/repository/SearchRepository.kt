@@ -5,6 +5,6 @@ import ua.leonidius.beatinspector.data.shared.repository.BasicRepository
 
 interface SearchRepository: BasicRepository<String, List<SongSearchResult>> {
 
-    fun getById(id: String): SongSearchResult
+    suspend fun getById(id: String): SongSearchResult
 
 }

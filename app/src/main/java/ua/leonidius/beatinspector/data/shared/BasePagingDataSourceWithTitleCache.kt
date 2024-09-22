@@ -9,6 +9,7 @@ import androidx.paging.cachedIn
 import com.haroldadmin.cnradapter.NetworkResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import ua.leonidius.beatinspector.data.shared.cache.Cache
 import ua.leonidius.beatinspector.data.shared.cache.InMemCache
 import ua.leonidius.beatinspector.data.shared.network.dto.ErrorResponse
 import ua.leonidius.beatinspector.data.shared.domain.SearchResult
@@ -20,7 +21,7 @@ import ua.leonidius.beatinspector.data.shared.network.toUIException
  */
 abstract class BasePagingDataSourceWithTitleCache<T: SearchResult, D: ListMapper<T>>(
     private val service: suspend (limit: Int, offset: Int) -> NetworkResponse<D, ErrorResponse>,
-    private val cache: InMemCache<String, T>,
+    private val cache: Cache<String, T>,
     // private val hideExplicit: () -> Boolean,
     private val filter: (suspend (T) -> Boolean)? = null,
 ): PagingSource<Int, T>(), PagingDataSource<T> {

@@ -14,6 +14,8 @@ data class Song(
     val key: String, // todo: enum
     val keyConfidence: Double,
     val modeConfidence: Double,
-    val genres: List<String> = listOf(),
+    val genres: String, // joined with ", "
     val albumArtUrl: String?,
+
+    val isExplicit: Boolean,
 )

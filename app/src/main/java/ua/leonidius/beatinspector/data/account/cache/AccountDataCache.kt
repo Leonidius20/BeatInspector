@@ -28,7 +28,7 @@ class AccountDataCache @Inject constructor(
 
     // todo: it may be a good idea have the data as datastore flow, so that any viewmodel can observe it and update ui accordingly
 
-    override operator fun get(id: Unit): AccountDetails {
+    override suspend fun get(id: Unit): AccountDetails {
         val username = prefs.getString(prefUsernameKey, null)!! // should throw exception if null, should check isDataAvailable first
         val id = prefs.getString(prefIdKey, null)!!
         val smallImageUrl = prefs.getString(prefSmallImageUrl, null)
@@ -37,7 +37,7 @@ class AccountDataCache @Inject constructor(
         return AccountDetails(id, username, smallImageUrl, bigImageUrl)
     }
 
-    override operator fun set(id: Unit, data: AccountDetails) {
+    override suspend fun set(id: Unit, data: AccountDetails) {
         with(prefs.edit()) {
             putString(prefUsernameKey, data.username)
             putString(prefIdKey, data.id)
@@ -47,7 +47,7 @@ class AccountDataCache @Inject constructor(
         }
     }
 
-    override fun has(id: Unit): Boolean {
+    override suspend fun has(id: Unit): Boolean {
         return prefs.contains(prefUsernameKey) && prefs.contains(prefIdKey)
     }
 

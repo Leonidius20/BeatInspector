@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ua.leonidius.beatinspector.data.tracks.search.network.SearchNetworkDataSource
-import ua.leonidius.beatinspector.data.tracks.shared.cache.SongTitlesInMemCache
+import ua.leonidius.beatinspector.data.tracks.shared.cache.TrackBaseDetailsDbDataSource
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.shared.domain.SettingsState
 import javax.inject.Inject
@@ -18,7 +18,7 @@ class SearchRepositoryImpl @Inject constructor(
 
     @Named("io") private val ioDispatcher: CoroutineDispatcher,
     private val properNetworkDataSource: SearchNetworkDataSource,
-    private val searchCacheDataSource: SongTitlesInMemCache,
+    private val searchCacheDataSource: TrackBaseDetailsDbDataSource,
     private val settingsFlow: Flow<SettingsState>,
 ) : SearchRepository {
 
@@ -37,8 +37,8 @@ class SearchRepositoryImpl @Inject constructor(
         results
     }
 
-    override fun getById(id: String): SongSearchResult {
-        return searchCacheDataSource[id]
+    override suspend fun getById(id: String): SongSearchResult {
+        return searchCacheDataSource.get(id)
             ?: throw Error("no base info found in cache for song id $id")
         // todo maybe add network call here if not found in cache
     }

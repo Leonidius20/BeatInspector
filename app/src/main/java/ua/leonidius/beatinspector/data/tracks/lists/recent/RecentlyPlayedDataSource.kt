@@ -11,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import ua.leonidius.beatinspector.data.shared.PagingDataSource
-import ua.leonidius.beatinspector.data.tracks.shared.cache.SongTitlesInMemCache
+import ua.leonidius.beatinspector.data.tracks.shared.cache.TrackBaseDetailsDbDataSource
 import ua.leonidius.beatinspector.data.tracks.lists.recent.network.api.RecentlyPlayedApi
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.data.shared.network.toUIException
@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 class RecentlyPlayedDataSource @Inject constructor(
     private val service: RecentlyPlayedApi,
-    private val searchCache: SongTitlesInMemCache,
+    private val searchCache: TrackBaseDetailsDbDataSource,
     private val settingsFlow: Flow<SettingsState>,
 ): PagingSource<String, SongSearchResult>(), PagingDataSource<SongSearchResult> {
 

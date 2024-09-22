@@ -14,11 +14,12 @@ data class TrackDto(
 ): Mapper<SongSearchResult> {
 
     override fun toDomainObject(): SongSearchResult {
-        val name = if (this.explicit) "$name \uD83C\uDD74" else name // "E" emoji
+        // val name = if (this.explicit) "$name \uD83C\uDD74" else name // "E" emoji
         return SongSearchResult(
             id = id,
             name = name,
-            artists = artists.map { it.toDomainObject() },
+            artistNames = artists.joinToString(", ") { it.name },
+            artistIds = artists.joinToString(",") { it.id },
             isExplicit = explicit,
             imageUrl = album.biggestImageUrlOrNull(),
             smallestImageUrl = album.smallestImageUrlOrNull(),

@@ -108,11 +108,17 @@ fun SongDetailsScreenI(
 
             with(uiState) {
 
+                val trackName = remember(uiState.title, uiState.isExplicit) {
+                    if (uiState.isExplicit)
+                        "${uiState.title} \uD83C\uDD74"
+                    else uiState.title
+                }
+
                 when (LocalConfiguration.current.orientation) {
                     Configuration.ORIENTATION_LANDSCAPE -> {
                         SongDetailsLandscapeScreen(
                             modifier,
-                            name = title,
+                            name = trackName,
                             artistString = artists,
                             bpm = bpm,
                             key = key,
@@ -128,7 +134,7 @@ fun SongDetailsScreenI(
                     else -> {
                         SongDetailsPortraitScreen(
                             modifier,
-                            name = title,
+                            name = trackName,
                             artistString = artists,
                             bpm = bpm,
                             key = key,

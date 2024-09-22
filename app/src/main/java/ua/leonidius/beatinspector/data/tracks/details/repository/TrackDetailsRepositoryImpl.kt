@@ -4,28 +4,35 @@ import com.haroldadmin.cnradapter.NetworkResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withContext
-import ua.leonidius.beatinspector.data.tracks.details.cache.FullTrackDetailsCacheDataSource
+import ua.leonidius.beatinspector.data.shared.network.toUIException
+import ua.leonidius.beatinspector.data.tracks.details.cache.TrackExtendedDetailsDbDataSource
 import ua.leonidius.beatinspector.data.tracks.details.domain.Song
 import ua.leonidius.beatinspector.data.tracks.details.network.api.ArtistsApi
 import ua.leonidius.beatinspector.data.tracks.details.network.api.TrackAudioAnalysisApi
+import ua.leonidius.beatinspector.data.tracks.details.network.dto.TrackAudioAnalysisDto
 import ua.leonidius.beatinspector.data.tracks.search.repository.SearchRepository
-import ua.leonidius.beatinspector.data.shared.network.toUIException
+import ua.leonidius.beatinspector.data.tracks.shared.db.TrackExtendedDetails
+import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import javax.inject.Inject
 import javax.inject.Named
 
 class TrackDetailsRepositoryImpl @Inject constructor(
-    private val trackDetailsCacheDataSource: FullTrackDetailsCacheDataSource,
+    private val trackDetailsCacheDataSource: TrackExtendedDetailsDbDataSource,
+    // todo: split searchRepo into search and "get track base info by id" repos
     private val searchRepository: SearchRepository, // for title and artists
     private val artistsApi: ArtistsApi,
     private val audioAnalysisService: TrackAudioAnalysisApi,
     @Named("io") private val ioDispatcher: CoroutineDispatcher,
-): TrackDetailsRepository {
+) : TrackDetailsRepository {
 
     override suspend fun getFullDetails(id: String): Song = withContext(ioDispatcher) {
-        trackDetailsCacheDataSource.getFromCache(id)
-            ?.let { return@withContext it }
-
         val baseInfo = searchRepository.getById(id)
+
+        val extendedInfo = trackDetailsCacheDataSource.getFromCache(id)
+
+        if (extendedInfo != null) {
+            return@withContext assembleDomainObjectFromCached(baseInfo, extendedInfo)
+        }
 
         val trackAnalysisDeferredResponse = async {
             when (val response = audioAnalysisService.getTrackAudioAnalysis(baseInfo.id)) {
@@ -36,9 +43,10 @@ class TrackDetailsRepositoryImpl @Inject constructor(
         }
 
         val genresDeferredResponse = async {
-            when (val response = artistsApi.getArtists(baseInfo.artists.joinToString(",") { it.id })) {
+            when (val response = artistsApi.getArtists(baseInfo.artistIds)) {
                 is NetworkResponse.Success -> Result.success(
-                    response.body.artists.map { it.genres }.flatten().distinct())
+                    response.body.artists.map { it.genres }.flatten().distinct()
+                )
 
                 is NetworkResponse.Error -> Result.failure(response.toUIException())
                 // ??? throw response.toUIException()
@@ -61,15 +69,15 @@ class TrackDetailsRepositoryImpl @Inject constructor(
     }
 
     private fun assembleTrackDomainObject(
-        baseInfo: ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult,
-        details: ua.leonidius.beatinspector.data.tracks.details.network.dto.TrackAudioAnalysisDto,
+        baseInfo: SongSearchResult,
+        details: TrackAudioAnalysisDto,
         genres: List<String>,
     ): Song {
 
         return Song(
             id = baseInfo.id,
             name = baseInfo.name,
-            artist = baseInfo.artists.joinToString(", ") { it.name }, // todo: don't, just return as is and let ui layer handle it
+            artist = baseInfo.artistNames, // todo: don't, just return as is and let ui layer handle it
             duration = details.duration,
             loudness = details.loudness,
             bpm = details.tempo,
@@ -79,8 +87,32 @@ class TrackDetailsRepositoryImpl @Inject constructor(
             key = getKeyStringFromSpotifyValue(details.key, details.mode),
             keyConfidence = details.keyConfidence,
             modeConfidence = details.modeConfidence,
-            genres = genres,
+            genres = genres.joinToString(", "),
             albumArtUrl = baseInfo.imageUrl,
+            isExplicit = baseInfo.isExplicit,
+        )
+    }
+
+    private fun assembleDomainObjectFromCached(
+        baseInfo: SongSearchResult,
+        details: TrackExtendedDetails,
+    ): Song {
+        return Song(
+            id = baseInfo.id,
+            name = baseInfo.name,
+            artist = baseInfo.artistNames, // todo: don't, just return as is and let ui layer handle it
+            duration = details.duration,
+            loudness = details.loudness,
+            bpm = details.bpm,
+            bpmConfidence = details.bpmConfidence,
+            timeSignature = details.timeSignature,
+            timeSignatureConfidence = details.timeSignatureConfidence,
+            key = details.key,
+            keyConfidence = details.keyConfidence,
+            modeConfidence = details.modeConfidence,
+            genres = details.genres,
+            albumArtUrl = baseInfo.imageUrl,
+            isExplicit = baseInfo.isExplicit,
         )
     }
 
