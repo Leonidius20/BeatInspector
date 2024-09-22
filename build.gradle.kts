@@ -6,6 +6,7 @@ plugins {
     id("com.android.library") version "8.1.1" apply false
     id("com.mikepenz.aboutlibraries.plugin") version "10.10.0" apply false
     id("com.google.dagger.hilt.android") version "2.44" apply false
+    id("androidx.room") version "2.6.1" apply false // room version
 }
 
 buildscript {

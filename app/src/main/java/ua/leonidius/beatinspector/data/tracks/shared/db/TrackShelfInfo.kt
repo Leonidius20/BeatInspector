@@ -9,10 +9,10 @@ import androidx.room.PrimaryKey
  * sees first, including the name and the cover art. The list of artists
  * is JOIN-ed in SQL.
  */
-@Entity(tableName = "tracks", primaryKeys = ["id"])
+@Entity(tableName = "tracks")
 data class TrackShelfInfo(
 
-    @PrimaryKey val id: String,
+    @PrimaryKey val trackId: String,
 
     val name: String,
 
@@ -21,4 +21,6 @@ data class TrackShelfInfo(
     @ColumnInfo(name = "big_image_url") val imageUrl: String,
 
     @ColumnInfo(name = "small_image_url") val smallestImageUrl: String? = null,
+
+    val audioDetailsLoaded: Boolean,
 )

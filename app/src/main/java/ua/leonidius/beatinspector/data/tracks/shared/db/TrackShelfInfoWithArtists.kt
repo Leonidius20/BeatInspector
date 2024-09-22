@@ -9,7 +9,7 @@ data class TrackShelfInfoWithArtists(
     @Embedded val trackShelfInfo: TrackShelfInfo,
 
     @Relation(
-        associateBy = Junction(TrackArtist::class),
+        associateBy = Junction(TrackArtistAssociation::class),
         parentColumn = "trackId",
         entityColumn = "artistId",
     )

@@ -9,7 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ua.leonidius.beatinspector.data.shared.PagingDataSource
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
-import ua.leonidius.beatinspector.data.playlists.PlaylistInfoRepository
+import ua.leonidius.beatinspector.data.playlists.repository.PlaylistInfoRepository
 import ua.leonidius.beatinspector.features.tracklist.shared.viewmodels.TrackListViewModel
 import javax.inject.Inject
 import javax.inject.Named

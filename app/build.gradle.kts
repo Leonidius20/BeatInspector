@@ -9,6 +9,7 @@ plugins {
     id("com.github.alexfu.androidautoversion")
     id("com.mikepenz.aboutlibraries.plugin")
     id("com.google.dagger.hilt.android") // todo: maybe should change that dagger.hilt.android.plugin
+    id("androidx.room")
 }
 
 android {
@@ -164,6 +165,8 @@ dependencies {
     // optional - Jetpack Compose integration
     implementation("androidx.paging:paging-compose:3.3.0")
 
+    implementation("androidx.compose.material3.adaptive:adaptive-android:1.0.0")
+
     testImplementation("androidx.paging:paging-testing:3.3.0")
 
     // hilt
@@ -203,4 +206,8 @@ dependencies {
 
 kapt {
     correctErrorTypes = true
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }

@@ -20,15 +20,14 @@ import androidx.room.PrimaryKey
  *
  * the search results will not be timestamped, instead it will be invalidated every time
  */
-
 data class SongSearchResult(
-    @PrimaryKey override val id: String,
+    override val id: String,
     val name: String,
 
-    val artists: List<Artist>, // todo: how do we represent the artists?
-    @ColumnInfo(name = "is_explicit") val isExplicit: Boolean,
-    @ColumnInfo(name = "big_image_url") val imageUrl: String?,
-    @ColumnInfo(name = "small_image_url") val smallestImageUrl: String? = null,
+    val artists: List<Artist>,
+    val isExplicit: Boolean,
+    val imageUrl: String?,
+    val smallestImageUrl: String? = null,
 
 
 ): ua.leonidius.beatinspector.data.shared.domain.SearchResult

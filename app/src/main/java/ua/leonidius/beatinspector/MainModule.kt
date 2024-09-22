@@ -35,11 +35,9 @@ import ua.leonidius.beatinspector.data.account.domain.AccountDetails
 import ua.leonidius.beatinspector.data.account.network.api.AccountApi
 import ua.leonidius.beatinspector.data.account.repository.AccountRepository
 import ua.leonidius.beatinspector.data.account.repository.AccountRepositoryImpl
-import ua.leonidius.beatinspector.data.auth.logic.Authenticator
 import ua.leonidius.beatinspector.data.auth.logic.AuthTokenProvider
+import ua.leonidius.beatinspector.data.auth.logic.Authenticator
 import ua.leonidius.beatinspector.data.auth.logic.PKCEAuthenticationInitiator
-import ua.leonidius.beatinspector.data.playlists.MyPlaylistsPagingDataSource
-import ua.leonidius.beatinspector.data.playlists.domain.PlaylistSearchResult
 import ua.leonidius.beatinspector.data.playlists.network.api.MyPlaylistsService
 import ua.leonidius.beatinspector.data.settings.SettingsRepository
 import ua.leonidius.beatinspector.data.shared.PagingDataSource
@@ -63,9 +61,9 @@ import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.infrastructure.ApiErrorInterceptor
 import ua.leonidius.beatinspector.infrastructure.AuthInterceptor
 import ua.leonidius.beatinspector.infrastructure.isPackageInstalled
+import ua.leonidius.beatinspector.shared.domain.SettingsState
 import ua.leonidius.beatinspector.shared.logic.eventbus.EventBus
 import ua.leonidius.beatinspector.shared.logic.eventbus.EventBusImpl
-import ua.leonidius.beatinspector.shared.domain.SettingsState
 import java.text.DecimalFormat
 import javax.inject.Named
 import javax.inject.Singleton
@@ -341,11 +339,11 @@ abstract class EventBusModule {
         trackDetailsRepository: TrackDetailsRepositoryImpl
     ): TrackDetailsRepository
 
-    @Binds
+    /*@Binds
     @Singleton
     abstract fun bindMyPlaylistsPagingDataSource(
         myPlaylistsPagingDataSource: MyPlaylistsPagingDataSource
-    ): PagingDataSource<PlaylistSearchResult>
+    ): PagingDataSource<PlaylistSearchResult>*/
 
     @Binds
     @Singleton // only 1 such object is ever created

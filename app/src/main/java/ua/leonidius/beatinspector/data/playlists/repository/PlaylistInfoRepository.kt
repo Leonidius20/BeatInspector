@@ -1,4 +1,4 @@
-package ua.leonidius.beatinspector.data.playlists
+package ua.leonidius.beatinspector.data.playlists.repository
 
 import ua.leonidius.beatinspector.data.playlists.db.PlaylistDao
 import ua.leonidius.beatinspector.data.playlists.domain.PlaylistSearchResult
