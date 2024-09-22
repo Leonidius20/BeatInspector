@@ -16,14 +16,14 @@ import javax.inject.Singleton
         PlaylistSearchResult::class,
         PlaylistPageKeys::class,
 
-        //Genre::class,
-        //Artist::class,
+        Genre::class,
+        Artist::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = true,
-    //autoMigrations = [
-    //    AutoMigration(from = 2, to = 3)
-    //]
+    autoMigrations = [
+        AutoMigration(from = 2, to = 3)
+    ]
 )
 @Singleton
 abstract class TracksDatabase : RoomDatabase() {

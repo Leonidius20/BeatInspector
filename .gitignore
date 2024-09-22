@@ -13,3 +13,4 @@ secrets.properties
 android-keystore.jks
 /android-keystore.jks
 /*.jks
+.kotlin
