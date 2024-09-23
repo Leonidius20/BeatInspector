@@ -8,6 +8,8 @@ import ua.leonidius.beatinspector.data.playlists.db.PlaylistPageKeys
 import ua.leonidius.beatinspector.data.playlists.db.PlaylistPageKeysDao
 import ua.leonidius.beatinspector.data.playlists.domain.PlaylistSearchResult
 import ua.leonidius.beatinspector.data.tracks.details.db.TrackDetailsDao
+import ua.leonidius.beatinspector.data.tracks.lists.liked.db.daos.LikedTracksDao
+import ua.leonidius.beatinspector.data.tracks.lists.liked.db.entities.LikedTrackWithPageKeys
 import ua.leonidius.beatinspector.data.tracks.shared.db.TrackExtendedDetails
 import ua.leonidius.beatinspector.data.tracks.shared.db.TrackBaseDetails
 import javax.inject.Singleton
@@ -19,6 +21,8 @@ import javax.inject.Singleton
 
         TrackBaseDetails::class,
         TrackExtendedDetails::class,
+
+        LikedTrackWithPageKeys::class,
     ],
     version = 3,
     exportSchema = true,
@@ -34,5 +38,7 @@ abstract class TracksDatabase : RoomDatabase() {
     abstract fun playlistPageKeysDao(): PlaylistPageKeysDao
 
     abstract fun trackDetailsDao(): TrackDetailsDao
+
+    abstract fun likedTracksDao(): LikedTracksDao
 
 }

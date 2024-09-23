@@ -24,9 +24,14 @@ class TrackBaseDetailsDbDataSource @Inject constructor(
         // return cache[id] ?: throw Exception("No data in ${this::class.simpleName} for id $id")
     }
 
+    @Deprecated("use batchAdd(Collection<SongSearchResult>)", ReplaceWith("batchAdd(collection)"))
     override suspend fun batchAdd(data: Map<String, SongSearchResult>) {
         // cache.putAll(data)
-        trackDetailsDao.insertAllTrackBaseDetails(data.values.map { it.toDbObject() })
+        batchAdd(data.values)
+    }
+
+    suspend fun batchAdd(data: Collection<SongSearchResult>) {
+        trackDetailsDao.insertAllTrackBaseDetails(data.map { it.toDbObject() })
     }
 
     private fun SongSearchResult.toDbObject(): TrackBaseDetails {
@@ -35,18 +40,6 @@ class TrackBaseDetailsDbDataSource @Inject constructor(
             name = this.name,
             isExplicit = this.isExplicit,
             imageUrl = this.imageUrl ?: "",
-            smallestImageUrl = this.smallestImageUrl,
-            artistNames = this.artistNames,
-            artistIds = this.artistIds,
-        )
-    }
-
-    private fun TrackBaseDetails.toDomainObject(): SongSearchResult {
-        return SongSearchResult(
-            id = this.trackId,
-            name = this.name,
-            isExplicit = this.isExplicit,
-            imageUrl = this.imageUrl,
             smallestImageUrl = this.smallestImageUrl,
             artistNames = this.artistNames,
             artistIds = this.artistIds,
