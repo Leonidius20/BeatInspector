@@ -5,11 +5,10 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
-import com.haroldadmin.cnradapter.NetworkResponse
 import retrofit2.HttpException
 import ua.leonidius.beatinspector.data.shared.db.TracksDatabase
 import ua.leonidius.beatinspector.data.tracks.lists.liked.db.entities.LikedTrackWithPageKeys
-import ua.leonidius.beatinspector.data.tracks.lists.liked.network.api.LikedTracksApi
+import ua.leonidius.beatinspector.data.tracks.lists.liked.network.LikedTracksNetworkDataSource
 import ua.leonidius.beatinspector.data.tracks.shared.cache.TrackBaseDetailsDbDataSource
 import ua.leonidius.beatinspector.data.tracks.shared.db.TrackBaseDetails
 import java.io.IOException
@@ -20,8 +19,8 @@ import javax.inject.Singleton
 @OptIn(ExperimentalPagingApi::class)
 @Singleton
 class LikedTracksRemoteMediator @Inject constructor(
-    private val api: LikedTracksApi,
-    private val db: TracksDatabase,
+    private val remoteSource: LikedTracksNetworkDataSource,
+    private val db: TracksDatabase, // todo: replace with DbDataSource that will have isCacheFresh(), clearAllAndInsert(), insert(), clearAll(), dataSource() (for Pager)
     private val trackBaseDetailsDbDataSource: TrackBaseDetailsDbDataSource,
 ) : RemoteMediator<Int, TrackBaseDetails>() {
 
@@ -84,21 +83,11 @@ class LikedTracksRemoteMediator @Inject constructor(
             }
         }
 
-        val limit = state.config.pageSize
-        val offset = page * limit
-
         try {
-            val response = api.getSavedTracks(limit = limit, offset = offset)
+            val loadedLikedTracks = remoteSource.getLikedTracks(
+                page, itemsPerPage = state.config.pageSize
+            ) // throws SongDataIOException
 
-            if (response is NetworkResponse.Error) {
-                return MediatorResult.Error(
-                    response.error ?: IOException("Unknown error in LikedTracksRemoteMediator")
-                )
-            }
-
-            val successfulResponse = response as NetworkResponse.Success
-
-            val loadedLikedTracks = successfulResponse.body.items
             val endOfPaginationReached = loadedLikedTracks.isEmpty()
 
             db.withTransaction {
@@ -113,7 +102,7 @@ class LikedTracksRemoteMediator @Inject constructor(
                 likedTracksDao.insertAll(
                     loadedLikedTracks.map { track ->
                         LikedTrackWithPageKeys(
-                            trackId = track.track.id,
+                            trackId = track.id,
                             prevKey = prevKey,
                             nextKey = nextKey,
                             cachedAt = cachedAt,
@@ -121,20 +110,18 @@ class LikedTracksRemoteMediator @Inject constructor(
                     }
                 )
 
-                trackBaseDetailsDbDataSource.batchAdd(
-                    loadedLikedTracks.map { it.track.toDomainObject() }
-                )
+                trackBaseDetailsDbDataSource.batchAdd(loadedLikedTracks)
             }
 
-            return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
+            return MediatorResult.Success(
+                endOfPaginationReached = endOfPaginationReached
+            )
 
         } catch (e: IOException) {
             return MediatorResult.Error(e)
         } catch (e: HttpException) {
             return MediatorResult.Error(e)
         }
-
-        TODO("Not yet implemented")
     }
 
     private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, TrackBaseDetails>): LikedTrackWithPageKeys? {

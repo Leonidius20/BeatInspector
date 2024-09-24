@@ -7,13 +7,14 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import ua.leonidius.beatinspector.data.tracks.lists.liked.LikedTracksNetworkPagingSource
 import ua.leonidius.beatinspector.data.tracks.lists.liked.db.daos.LikedTracksDao
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.shared.logic.eventbus.EventBus
 import ua.leonidius.beatinspector.shared.logic.eventbus.UserLogoutRequestEvent
 import javax.inject.Inject
 import javax.inject.Singleton
+
+private const val ITEMS_PER_PAGE = 50
 
 @Singleton
 class LikedTracksRepository @Inject constructor(
@@ -24,7 +25,7 @@ class LikedTracksRepository @Inject constructor(
 
     init {
         eventBus.subscribe(UserLogoutRequestEvent::class) {
-            // todo: clear cache
+            likedTracksDao.clearAll()
         }
     }
 
@@ -32,7 +33,7 @@ class LikedTracksRepository @Inject constructor(
     fun getLikedTracksPagedFlow(): Flow<PagingData<SongSearchResult>> {
         return Pager(
             config = PagingConfig(
-                pageSize = LikedTracksNetworkPagingSource.ITEMS_PER_PAGE,
+                pageSize = ITEMS_PER_PAGE,
                 enablePlaceholders = false,
             ),
             remoteMediator = mediator,

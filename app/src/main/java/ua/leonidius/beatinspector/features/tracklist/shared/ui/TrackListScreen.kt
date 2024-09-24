@@ -2,7 +2,9 @@ package ua.leonidius.beatinspector.features.tracklist.shared.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -86,12 +88,18 @@ private fun TrackListScreen(
         // todo: universal error screen
         val error = refreshState.error
 
-        Text(
-            if (error is SongDataIOException)
-                stringResource(error.toUiMessage())
+        Box(modifier
+            .fillMaxWidth()) {
+            Text(
+                modifier = Modifier
+                    .padding(Dimens.paddingLarge)
+                    .align(Alignment.TopCenter),
+                text = if (error is SongDataIOException)
+                    stringResource(error.toUiMessage())
                 // error.toTextDescription()
-            else "Unknown error while loading, ${refreshState.error.message}"
-        )
+                else "Unknown error while loading, ${refreshState.error.message}",
+            )
+        }
 
     } else if (lazyItems.loadState.refresh is LoadState.Loading) {
         LoadingScreen()

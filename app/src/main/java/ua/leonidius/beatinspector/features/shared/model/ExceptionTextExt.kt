@@ -11,5 +11,6 @@ fun SongDataIOException.toUiMessage(): Int {
         is SongDataIOException.TokenRefresh -> R.string.token_refresh_error
         is SongDataIOException.NotLoggedIn -> R.string.not_logged_in_error
         is SongDataIOException.ApiAccessDenied -> R.string.api_access_denied_error
+        is SongDataIOException.NoInternetConnection -> R.string.no_internet
     }
 }

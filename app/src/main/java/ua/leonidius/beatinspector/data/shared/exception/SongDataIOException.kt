@@ -81,4 +81,10 @@ sealed class SongDataIOException(
 
     }
 
+    object NoInternetConnection : SongDataIOException() {
+
+        override fun toTextDescription() = "No internet connection."
+
+    }
+
 }
