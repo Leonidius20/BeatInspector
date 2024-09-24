@@ -7,7 +7,7 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import ua.leonidius.beatinspector.data.tracks.lists.liked.db.daos.LikedTracksDao
+import ua.leonidius.beatinspector.data.tracks.lists.liked.db.LikedTracksDbDataSource
 import ua.leonidius.beatinspector.data.tracks.shared.domain.SongSearchResult
 import ua.leonidius.beatinspector.shared.logic.eventbus.EventBus
 import ua.leonidius.beatinspector.shared.logic.eventbus.UserLogoutRequestEvent
@@ -20,12 +20,12 @@ private const val ITEMS_PER_PAGE = 50
 class LikedTracksRepository @Inject constructor(
     eventBus: EventBus,
     private val mediator: LikedTracksRemoteMediator,
-    private val likedTracksDao: LikedTracksDao,
+    private val likedTracksDbDataSource: LikedTracksDbDataSource,
 ) {
 
     init {
         eventBus.subscribe(UserLogoutRequestEvent::class) {
-            likedTracksDao.clearAll()
+            likedTracksDbDataSource.clearAll()
         }
     }
 
@@ -38,7 +38,7 @@ class LikedTracksRepository @Inject constructor(
             ),
             remoteMediator = mediator,
             pagingSourceFactory = {
-                likedTracksDao.likedTracksPagingSource()
+                likedTracksDbDataSource.pagingSource()
             }
         ).flow.map { data ->
             data.map { item ->
